@@ -462,7 +462,6 @@ export default function CapsuleDetail() {
           comments={capsuleComments}
           currentUser={currentUser}
           onAddComment={(content) => currentUser && addComment(capsule.id, {
-            capsuleId: capsule.id,
             userId: currentUser.id,
             nickname: currentUser.nickname,
             content

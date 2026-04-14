@@ -149,6 +149,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
       addComment: (capsuleId, commentData) => set((state) => {
         const newComment: Comment = {
           ...commentData,
+          capsuleId,
           id: Date.now().toString(),
           createdAt: new Date().toISOString()
         };

@@ -54,6 +54,15 @@ export interface AITextTemplate {
   content: string;
 }
 
+export interface Comment {
+  id: string;
+  capsuleId: string;
+  userId: string;
+  nickname: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface Capsule {
   id: string;
   userId: string;
@@ -101,7 +110,7 @@ export interface CapsuleStore {
   drafts: DraftCapsule[];
   addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => void;
   likeCapsule: (id: string) => void;
-  addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt'>) => void;
+  addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'capsuleId'>) => void;
   favoriteCapsule: (id: string) => void;
   getCapsuleById: (id: string) => Capsule | undefined;
   getPublicCapsules: () => Capsule[];
