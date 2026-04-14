@@ -666,12 +666,6 @@ export default function CapsuleDetail() {
         />
       </div>
 
-      <SharePosterModal
-        isOpen={showPosterModal}
-        onClose={() => setShowPosterModal(false)}
-        capsule={capsule}
-      />
-
       {/* 分享邀请链接模态框 */}
       {showShareLinkModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -715,6 +709,12 @@ export default function CapsuleDetail() {
           </div>
         </div>
       )}
+
+      <SharePosterModal
+        isOpen={showPosterModal}
+        onClose={() => setShowPosterModal(false)}
+        capsule={capsule}
+      />
     </div>
   );
 }
