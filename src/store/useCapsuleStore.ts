@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Capsule, Comment, User, CapsuleStore } from '../types';
+import { Capsule, Comment, User, CapsuleStore, CapsuleMember, CapsuleReply, DraftCapsule } from '../types';
 
 const initialCapsules: Capsule[] = [
   {
@@ -8,14 +8,15 @@ const initialCapsules: Capsule[] = [
     userId: 'demo1',
     content: '今天和室友在图书馆度过了美好的一天，希望明年的今天我们都能实现自己的目标！',
     images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=university%20library%20study%20scene%20warm%20lighting&image_size=square'],
-    openAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    openAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     isPublic: true,
     isAnonymous: false,
     tags: ['学习', '室友', '目标'],
     likes: 42,
     comments: 8,
     favorites: 15,
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    replies: []
   },
   {
     id: '2',
@@ -47,6 +48,28 @@ const initialCapsules: Capsule[] = [
     comments: 5,
     favorites: 18,
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: '4',
+    userId: 'demo4',
+    content: '毕业快乐！我们402宿舍永远不散！',
+    images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=university%20graduation%20group%20photo%20happy%20students&image_size=square'],
+    openAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    isPublic: true,
+    isAnonymous: false,
+    tags: ['毕业', '宿舍', '友谊'],
+    likes: 128,
+    comments: 25,
+    favorites: 45,
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    isGroup: true,
+    groupName: '402宿舍毕业胶囊',
+    inviteLink: 'https://capsule.example.com/join/402-grad',
+    groupMembers: [
+      { id: 'm1', userId: 'demo4', nickname: '老大', joinedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+      { id: 'm2', userId: 'demo5', nickname: '老二', joinedAt: new Date(Date.now() - 1.8 * 24 * 60 * 60 * 1000).toISOString() },
+      { id: 'm3', userId: 'demo6', nickname: '老三', joinedAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
   }
 ];
 
@@ -87,6 +110,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
       currentUser,
       notifications: [],
       wechatBound: false,
+      drafts: [],
 
       addCapsule: (capsuleData) => set((state) => ({
         capsules: [...state.capsules, {
@@ -155,6 +179,93 @@ export const useCapsuleStore = create<CapsuleStore>()(
         capsules: state.capsules.map(c => 
           c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c
         )
+      })),
+
+      saveDraft: (draftData) => set((state) => {
+        const existingDraftIndex = state.drafts.findIndex(d => d.userId === draftData.userId);
+        const now = new Date().toISOString();
+        
+        if (existingDraftIndex >= 0) {
+          const updatedDrafts = [...state.drafts];
+          updatedDrafts[existingDraftIndex] = {
+            ...updatedDrafts[existingDraftIndex],
+            ...draftData,
+            updatedAt: now
+          };
+          return { drafts: updatedDrafts };
+        } else {
+          const newDraft: DraftCapsule = {
+            ...draftData,
+            id: Date.now().toString(),
+            savedAt: now,
+            updatedAt: now
+          };
+          const allDrafts = [newDraft, ...state.drafts];
+          return { drafts: allDrafts.slice(0, 3) };
+        }
+      }),
+
+      getDrafts: (userId) => get().drafts.filter(d => d.userId === userId),
+
+      deleteDraft: (id) => set((state) => ({
+        drafts: state.drafts.filter(d => d.id !== id)
+      })),
+
+      addReply: (capsuleId, replyData) => set((state) => {
+        const newReply: CapsuleReply = {
+          ...replyData,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString()
+        };
+        return {
+          capsules: state.capsules.map(c => {
+            if (c.id === capsuleId) {
+              return {
+                ...c,
+                replies: [...(c.replies || []), newReply]
+              };
+            }
+            return c;
+          })
+        };
+      }),
+
+      joinGroupCapsule: (capsuleId, userId, nickname, avatar) => set((state) => {
+        const newMember: CapsuleMember = {
+          id: Date.now().toString(),
+          userId,
+          nickname,
+          avatar,
+          joinedAt: new Date().toISOString()
+        };
+        return {
+          capsules: state.capsules.map(c => {
+            if (c.id === capsuleId && c.isGroup) {
+              return {
+                ...c,
+                groupMembers: [...(c.groupMembers || []), newMember]
+              };
+            }
+            return c;
+          })
+        };
+      }),
+
+      addGroupMemberContent: (capsuleId, userId, content, images, audio) => set((state) => ({
+        capsules: state.capsules.map(c => {
+          if (c.id === capsuleId && c.isGroup && c.groupMembers) {
+            return {
+              ...c,
+              groupMembers: c.groupMembers.map(m => {
+                if (m.userId === userId) {
+                  return { ...m, content, images, audio };
+                }
+                return m;
+              })
+            };
+          }
+          return c;
+        })
       }))
     }),
     {

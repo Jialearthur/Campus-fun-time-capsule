@@ -1,5 +1,5 @@
 import { Capsule } from '../types';
-import { Heart, MessageCircle, Star, Lock, Unlock, User } from 'lucide-react';
+import { Heart, MessageCircle, Star, Lock, Unlock, User, Users } from 'lucide-react';
 import CountdownTimer from './CountdownTimer';
 import { isCapsuleOpened } from '../utils/date';
 import { useNavigate } from 'react-router-dom';
@@ -23,9 +23,21 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
 
   return (
     <div 
-      className="bg-white rounded-3xl shadow-gummy border-2 border-gummy-pink/30 overflow-hidden mb-6 hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group gummy-card animate-fade-in"
+      className={cn(
+        "bg-white rounded-3xl shadow-gummy border-2 overflow-hidden mb-6 hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group gummy-card animate-fade-in",
+        capsule.isGroup ? "border-candy-yellow/50" : "border-gummy-pink/30"
+      )}
       onClick={() => navigate(`/capsule/${capsule.id}`)}
     >
+      {capsule.isGroup && (
+        <div className="absolute top-4 left-4 z-10">
+          <div className="flex items-center gap-1.5 bg-gradient-to-r from-candy-yellow to-candy-orange text-white px-3 py-1.5 rounded-full shadow-lg">
+            <Users className="w-3.5 h-3.5" />
+            <span className="text-xs font-bold">集体胶囊</span>
+          </div>
+        </div>
+      )}
+
       {capsule.images.length > 0 && (
         <div className={cn(
           "relative h-52 overflow-hidden rounded-t-3xl",
@@ -56,11 +68,21 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full gummy-gradient flex items-center justify-center shadow-sm">
-              <User className="w-4.5 h-4.5 text-white" />
+            <div className={cn(
+              "w-9 h-9 rounded-full flex items-center justify-center shadow-sm",
+              capsule.isGroup ? "bg-gradient-to-r from-candy-yellow to-candy-orange" : "gummy-gradient"
+            )}>
+              {capsule.isGroup ? (
+                <Users className="w-4.5 h-4.5 text-white" />
+              ) : (
+                <User className="w-4.5 h-4.5 text-white" />
+              )}
             </div>
             <span className="text-sm font-medium text-gummy-dark">
-              {capsule.isAnonymous ? '匿名用户' : '校园旅人'}
+              {capsule.isGroup 
+                ? (capsule.groupName || '集体胶囊')
+                : (capsule.isAnonymous ? '匿名用户' : '校园旅人')
+              }
             </span>
           </div>
           <div className="flex items-center gap-1">

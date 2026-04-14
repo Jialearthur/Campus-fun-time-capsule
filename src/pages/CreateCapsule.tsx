@@ -1,23 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCapsuleStore } from '../store/useCapsuleStore';
 import ImageUploader from '../components/ImageUploader';
 import AudioRecorder from '../components/AudioRecorder';
-import { ArrowLeft, Palette, Users, Lock, Tag, Calendar, Globe, CheckCircle2, XCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import {
+  ArrowLeft,
+  Palette,
+  Users,
+  Lock,
+  Tag,
+  Calendar,
+  Globe,
+  CheckCircle2,
+  XCircle,
+  ChevronRight,
+  ChevronLeft,
+  Sparkles,
+  RefreshCw,
+  Copy,
+  UserPlus,
+  Save,
+  Trash2,
+  Clock
+} from 'lucide-react';
 import { validateContent, validateOpenDate } from '../utils/validation';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { templates, campusTags, Template } from '../utils/templates';
+import {
+  generateAITextTemplates,
+  getStyleIcon,
+  getStyleColor
+} from '../utils/aiTextGenerator';
+import { AITextTemplate } from '../types';
 
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 }
 
-type Step = 1 | 2 | 3 | 4 | 5;
+type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export default function CreateCapsule() {
   const navigate = useNavigate();
-  const { addCapsule, currentUser } = useCapsuleStore();
+  const {
+    addCapsule,
+    currentUser,
+    saveDraft,
+    getDrafts,
+    deleteDraft
+  } = useCapsuleStore();
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [content, setContent] = useState('');
@@ -33,6 +64,121 @@ export default function CreateCapsule() {
   const [sharedInput, setSharedInput] = useState('');
   const [blindBoxDescription, setBlindBoxDescription] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
+
+  const [isGroup, setIsGroup] = useState(false);
+  const [groupName, setGroupName] = useState('');
+  const [groupMemberCount, setGroupMemberCount] = useState(5);
+
+  const [aiKeywords, setAiKeywords] = useState<string[]>([]);
+  const [aiKeywordInput, setAiKeywordInput] = useState('');
+  const [aiTemplates, setAiTemplates] = useState<AITextTemplate[]>([]);
+  const [showAiSection, setShowAiSection] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+
+  const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (currentUser) {
+      const drafts = getDrafts(currentUser.id);
+      if (drafts.length > 0) {
+        setShowDraftPrompt(true);
+      }
+    }
+  }, [currentUser, getDrafts]);
+
+  useEffect(() => {
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    if (currentUser && (content || images.length > 0 || selectedTemplate)) {
+      autoSaveTimerRef.current = setTimeout(() => {
+        saveDraft({
+          userId: currentUser.id,
+          content,
+          images,
+          audio: audio || undefined,
+          openAt: openDate || undefined,
+          isPublic,
+          isAnonymous,
+          tags: selectedTags,
+          template: selectedTemplate?.id,
+          backgroundImage: selectedTemplate?.backgroundImage,
+          fontStyle: selectedTemplate?.fontStyle.color,
+          password: password || undefined,
+          sharedWith: sharedWith.length > 0 ? sharedWith : undefined,
+          isGroup,
+          groupName: groupName || undefined,
+          groupMembers: sharedWith.length > 0 ? sharedWith : undefined
+        });
+        setLastSavedAt(new Date());
+      }, 30000);
+    }
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [
+    content,
+    images,
+    audio,
+    openDate,
+    isPublic,
+    isAnonymous,
+    selectedTags,
+    selectedTemplate,
+    password,
+    sharedWith,
+    isGroup,
+    groupName,
+    currentUser,
+    saveDraft
+  ]);
+
+  const loadDraft = (draft: any) => {
+    setContent(draft.content || '');
+    setImages(draft.images || []);
+    setAudio(draft.audio || null);
+    setOpenDate(draft.openAt || '');
+    setIsPublic(draft.isPublic ?? true);
+    setIsAnonymous(draft.isAnonymous ?? false);
+    setSelectedTags(draft.tags || []);
+    setPassword(draft.password || '');
+    setSharedWith(draft.sharedWith || []);
+    setIsGroup(draft.isGroup ?? false);
+    setGroupName(draft.groupName || '');
+    setShowDraftPrompt(false);
+  };
+
+  const handleGenerateAiTemplates = () => {
+    if (aiKeywords.length === 0) return;
+    setIsGeneratingAi(true);
+    setTimeout(() => {
+      const templates = generateAITextTemplates(aiKeywords);
+      setAiTemplates(templates);
+      setIsGeneratingAi(false);
+    }, 1000);
+  };
+
+  const handleAddAiKeyword = () => {
+    if (aiKeywordInput.trim() && aiKeywords.length < 3) {
+      setAiKeywords([...aiKeywords, aiKeywordInput.trim()]);
+      setAiKeywordInput('');
+    }
+  };
+
+  const handleRemoveAiKeyword = (keyword: string) => {
+    setAiKeywords(aiKeywords.filter(k => k !== keyword));
+  };
+
+  const handleUseAiTemplate = (templateContent: string) => {
+    setContent(templateContent);
+    setShowAiSection(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,12 +209,20 @@ export default function CreateCapsule() {
       newErrors.push('密码长度应在4-6位之间');
     }
 
-    if (sharedWith.length > 5) {
+    if (sharedWith.length > 5 && !isGroup) {
       newErrors.push('最多只能邀请5位好友');
+    }
+
+    if (isGroup && sharedWith.length > 19) {
+      newErrors.push('集体胶囊最多邀请19位成员');
     }
 
     if (isPublic && blindBoxDescription.length > 20) {
       newErrors.push('盲盒描述不能超过20字');
+    }
+
+    if (isGroup && !groupName) {
+      newErrors.push('请输入集体胶囊名称');
     }
 
     if (newErrors.length > 0) {
@@ -76,7 +230,7 @@ export default function CreateCapsule() {
       return;
     }
 
-    addCapsule({
+    const capsuleData: any = {
       userId: currentUser.id,
       content,
       images,
@@ -89,9 +243,31 @@ export default function CreateCapsule() {
       backgroundImage: selectedTemplate?.backgroundImage,
       fontStyle: selectedTemplate?.fontStyle.color,
       password: password || undefined,
-      sharedWith: sharedWith.length > 0 ? sharedWith : undefined,
+      sharedWith: sharedWith.length > 0 && !isGroup ? sharedWith : undefined,
       blindBoxDescription: isPublic && blindBoxDescription ? blindBoxDescription : undefined
-    });
+    };
+
+    if (isGroup) {
+      capsuleData.isGroup = true;
+      capsuleData.groupName = groupName;
+      capsuleData.inviteLink = `https://capsule.example.com/join/${Date.now()}`;
+      capsuleData.groupMembers = [
+        {
+          id: currentUser.id,
+          userId: currentUser.id,
+          nickname: currentUser.nickname,
+          avatar: currentUser.avatar,
+          joinedAt: new Date().toISOString()
+        }
+      ];
+    }
+
+    addCapsule(capsuleData);
+
+    if (currentUser) {
+      const drafts = getDrafts(currentUser.id);
+      drafts.forEach(draft => deleteDraft(draft.id));
+    }
 
     navigate('/my-capsules', { replace: true });
   };
@@ -113,7 +289,8 @@ export default function CreateCapsule() {
   };
 
   const handleAddSharedUser = () => {
-    if (sharedInput.trim() && sharedWith.length < 5 && !sharedWith.includes(sharedInput.trim())) {
+    const maxCount = isGroup ? 19 : 5;
+    if (sharedInput.trim() && sharedWith.length < maxCount && !sharedWith.includes(sharedInput.trim())) {
       setSharedWith([...sharedWith, sharedInput.trim()]);
       setSharedInput('');
     }
@@ -126,16 +303,26 @@ export default function CreateCapsule() {
   const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const maxDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 
-  const steps = [
-    { id: 1 as Step, title: '选择模板', subtitle: '快速创建专属胶囊' },
-    { id: 2 as Step, title: '记录回忆', subtitle: '写下故事，添加照片和语音' },
-    { id: 3 as Step, title: '设置时间', subtitle: '选择胶囊开启的日期' },
-    { id: 4 as Step, title: '添加标签', subtitle: '选择校园标签' },
-    { id: 5 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' },
-  ];
+  const steps = isGroup
+    ? [
+        { id: 1 as Step, title: '胶囊类型', subtitle: '选择个人或集体胶囊' },
+        { id: 2 as Step, title: '集体信息', subtitle: '设置胶囊名称和成员' },
+        { id: 3 as Step, title: '记录回忆', subtitle: '写下故事，添加照片和语音' },
+        { id: 4 as Step, title: '设置时间', subtitle: '选择胶囊开启的日期' },
+        { id: 5 as Step, title: '添加标签', subtitle: '选择校园标签' },
+        { id: 6 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
+      ]
+    : [
+        { id: 1 as Step, title: '胶囊类型', subtitle: '选择个人或集体胶囊' },
+        { id: 2 as Step, title: '选择模板', subtitle: '快速创建专属胶囊' },
+        { id: 3 as Step, title: '记录回忆', subtitle: '写下故事，添加照片和语音' },
+        { id: 4 as Step, title: '设置时间', subtitle: '选择胶囊开启的日期' },
+        { id: 5 as Step, title: '添加标签', subtitle: '选择校园标签' },
+        { id: 6 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
+      ];
 
   const handleNext = () => {
-    if (currentStep < 5) {
+    if (currentStep < steps.length) {
       setCurrentStep((prev) => (prev + 1 as Step));
     }
   };
@@ -154,11 +341,63 @@ export default function CreateCapsule() {
             <ArrowLeft className="w-6 h-6 text-[#8a7ab5]" />
           </button>
           <h1 className="font-bold text-lg text-[#5a4b7a]">创建时光胶囊</h1>
-          <div className="w-10" />
+          <div className="w-10 flex items-center justify-center">
+            {lastSavedAt && (
+              <div className="flex items-center gap-1 text-xs text-[#a093c2]">
+                <Save className="w-3 h-3" />
+                <span>已保存</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 pt-6">
+        {showDraftPrompt && currentUser && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-candy-yellow/20 to-candy-orange/20 border border-candy-yellow/30 rounded-2xl">
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-candy-orange shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-medium text-gray-800 mb-2">发现未完成的草稿</p>
+                <div className="space-y-2">
+                  {getDrafts(currentUser.id).map((draft) => (
+                    <div key={draft.id} className="flex items-center justify-between bg-white rounded-xl p-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">
+                          {draft.content?.substring(0, 30) || '未命名草稿'}...
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(draft.updatedAt).toLocaleString('zh-CN')}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => loadDraft(draft)}
+                          className="px-3 py-1.5 bg-gradient-to-r from-candy-pink to-candy-purple text-white text-sm rounded-lg"
+                        >
+                          恢复
+                        </button>
+                        <button
+                          onClick={() => deleteDraft(draft.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-500"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowDraftPrompt(false)}
+                  className="mt-2 text-sm text-gray-500 hover:text-gray-700"
+                >
+                  忽略，创建新胶囊
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {errors.length > 0 && (
           <div className="mb-6 p-4 bg-[#fdecea] border border-[#fcd5ce] rounded-2xl">
             <div className="flex items-start gap-3">
@@ -175,21 +414,20 @@ export default function CreateCapsule() {
           </div>
         )}
 
-        {/* 步骤指示器 */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <div>
               <h2 className="font-bold text-[#5a4b7a]">{steps[currentStep - 1].title}</h2>
               <p className="text-sm text-[#a093c2]">{steps[currentStep - 1].subtitle}</p>
             </div>
-            <span className="text-sm text-[#c8b6e2]">{currentStep}/5</span>
+            <span className="text-sm text-[#c8b6e2]">{currentStep}/{steps.length}</span>
           </div>
           <div className="flex items-center gap-2">
             {steps.map((step) => (
               <div key={step.id} className="flex-1">
                 <div className={cn(
                   "w-full h-2 rounded-full transition-all duration-300",
-                  currentStep >= step.id ? "bg-[#c8b6e2]" : "bg-[#e0d6f0]"
+                  currentStep >= step.id ? "bg-gradient-to-r from-candy-pink to-candy-purple" : "bg-[#e0d6f0]"
                 )} />
               </div>
             ))}
@@ -197,8 +435,80 @@ export default function CreateCapsule() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 步骤 1：选择模板 */}
           {currentStep === 1 && (
+            <Section title="胶囊类型" subtitle="选择个人或集体胶囊">
+              <div className="space-y-3">
+                <ToggleButton
+                  active={!isGroup}
+                  onClick={() => setIsGroup(false)}
+                  icon={<Sparkles className="w-5 h-5" />}
+                  title="个人胶囊"
+                  description="仅您一人创建和管理"
+                />
+                <ToggleButton
+                  active={isGroup}
+                  onClick={() => setIsGroup(true)}
+                  icon={<Users className="w-5 h-5" />}
+                  title="集体胶囊"
+                  description="1-20人共同创建，毕业季/社团专属"
+                />
+              </div>
+            </Section>
+          )}
+
+          {currentStep === 2 && isGroup && (
+            <Section title="集体信息" subtitle="设置胶囊名称和成员">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-[#5a4b7a] mb-2 block">集体胶囊名称</label>
+                  <input
+                    type="text"
+                    value={groupName}
+                    onChange={(e) => setGroupName(e.target.value)}
+                    placeholder="例如：402宿舍毕业胶囊"
+                    className="w-full bg-white border border-[#e0d6f0] rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#c8b6e2] focus:border-[#c8b6e2] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-[#5a4b7a] mb-2 block">邀请成员（最多19人）</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={sharedInput}
+                      onChange={(e) => setSharedInput(e.target.value)}
+                      placeholder="输入成员昵称"
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddSharedUser()}
+                      className="flex-1 bg-white border border-[#e0d6f0] rounded-2xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#c8b6e2] focus:border-[#c8b6e2] transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddSharedUser}
+                      className="px-4 py-2.5 bg-gradient-to-br from-candy-pink to-candy-purple text-white rounded-2xl"
+                    >
+                      <UserPlus className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {sharedWith.map((user, index) => (
+                      <div key={index} className="flex items-center gap-1 bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 rounded-full px-3 py-1 text-sm">
+                        <span className="text-gray-700">{user}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSharedUser(user)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-[#a093c2] mt-1">已添加 {sharedWith.length}/19 位成员</p>
+                </div>
+              </div>
+            </Section>
+          )}
+
+          {currentStep === 2 && !isGroup && (
             <Section title="选择模板" subtitle="快速创建专属胶囊">
               <div className="grid grid-cols-2 gap-3">
                 {templates.map((template) => (
@@ -209,8 +519,8 @@ export default function CreateCapsule() {
                     className={cn(
                       "p-3 rounded-xl border-2 transition-all",
                       selectedTemplate?.id === template.id
-                        ? "border-[#c8b6e2] bg-[#f5f3f7]"
-                        : "border-[#e0d6f0] bg-white hover:border-[#c8b6e2]"
+                        ? "border-candy-purple bg-candy-purple/10"
+                        : "border-[#e0d6f0] bg-white hover:border-candy-pink"
                     )}
                   >
                     <div className="aspect-video rounded-lg overflow-hidden mb-2">
@@ -228,10 +538,109 @@ export default function CreateCapsule() {
             </Section>
           )}
 
-          {/* 步骤 2：记录回忆 */}
-          {currentStep === 2 && (
+          {(currentStep === 3 && !isGroup) || (currentStep === 3 && isGroup) ? (
             <>
               <Section title="写下你的故事" subtitle="记录此刻的心情">
+                <button
+                  type="button"
+                  onClick={() => setShowAiSection(!showAiSection)}
+                  className="mb-4 flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  {showAiSection ? '隐藏AI助手' : 'AI帮我写'}
+                </button>
+
+                {showAiSection && (
+                  <div className="mb-4 p-4 bg-gradient-to-r from-candy-yellow/10 to-candy-orange/10 rounded-2xl border border-candy-yellow/20">
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">输入关键词（1-3个）</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            value={aiKeywordInput}
+                            onChange={(e) => setAiKeywordInput(e.target.value)}
+                            placeholder="例如：军训、室友、考研"
+                            onKeyPress={(e) => e.key === 'Enter' && handleAddAiKeyword()}
+                            className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-candy-pink"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddAiKeyword}
+                            disabled={aiKeywords.length >= 3}
+                            className="px-3 py-2 bg-candy-pink text-white rounded-xl text-sm disabled:opacity-50"
+                          >
+                            添加
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {aiKeywords.map((keyword, idx) => (
+                            <span key={idx} className="inline-flex items-center gap-1 px-3 py-1 bg-candy-pink/20 text-candy-purple rounded-full text-sm">
+                              {keyword}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveAiKeyword(keyword)}
+                                className="text-candy-purple hover:text-red-500"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleGenerateAiTemplates}
+                        disabled={aiKeywords.length === 0 || isGeneratingAi}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium disabled:opacity-50"
+                      >
+                        {isGeneratingAi ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            生成中...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4" />
+                            生成文案
+                          </>
+                        )}
+                      </button>
+
+                      {aiTemplates.length > 0 && (
+                        <div className="space-y-2 mt-4">
+                          <p className="text-sm font-medium text-gray-700">选择一个模板：</p>
+                          {aiTemplates.map((template) => (
+                            <div
+                              key={template.id}
+                              className={cn(
+                                "p-3 rounded-xl border-2 cursor-pointer transition-all",
+                                "bg-gradient-to-br " + getStyleColor(template.style),
+                                "border-transparent hover:border-candy-pink"
+                              )}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="flex items-center gap-1 text-sm font-medium text-gray-700">
+                                  {getStyleIcon(template.style)} {template.styleName}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUseAiTemplate(template.content)}
+                                  className="flex items-center gap-1 px-3 py-1 bg-white rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                  使用
+                                </button>
+                              </div>
+                              <p className="text-sm text-gray-600">{template.content}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="relative">
                   <textarea
                     value={content}
@@ -248,22 +657,22 @@ export default function CreateCapsule() {
                     className={cn(
                       "w-full min-h-[150px] bg-white border rounded-2xl p-4 resize-none focus:outline-none focus:ring-2 transition-all",
                       content.length > 0 && content.length < 10
-                        ? "border-[#e57373] focus:ring-[#e57373] focus:border-[#e57373]"
+                        ? "border-red-400 focus:ring-red-400 focus:border-red-400"
                         : content.length === 500
-                        ? "border-[#ff9800] focus:ring-[#ff9800] focus:border-[#ff9800]"
-                        : "border-[#e0d6f0] focus:ring-[#c8b6e2] focus:border-[#c8b6e2]"
+                        ? "border-orange-400 focus:ring-orange-400 focus:border-orange-400"
+                        : "border-[#e0d6f0] focus:ring-candy-pink focus:border-candy-pink"
                     )}
                   />
                   <div className={cn(
                     "absolute bottom-3 right-3 text-xs font-medium",
-                    content.length > 0 && content.length < 10 ? "text-[#e57373]" :
-                    content.length === 500 ? "text-[#ff9800]" : "text-[#a093c2]"
+                    content.length > 0 && content.length < 10 ? "text-red-500" :
+                    content.length === 500 ? "text-orange-500" : "text-[#a093c2]"
                   )}>
                     {content.length}/500
                     {content.length > 0 && content.length < 10 && <span className="ml-1">（至少10字）</span>}
                   </div>
                 </div>
-                {isPublic && (
+                {isPublic && !isGroup && (
                   <input
                     type="text"
                     value={blindBoxDescription}
@@ -283,10 +692,9 @@ export default function CreateCapsule() {
                 <AudioRecorder audioUrl={audio} onChange={setAudio} />
               </Section>
             </>
-          )}
+          ) : null}
 
-          {/* 步骤 3：设置时间 */}
-          {currentStep === 3 && (
+          {(currentStep === 4 && !isGroup) || (currentStep === 4 && isGroup) ? (
             <Section title="开启时间" subtitle="选择胶囊开启的日期">
               <p className="text-sm text-[#a093c2] mb-3">请选择1天后至1年内的任意时间</p>
               <div className="relative">
@@ -301,10 +709,9 @@ export default function CreateCapsule() {
                 />
               </div>
             </Section>
-          )}
+          ) : null}
 
-          {/* 步骤 4：添加标签 */}
-          {currentStep === 4 && (
+          {(currentStep === 5 && !isGroup) || (currentStep === 5 && isGroup) ? (
             <Section title="校园标签" subtitle="选择1-3个校园标签">
               <p className="text-sm text-[#a093c2] mb-3">选择与你的回忆相关的标签</p>
               <div className="flex flex-wrap gap-2">
@@ -316,8 +723,8 @@ export default function CreateCapsule() {
                     className={cn(
                       "px-3 py-1.5 rounded-full text-sm transition-all",
                       selectedTags.includes(tag)
-                        ? "bg-[#f5f3f7] text-[#8a7ab5] border border-[#c8b6e2]"
-                        : "bg-white text-[#8a7ab5] border border-[#e0d6f0] hover:border-[#c8b6e2]"
+                        ? "bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 text-candy-purple border border-candy-pink"
+                        : "bg-white text-[#8a7ab5] border border-[#e0d6f0] hover:border-candy-pink"
                     )}
                   >
                     #{tag}
@@ -325,10 +732,9 @@ export default function CreateCapsule() {
                 ))}
               </div>
             </Section>
-          )}
+          ) : null}
 
-          {/* 步骤 5：隐私设置 */}
-          {currentStep === 5 && (
+          {(currentStep === 6 && !isGroup) || (currentStep === 6 && isGroup) ? (
             <>
               <Section title="隐私设置" subtitle="选择胶囊的可见性">
                 <div className="space-y-3">
@@ -344,11 +750,11 @@ export default function CreateCapsule() {
                     onClick={() => setIsPublic(false)}
                     icon={<Lock className="w-5 h-5" />}
                     title="私密"
-                    description="仅您本人可见"
+                    description={isGroup ? "仅集体成员可见" : "仅您本人可见"}
                   />
                 </div>
 
-                {!isPublic && (
+                {!isPublic && !isGroup && (
                   <div className="mt-4 space-y-4">
                     <div>
                       <h3 className="text-sm font-medium text-[#5a4b7a] mb-2">胶囊密码（可选）</h3>
@@ -411,7 +817,7 @@ export default function CreateCapsule() {
                     onClick={() => setIsAnonymous(!isAnonymous)}
                     className={cn(
                       "w-12 h-7 rounded-full transition-colors relative",
-                      isAnonymous ? "bg-[#c8b6e2]" : "bg-[#e0d6f0]"
+                      isAnonymous ? "bg-gradient-to-r from-candy-pink to-candy-purple" : "bg-[#e0d6f0]"
                     )}
                   >
                     <div className={cn(
@@ -422,9 +828,8 @@ export default function CreateCapsule() {
                 </div>
               </Section>
             </>
-          )}
+          ) : null}
 
-          {/* 步骤导航按钮 */}
           <div className="flex items-center justify-between mt-8">
             <button
               type="button"
@@ -434,18 +839,18 @@ export default function CreateCapsule() {
                 "flex items-center gap-2 px-6 py-3 rounded-2xl transition-all",
                 currentStep === 1
                   ? "opacity-50 cursor-not-allowed"
-                  : "bg-white border border-[#e0d6f0] text-[#5a4b7a] hover:border-[#c8b6e2]"
+                  : "bg-white border border-[#e0d6f0] text-[#5a4b7a] hover:border-candy-pink"
               )}
             >
               <ChevronLeft className="w-5 h-5" />
               上一步
             </button>
             
-            {currentStep < 5 ? (
+            {currentStep < steps.length ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] text-[#5a4b7a] rounded-2xl hover:from-[#d8cbf0] hover:to-[#c8e0d3] transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-candy-pink to-candy-purple text-white rounded-2xl hover:opacity-90 transition-opacity"
               >
                 下一步
                 <ChevronRight className="w-5 h-5" />
@@ -453,7 +858,7 @@ export default function CreateCapsule() {
             ) : (
               <button
                 type="submit"
-                className="px-8 py-3 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] text-[#5a4b7a] font-bold rounded-2xl shadow-lg shadow-[#e8dff5]/50 active:scale-[0.98] transition-transform"
+                className="px-8 py-3 bg-gradient-to-br from-candy-pink to-candy-purple text-white font-bold rounded-2xl shadow-lg shadow-candy-pink/30 active:scale-[0.98] transition-transform"
               >
                 封印时光胶囊 ✨
               </button>
@@ -470,7 +875,7 @@ function Section({ title, subtitle, children }: { title: string; subtitle: strin
     <div className="space-y-3">
       <div>
         <h2 className="font-bold text-[#5a4b7a] flex items-center gap-2">
-          <span className="w-1.5 h-5 bg-gradient-to-b from-[#c8b6e2] to-[#a093c2] rounded-full" />
+          <span className="w-1.5 h-5 bg-gradient-to-b from-candy-pink to-candy-purple rounded-full" />
           {title}
         </h2>
         <p className="text-sm text-[#a093c2] ml-3.5">{subtitle}</p>
@@ -488,13 +893,13 @@ function ToggleButton({ active, onClick, icon, title, description }: { active: b
       className={cn(
         "w-full p-4 rounded-2xl border-2 transition-all flex items-center gap-3 text-left",
         active 
-          ? "border-[#c8b6e2] bg-[#f5f3f7]" 
-          : "border-[#e0d6f0] bg-white hover:border-[#c8b6e2]"
+          ? "border-candy-pink bg-gradient-to-r from-candy-pink/10 to-candy-purple/10" 
+          : "border-[#e0d6f0] bg-white hover:border-candy-pink"
       )}
     >
       <div className={cn(
         "w-10 h-10 rounded-full flex items-center justify-center",
-        active ? "bg-[#c8b6e2] text-white" : "bg-[#f5f3f7] text-[#a093c2]"
+        active ? "bg-gradient-to-r from-candy-pink to-candy-purple text-white" : "bg-[#f5f3f7] text-[#a093c2]"
       )}>
         {icon}
       </div>
@@ -504,7 +909,7 @@ function ToggleButton({ active, onClick, icon, title, description }: { active: b
         </p>
         <p className="text-xs text-[#a093c2]">{description}</p>
       </div>
-      {active && <CheckCircle2 className="w-5 h-5 text-[#c8b6e2]" />}
+      {active && <CheckCircle2 className="w-5 h-5 text-candy-pink" />}
     </button>
   );
 }

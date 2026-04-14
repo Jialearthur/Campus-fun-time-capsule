@@ -3,7 +3,24 @@ import { useState, useEffect } from 'react';
 import { useCapsuleStore } from '../store/useCapsuleStore';
 import CommentSection from '../components/CommentSection';
 import CountdownTimer from '../components/CountdownTimer';
-import { ArrowLeft, Heart, Star, MessageCircle, Play, User, Lock, Unlock, Edit, Save, AlertCircle } from 'lucide-react';
+import SharePosterModal from '../components/SharePosterModal';
+import {
+  ArrowLeft,
+  Heart,
+  Star,
+  MessageCircle,
+  Play,
+  User,
+  Lock,
+  Unlock,
+  Edit,
+  Save,
+  AlertCircle,
+  Share2,
+  Reply,
+  Image as ImageIcon,
+  Users
+} from 'lucide-react';
 import { isCapsuleOpened, formatDate } from '../utils/date';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -15,16 +32,30 @@ function cn(...inputs: any[]) {
 export default function CapsuleDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getCapsuleById, comments, currentUser, likeCapsule, addComment, favoriteCapsule, updateCapsule, addNotification } = useCapsuleStore();
+  const {
+    getCapsuleById,
+    comments,
+    currentUser,
+    likeCapsule,
+    addComment,
+    favoriteCapsule,
+    updateCapsule,
+    addNotification,
+    addReply
+  } = useCapsuleStore();
 
   const capsule = id ? getCapsuleById(id) : undefined;
+  const [showPosterModal, setShowPosterModal] = useState(false);
+  const [replyContent, setReplyContent] = useState('');
+  const [replyImages, setReplyImages] = useState<string[]>([]);
+  const [showReplySection, setShowReplySection] = useState(false);
 
   if (!capsule) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex items-center justify-center">
         <div className="text-center">
           <p className="text-[#8a7ab5] mb-4">胶囊不存在</p>
-          <button onClick={() => navigate('/')} className="px-6 py-2 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] text-[#5a4b7a] rounded-full">
+          <button onClick={() => navigate('/')} className="px-6 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-full">
             返回广场
           </button>
         </div>
@@ -41,25 +72,19 @@ export default function CapsuleDetail() {
   const [hasAccess, setHasAccess] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
 
-  // 检查用户是否有权限访问
   useEffect(() => {
     if (capsule.isPublic) {
       setHasAccess(true);
     } else if (currentUser) {
-      // 检查是否是胶囊创建者
       if (capsule.userId === currentUser.id) {
         setHasAccess(true);
-      }
-      // 检查是否被邀请
-      else if (capsule.sharedWith && capsule.sharedWith.includes(currentUser.nickname)) {
+      } else if (capsule.sharedWith && capsule.sharedWith.includes(currentUser.nickname)) {
         setHasAccess(true);
-      }
-      // 需要密码验证
-      else if (capsule.password) {
+      } else if (capsule.isGroup && capsule.groupMembers?.some(m => m.userId === currentUser.id)) {
+        setHasAccess(true);
+      } else if (capsule.password) {
         setHasAccess(false);
-      }
-      // 无权限访问
-      else {
+      } else {
         setHasAccess(false);
       }
     }
@@ -78,7 +103,6 @@ export default function CapsuleDetail() {
     setTimeout(() => {
       if (password === capsule.password) {
         setHasAccess(true);
-        // 添加访问成功通知
         if (currentUser) {
           addNotification({
             title: '访问成功',
@@ -93,27 +117,48 @@ export default function CapsuleDetail() {
     }, 500);
   };
 
-  // 无访问权限的提示
+  const handleSubmitReply = () => {
+    if (!currentUser || !replyContent.trim()) return;
+    
+    addReply(capsule.id, {
+      capsuleId: capsule.id,
+      userId: currentUser.id,
+      nickname: currentUser.nickname,
+      content: replyContent,
+      images: replyImages.length > 0 ? replyImages : undefined
+    });
+    
+    setReplyContent('');
+    setReplyImages([]);
+    setShowReplySection(false);
+    
+    addNotification({
+      title: '回信已发送',
+      message: '您的跨时空回信已成功添加',
+      type: 'system',
+      capsuleId: capsule.id
+    });
+  };
+
   const renderNoAccess = () => (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
-      <div className="w-20 h-20 rounded-full bg-[#f5f3f7] flex items-center justify-center mb-6">
-        <Lock className="w-10 h-10 text-[#c8b6e2]" />
+      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
+        <Lock className="w-10 h-10 text-candy-purple" />
       </div>
       <h2 className="text-xl font-bold text-[#5a4b7a] mb-2">无访问权限</h2>
       <p className="text-[#8a7ab5] text-center mb-8">
         这是一个私密胶囊，只有被邀请的用户或输入正确密码才能访问
       </p>
-      <button onClick={() => navigate('/')} className="px-6 py-3 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] text-[#5a4b7a] rounded-xl font-medium">
+      <button onClick={() => navigate('/')} className="px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium">
         返回广场
       </button>
     </div>
   );
 
-  // 密码验证表单
   const renderPasswordForm = () => (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
-      <div className="w-20 h-20 rounded-full bg-[#f5f3f7] flex items-center justify-center mb-6">
-        <Lock className="w-10 h-10 text-[#c8b6e2]" />
+      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
+        <Lock className="w-10 h-10 text-candy-purple" />
       </div>
       <h2 className="text-xl font-bold text-[#5a4b7a] mb-6">输入密码访问胶囊</h2>
       
@@ -125,7 +170,7 @@ export default function CapsuleDetail() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="请输入4-6位数字密码"
             maxLength={6}
-            className="w-full px-4 py-3 bg-white border border-[#e0d6f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#c8b6e2] focus:border-[#c8b6e2] transition-all"
+            className="w-full px-4 py-3 bg-white border border-[#e0d6f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink transition-all"
           />
           {passwordError && (
             <div className="flex items-center gap-2 mt-2 text-[#e57373] text-sm">
@@ -137,7 +182,7 @@ export default function CapsuleDetail() {
         <button
           type="submit"
           disabled={isVerifying || !password}
-          className="w-full py-3 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] text-[#5a4b7a] rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {isVerifying ? '验证中...' : '验证密码'}
         </button>
@@ -149,29 +194,26 @@ export default function CapsuleDetail() {
     </div>
   );
 
-  // 胶囊尚未开启的提示
   const renderNotOpened = () => (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
-      <div className="w-20 h-20 rounded-full bg-[#f5f3f7] flex items-center justify-center mb-6">
-        <Lock className="w-10 h-10 text-[#c8b6e2]" />
+      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
+        <Lock className="w-10 h-10 text-candy-purple" />
       </div>
       <h2 className="text-xl font-bold text-[#5a4b7a] mb-2">胶囊尚未开启</h2>
       <p className="text-[#8a7ab5] text-center mb-8">
         静待时光，美好终将呈现
       </p>
       <CountdownTimer openAt={capsule.openAt} />
-      <button onClick={() => navigate('/')} className="mt-8 px-6 py-3 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] text-[#5a4b7a] rounded-xl font-medium">
+      <button onClick={() => navigate('/')} className="mt-8 px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium">
         返回广场
       </button>
     </div>
   );
 
-  // 检查访问权限
   if (!hasAccess) {
     return capsule.password ? renderPasswordForm() : renderNoAccess();
   }
 
-  // 检查胶囊是否开启
   if (!isOpened) {
     return renderNotOpened();
   }
@@ -183,17 +225,50 @@ export default function CapsuleDetail() {
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft className="w-6 h-6 text-[#8a7ab5]" />
           </button>
-          <h1 className="font-bold text-lg text-[#5a4b7a]">胶囊详情</h1>
-          <button 
-            onClick={() => setIsEditing(!isEditing)}
-            className="p-2 -mr-2 text-[#c8b6e2]"
-          >
-            {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
-          </button>
+          <h1 className="font-bold text-lg text-[#5a4b7a]">
+            {capsule.isGroup ? (capsule.groupName || '集体胶囊') : '胶囊详情'}
+          </h1>
+          <div className="flex items-center gap-2">
+            {isOpened && (
+              <button 
+                onClick={() => setShowPosterModal(true)}
+                className="p-2 text-candy-pink"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
+            )}
+            {currentUser && capsule.userId === currentUser.id && (
+              <button 
+                onClick={() => setIsEditing(!isEditing)}
+                className="p-2 -mr-2 text-candy-purple"
+              >
+                {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 pt-6">
+        {capsule.isGroup && capsule.groupMembers && (
+          <div className="mb-6 bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 rounded-2xl p-4 border border-candy-pink/20">
+            <div className="flex items-center gap-2 mb-3">
+              <Users className="w-5 h-5 text-candy-purple" />
+              <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {capsule.groupMembers.map((member) => (
+                <div key={member.id} className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-xs">
+                    {member.nickname[0]}
+                  </div>
+                  <span className="text-sm text-gray-700">{member.nickname}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {capsule.images.length > 0 && (
           <div className="mb-6 rounded-3xl overflow-hidden">
             <div className="grid grid-cols-2 gap-2">
@@ -210,19 +285,19 @@ export default function CapsuleDetail() {
         )}
 
         {capsule.audio && (
-          <div className="mb-6 bg-[#f5f3f7] rounded-2xl p-4 border border-[#e0d6f0]">
+          <div className="mb-6 bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 rounded-2xl p-4 border border-candy-pink/20">
             <div className="flex items-center gap-3">
-              <button className="w-12 h-12 rounded-full bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] flex items-center justify-center text-[#5a4b7a] shadow-lg shadow-[#e8dff5]/50">
+              <button className="w-12 h-12 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white shadow-lg">
                 <Play className="w-5 h-5 fill-current ml-1" />
               </button>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="flex-1 h-2 bg-[#e0d6f0] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#c8b6e2] w-1/3 rounded-full" />
+                  <div className="flex-1 h-2 bg-white rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-candy-pink to-candy-purple w-1/3 rounded-full" />
                   </div>
-                  <span className="text-xs text-[#8a7ab5] font-medium">00:15</span>
+                  <span className="text-xs text-gray-600 font-medium">00:15</span>
                 </div>
-                <p className="text-xs text-[#a093c2]">语音留言</p>
+                <p className="text-xs text-gray-500">语音留言</p>
               </div>
             </div>
           </div>
@@ -231,8 +306,8 @@ export default function CapsuleDetail() {
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#e0d6f0] mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] flex items-center justify-center">
-                <User className="w-5 h-5 text-[#8a7ab5]" />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
               </div>
               <div>
                 <p className="font-medium text-[#5a4b7a]">
@@ -243,9 +318,9 @@ export default function CapsuleDetail() {
             </div>
             <div className="flex items-center gap-1">
               {capsule.isPublic ? (
-                <Unlock className="w-4 h-4 text-[#81c784]" />
+                <Unlock className="w-4 h-4 text-candy-green" />
               ) : (
-                <Lock className="w-4 h-4 text-[#a093c2]" />
+                <Lock className="w-4 h-4 text-gray-400" />
               )}
             </div>
           </div>
@@ -255,7 +330,7 @@ export default function CapsuleDetail() {
               <textarea
                 value={editedContent}
                 onChange={(e) => setEditedContent(e.target.value)}
-                className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#c8b6e2] focus:border-[#c8b6e2] transition-all"
+                className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[120px] focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink transition-all"
                 placeholder="写下你的时光记忆..."
               />
             ) : (
@@ -272,7 +347,7 @@ export default function CapsuleDetail() {
 
           <div className="flex flex-wrap gap-2 mb-4">
             {capsule.tags.map((tag, idx) => (
-              <span key={idx} className="px-3 py-1 bg-[#f5f3f7] text-[#8a7ab5] text-xs rounded-full border border-[#e0d6f0]">
+              <span key={idx} className="px-3 py-1 bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 text-candy-purple text-xs rounded-full border border-candy-pink/20">
                 #{tag}
               </span>
             ))}
@@ -283,27 +358,103 @@ export default function CapsuleDetail() {
           </div>
         </div>
 
+        {capsule.replies && capsule.replies.length > 0 && (
+          <div className="mb-6">
+            <h3 className="font-bold text-lg text-[#5a4b7a] mb-4 flex items-center gap-2">
+              <Reply className="w-5 h-5 text-candy-orange" />
+              跨时空回信 ({capsule.replies.length})
+            </h3>
+            <div className="space-y-4">
+              {capsule.replies.map((reply) => (
+                <div key={reply.id} className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-candy-yellow to-candy-orange flex items-center justify-center text-white text-sm">
+                      {reply.nickname[0]}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800">{reply.nickname}</p>
+                      <p className="text-xs text-gray-500">{formatDate(reply.createdAt)}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">{reply.content}</p>
+                  {reply.images && reply.images.length > 0 && (
+                    <div className="mt-3 flex gap-2">
+                      {reply.images.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`Reply image ${idx + 1}`}
+                          className="w-20 h-20 rounded-lg object-cover"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isOpened && (
+          <div className="mb-6">
+            {!showReplySection ? (
+              <button
+                onClick={() => setShowReplySection(true)}
+                className="w-full py-3 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-2xl font-medium flex items-center justify-center gap-2"
+              >
+                <Reply className="w-5 h-5" />
+                添加跨时空回信
+              </button>
+            ) : (
+              <div className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-medium text-gray-800">写回信</h4>
+                  <button
+                    onClick={() => setShowReplySection(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    取消
+                  </button>
+                </div>
+                <textarea
+                  value={replyContent}
+                  onChange={(e) => setReplyContent(e.target.value)}
+                  placeholder="写下你想对过去/未来说的话..."
+                  className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:ring-candy-yellow focus:border-candy-yellow"
+                />
+                <div className="flex items-center justify-between">
+                  <button className="flex items-center gap-2 text-gray-500 hover:text-candy-orange">
+                    <ImageIcon className="w-5 h-5" />
+                    <span className="text-sm">添加图片</span>
+                  </button>
+                  <button
+                    onClick={handleSubmitReply}
+                    disabled={!replyContent.trim()}
+                    className="px-6 py-2 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-xl font-medium disabled:opacity-50"
+                  >
+                    发送
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex gap-3 mb-8">
           <ActionButton
             icon={<Heart className="w-5 h-5" />}
             count={capsule.likes}
             onClick={() => likeCapsule(capsule.id)}
-            activeColor="text-[#c8b6e2]"
-            activeBg="bg-[#f5f3f7]"
           />
           <ActionButton
             icon={<MessageCircle className="w-5 h-5" />}
             count={capsule.comments}
             onClick={() => {}}
-            activeColor="text-[#c8b6e2]"
-            activeBg="bg-[#f5f3f7]"
           />
           <ActionButton
             icon={<Star className="w-5 h-5" />}
             count={capsule.favorites}
             onClick={() => favoriteCapsule(capsule.id)}
-            activeColor="text-[#c8b6e2]"
-            activeBg="bg-[#f5f3f7]"
           />
         </div>
 
@@ -318,6 +469,12 @@ export default function CapsuleDetail() {
           })}
         />
       </div>
+
+      <SharePosterModal
+        isOpen={showPosterModal}
+        onClose={() => setShowPosterModal(false)}
+        capsule={capsule}
+      />
     </div>
   );
 }
@@ -325,21 +482,17 @@ export default function CapsuleDetail() {
 function ActionButton({ 
   icon, 
   count, 
-  onClick, 
-  activeColor, 
-  activeBg 
+  onClick 
 }: { 
   icon: React.ReactNode; 
   count: number; 
   onClick: () => void; 
-  activeColor: string; 
-  activeBg: string; 
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 py-3 rounded-2xl bg-white border border-[#e0d6f0] flex items-center justify-center gap-2 hover:border-[#c8b6e2] transition-all active:scale-95"
+      className="flex-1 py-3 rounded-2xl bg-white border border-[#e0d6f0] flex items-center justify-center gap-2 hover:border-candy-pink transition-all active:scale-95"
     >
       {icon}
       <span className="font-medium text-[#5a4b7a]">{count}</span>

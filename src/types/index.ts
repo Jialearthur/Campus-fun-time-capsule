@@ -4,6 +4,56 @@ export interface User {
   avatar?: string;
 }
 
+export interface CapsuleMember {
+  id: string;
+  userId: string;
+  nickname: string;
+  avatar?: string;
+  joinedAt: string;
+  content?: string;
+  images?: string[];
+  audio?: string;
+}
+
+export interface CapsuleReply {
+  id: string;
+  capsuleId: string;
+  userId: string;
+  nickname: string;
+  content: string;
+  images?: string[];
+  createdAt: string;
+}
+
+export interface DraftCapsule {
+  id: string;
+  userId: string;
+  content?: string;
+  images?: string[];
+  audio?: string;
+  openAt?: string;
+  isPublic?: boolean;
+  isAnonymous?: boolean;
+  tags?: string[];
+  template?: string;
+  backgroundImage?: string;
+  fontStyle?: string;
+  password?: string;
+  sharedWith?: string[];
+  isGroup?: boolean;
+  groupMembers?: string[];
+  groupName?: string;
+  savedAt: string;
+  updatedAt: string;
+}
+
+export interface AITextTemplate {
+  id: string;
+  style: 'warm' | 'funny' | 'literary';
+  styleName: string;
+  content: string;
+}
+
 export interface Capsule {
   id: string;
   userId: string;
@@ -25,15 +75,11 @@ export interface Capsule {
   sharedWith?: string[];
   blindBoxDescription?: string;
   updatedAt?: string;
-}
-
-export interface Comment {
-  id: string;
-  capsuleId: string;
-  userId: string;
-  nickname: string;
-  content: string;
-  createdAt: string;
+  isGroup?: boolean;
+  groupName?: string;
+  groupMembers?: CapsuleMember[];
+  inviteLink?: string;
+  replies?: CapsuleReply[];
 }
 
 export interface Notification {
@@ -52,6 +98,7 @@ export interface CapsuleStore {
   currentUser: User | null;
   notifications: Notification[];
   wechatBound: boolean;
+  drafts: DraftCapsule[];
   addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => void;
   likeCapsule: (id: string) => void;
   addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt'>) => void;
@@ -63,4 +110,10 @@ export interface CapsuleStore {
   addNotification: (notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) => void;
   markNotificationAsRead: (id: string) => void;
   updateCapsule: (id: string, updates: Partial<Capsule>) => void;
+  saveDraft: (draft: Omit<DraftCapsule, 'id' | 'savedAt' | 'updatedAt'>) => void;
+  getDrafts: (userId: string) => DraftCapsule[];
+  deleteDraft: (id: string) => void;
+  addReply: (capsuleId: string, reply: Omit<CapsuleReply, 'id' | 'createdAt'>) => void;
+  joinGroupCapsule: (capsuleId: string, userId: string, nickname: string, avatar?: string) => void;
+  addGroupMemberContent: (capsuleId: string, userId: string, content?: string, images?: string[], audio?: string) => void;
 }
