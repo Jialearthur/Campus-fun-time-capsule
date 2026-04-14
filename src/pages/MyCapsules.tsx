@@ -32,34 +32,34 @@ export default function MyCapsules() {
   const displayCapsules = activeTab === 'pending' ? pendingCapsules : openedCapsules;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 pb-24">
-      <div className="max-w-md mx-auto px-4 pt-6">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg shadow-pink-200">
-            <User className="w-10 h-10 text-white" />
+    <div className="min-h-screen bg-gradient-to-b from-gummy-cream to-gummy-pink/30 pb-24">
+      <div className="max-w-md mx-auto px-4 pt-8">
+        <div className="text-center mb-10">
+          <div className="w-24 h-24 mx-auto mb-5 gummy-gradient rounded-full flex items-center justify-center shadow-gummy animate-float">
+            <User className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-1">{currentUser.nickname}</h1>
-          <p className="text-gray-500 text-sm">我的时光胶囊</p>
+          <h1 className="text-3xl font-bold text-gummy-dark mb-2 font-title">{currentUser.nickname}</h1>
+          <p className="text-gummy-dark/60 text-lg font-body">我的时光胶囊</p>
           
-          <div className="flex justify-center gap-6 mt-6">
+          <div className="flex justify-center gap-8 mt-8">
             <div className="text-center">
-              <p className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+              <p className="text-2xl font-bold text-gummy-dark font-title">
                 {myCapsules.length}
               </p>
-              <p className="text-xs text-gray-500">总胶囊</p>
+              <p className="text-xs text-gummy-dark/60 mt-1">总胶囊</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-pink-500">{pendingCapsules.length}</p>
-              <p className="text-xs text-gray-500">待开启</p>
+              <p className="text-2xl font-bold text-gummy-orange font-title">{pendingCapsules.length}</p>
+              <p className="text-xs text-gummy-dark/60 mt-1">待开启</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-purple-500">{openedCapsules.length}</p>
-              <p className="text-xs text-gray-500">已开启</p>
+              <p className="text-2xl font-bold text-gummy-pink font-title">{openedCapsules.length}</p>
+              <p className="text-xs text-gummy-dark/60 mt-1">已开启</p>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-3 mb-8">
           <TabButton 
             active={activeTab === 'pending'}
             onClick={() => setActiveTab('pending')}
@@ -74,22 +74,23 @@ export default function MyCapsules() {
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {displayCapsules.length === 0 ? (
             <div className="text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <div className="w-24 h-24 mx-auto mb-6 bg-gummy-pink/20 rounded-full flex items-center justify-center shadow-gummy">
                 {activeTab === 'pending' ? (
-                  <Calendar className="w-10 h-10 text-gray-300" />
+                  <Calendar className="w-12 h-12 text-gummy-pink/60" />
                 ) : (
-                  <Sparkles className="w-10 h-10 text-gray-300" />
+                  <Sparkles className="w-12 h-12 text-gummy-pink/60" />
                 )}
               </div>
-              <p className="text-gray-500">
+              <p className="text-gummy-dark/70 font-medium mb-2">
                 {activeTab === 'pending' ? '暂无待开启的胶囊' : '暂无已开启的胶囊'}
               </p>
+              <p className="text-gummy-dark/50 text-sm font-body">快来创建你的第一个时光胶囊吧！</p>
             </div>
           ) : (
-            displayCapsules.map((capsule) => (
+            displayCapsules.map((capsule, index) => (
               <CapsuleCard
                 key={capsule.id}
                 capsule={capsule}
@@ -110,14 +111,14 @@ function TabButton({ active, onClick, label, icon }: { active: boolean; onClick:
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 py-3 rounded-2xl font-medium transition-all flex items-center justify-center gap-2",
+        "flex-1 py-3.5 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center gap-2",
         active
-          ? "bg-white text-gray-800 shadow-sm border border-pink-100"
-          : "text-gray-500 hover:bg-white/50"
+          ? "bg-white text-gummy-dark shadow-gummy border-2 border-gummy-pink/30"
+          : "text-gummy-dark/60 hover:bg-white/80 border-2 border-gummy-pink/30"
       )}
     >
       {icon}
-      {label}
+      <span className="font-title">{label}</span>
     </button>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Plus, Users, BookOpen, Search } from 'lucide-react';
+import { Sparkles, Plus, Users, BookOpen, Search, BarChart3 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,19 +13,19 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] pb-24">
-      <div className="max-w-md mx-auto px-4 pt-8">
+    <div className="min-h-screen bg-gradient-to-b from-gummy-cream to-gummy-pink/30 pb-24">
+      <div className="max-w-md mx-auto px-4 pt-10">
         {/* 顶部标题和搜索框 */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] flex items-center justify-center shadow-sm">
-              <Sparkles className="w-6 h-6 text-[#8a7ab5]" />
+        <div className="text-center mb-14">
+          <div className="flex items-center justify-center gap-3 mb-5">
+            <div className="w-16 h-16 rounded-full gummy-gradient flex items-center justify-center shadow-gummy animate-float">
+              <Sparkles className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-[#5a4b7a]">
-              时光胶囊
+            <h1 className="text-4xl font-bold text-gummy-dark font-title">
+              校园时光胶囊
             </h1>
           </div>
-          <p className="text-[#8b8b8b] mb-6">
+          <p className="text-gummy-dark/70 mb-8 text-lg font-body">
             记录校园时光，珍藏青春回忆
           </p>
           
@@ -36,45 +36,53 @@ export default function Home() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="搜索昵称、标签..."
-              className="w-full px-4 py-3 pl-12 rounded-full border border-[#e0d6f0] bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#c8b6e2] focus:border-transparent"
+              className="w-full px-5 py-4 pl-14 rounded-full border-2 border-gummy-pink/30 bg-white shadow-gummy focus:outline-none focus:ring-2 focus:ring-gummy-pink focus:border-transparent transition-all"
             />
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#a093c2]">
+            <div className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gummy-dark/60">
               <Search className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         {/* 核心功能入口 */}
-        <div className="grid grid-cols-1 gap-6 mb-12">
+        <div className="grid grid-cols-1 gap-6 mb-14">
           <FeatureButton
-            icon={<Plus className="w-8 h-8" />}
+            icon={<Plus className="w-8 h-8 text-white" />}
             title="创建胶囊"
             description="记录此刻的心情和回忆"
             onClick={() => navigate('/create')}
-            gradient="from-[#e8dff5] to-[#d8f0e3]"
-            textColor="text-[#5a4b7a]"
+            gradient="gummy-gradient"
+            textColor="text-gummy-dark"
           />
           <FeatureButton
-            icon={<Users className="w-8 h-8" />}
+            icon={<Users className="w-8 h-8 text-white" />}
             title="胶囊广场"
             description="发现他人的时光故事"
             onClick={() => navigate('/square')}
-            gradient="from-[#e8f0f8] to-[#f0e8f8]"
-            textColor="text-[#5a4b7a]"
+            gradient="from-gummy-purple to-gummy-blue"
+            textColor="text-gummy-dark"
           />
           <FeatureButton
-            icon={<BookOpen className="w-8 h-8" />}
+            icon={<BookOpen className="w-8 h-8 text-white" />}
             title="我的胶囊"
             description="查看我的时光收藏"
             onClick={() => navigate('/my')}
-            gradient="from-[#f8e8e8] to-[#e8f0f8]"
-            textColor="text-[#5a4b7a]"
+            gradient="from-gummy-green to-gummy-blue"
+            textColor="text-gummy-dark"
+          />
+          <FeatureButton
+            icon={<BarChart3 className="w-8 h-8 text-white" />}
+            title="数据统计"
+            description="查看胶囊数据和互动情况"
+            onClick={() => navigate('/dashboard')}
+            gradient="from-gummy-orange to-gummy-pink"
+            textColor="text-gummy-dark"
           />
         </div>
 
         {/* 底部装饰 */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 text-[#c8b6e2] text-sm">
+          <div className="inline-flex items-center gap-2 text-gummy-orange text-sm font-medium">
             <Sparkles className="w-4 h-4" />
             <span>珍藏每一刻美好</span>
           </div>
@@ -102,17 +110,17 @@ function FeatureButton({
   return (
     <button
       onClick={onClick}
-      className="group w-full p-6 rounded-2xl bg-white border border-[#e0d6f0] shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
+      className="group w-full p-6 rounded-3xl bg-white border-2 border-gummy-pink/30 shadow-gummy hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] gummy-card"
     >
       <div className="flex items-start gap-4">
-        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow`}>
           {icon}
         </div>
         <div className="flex-1">
-          <h3 className={`text-xl font-bold mb-1 ${textColor}`}>
+          <h3 className={`text-xl font-bold mb-1 ${textColor} font-title`}>
             {title}
           </h3>
-          <p className="text-[#8b8b8b] text-sm">
+          <p className="text-gummy-dark/60 text-sm font-body">
             {description}
           </p>
         </div>

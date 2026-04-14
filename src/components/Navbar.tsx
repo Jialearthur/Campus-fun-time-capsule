@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PlusSquare, User, Sparkles } from 'lucide-react';
+import { Home, PlusSquare, User, Sparkles, BarChart3 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import NotificationCenter from './NotificationCenter';
@@ -18,25 +18,30 @@ export default function Navbar() {
       icon: Home,
     },
     {
+      path: '/square',
+      label: '广场',
+      icon: Sparkles,
+    },
+    {
       path: '/create',
       label: '创建',
       icon: PlusSquare,
       isPrimary: true,
     },
     {
-      path: '/square',
-      label: '广场',
-      icon: Sparkles,
-    },
-    {
       path: '/my',
       label: '我的',
       icon: User,
     },
+    {
+      path: '/dashboard',
+      label: '数据',
+      icon: BarChart3,
+    },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-t border-[#e0d6f0] pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-t-2 border-gummy-pink/30 pb-safe shadow-lg shadow-gummy-pink/20">
       <div className="max-w-md mx-auto flex items-center justify-around h-16 px-4">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -48,12 +53,14 @@ export default function Navbar() {
               to={item.path}
               className={cn(
                 'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300',
-                isActive ? 'text-[#8a7ab5]' : 'text-[#a093c2] hover:text-[#8a7ab5]'
+                isActive 
+                  ? 'text-gummy-orange font-medium' 
+                  : 'text-gummy-dark/60 hover:text-gummy-orange transition-colors'
               )}
             >
               {item.isPrimary ? (
-                <div className="absolute -top-4 bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] rounded-full p-3 shadow-lg shadow-[#e8dff5] border-4 border-white">
-                  <Icon className="w-6 h-6 text-[#8a7ab5]" strokeWidth={2.5} />
+                <div className="absolute -top-5 gummy-gradient rounded-full p-3 shadow-gummy border-4 border-white animate-bounce-slow">
+                  <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
                 </div>
               ) : (
                 <>

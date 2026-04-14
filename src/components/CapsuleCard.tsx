@@ -23,27 +23,27 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
 
   return (
     <div 
-      className="bg-white rounded-3xl shadow-sm border border-[#e0d6f0] overflow-hidden mb-4 hover:shadow-md transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group"
+      className="bg-white rounded-3xl shadow-gummy border-2 border-gummy-pink/30 overflow-hidden mb-6 hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group gummy-card animate-fade-in"
       onClick={() => navigate(`/capsule/${capsule.id}`)}
     >
       {capsule.images.length > 0 && (
         <div className={cn(
-          "relative h-48 overflow-hidden",
+          "relative h-52 overflow-hidden rounded-t-3xl",
           !isOpened && "blur-sm"
         )}>
           <img 
             src={capsule.images[0]} 
             alt="Capsule cover" 
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           {capsule.images.length > 1 && (
-            <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+            <div className="absolute bottom-3 right-3 bg-white/90 text-gummy-dark text-xs px-3 py-1.5 rounded-full shadow-md">
               +{capsule.images.length - 1}
             </div>
           )}
           {(capsule.blindBoxDescription || capsule.content) && (
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-              <div className="p-4 text-white">
+              <div className="p-5 text-white">
                 <p className="text-sm font-medium line-clamp-2">
                   {capsule.blindBoxDescription || capsule.content}
                 </p>
@@ -54,43 +54,43 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
       )}
 
       <div className="p-5">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] flex items-center justify-center">
-              <User className="w-4 h-4 text-[#8a7ab5]" />
+            <div className="w-9 h-9 rounded-full gummy-gradient flex items-center justify-center shadow-sm">
+              <User className="w-4.5 h-4.5 text-white" />
             </div>
-            <span className="text-sm text-[#8a7ab5]">
+            <span className="text-sm font-medium text-gummy-dark">
               {capsule.isAnonymous ? '匿名用户' : '校园旅人'}
             </span>
           </div>
           <div className="flex items-center gap-1">
             {capsule.isPublic ? (
-              <Unlock className="w-4 h-4 text-[#81c784]" />
+              <Unlock className="w-4.5 h-4.5 text-gummy-green" />
             ) : (
-              <Lock className="w-4 h-4 text-[#a093c2]" />
+              <Lock className="w-4.5 h-4.5 text-gummy-orange" />
             )}
           </div>
         </div>
 
         <div className="mb-4">
           {isOpened ? (
-            <p className="text-[#5a4b7a] line-clamp-3 leading-relaxed">
+            <p className="text-gummy-dark line-clamp-3 leading-relaxed font-body">
               {capsule.content}
             </p>
           ) : (
-            <p className="text-[#a093c2] italic">🔒 胶囊尚未开启，敬请期待...</p>
+            <p className="text-gummy-orange/80 italic font-medium">🔒 胶囊尚未开启，敬请期待...</p>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-5">
           {capsule.tags.map((tag, idx) => (
-            <span key={idx} className="px-3 py-1 bg-[#f5f3f7] text-[#8a7ab5] text-xs rounded-full border border-[#e0d6f0]">
+            <span key={idx} className="px-3 py-1.5 bg-gummy-cream text-gummy-dark text-xs rounded-full border border-gummy-pink/30">
               #{tag}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-4 border-t border-gummy-pink/20">
           <CountdownTimer openAt={capsule.openAt} showLabel={false} />
           
           {showActions && isOpened && (
@@ -101,15 +101,15 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
                   e.stopPropagation();
                   onLike?.(capsule.id);
                 }}
-                className="flex items-center gap-1 text-gray-500 hover:text-pink-500 transition-colors"
+                className="flex items-center gap-1.5 text-gummy-dark/60 hover:text-gummy-pink transition-colors duration-300 transform hover:scale-110"
               >
                 <Heart className="w-5 h-5" />
-                <span className="text-sm">{capsule.likes}</span>
+                <span className="text-sm font-medium">{capsule.likes}</span>
               </button>
               
-              <div className="flex items-center gap-1 text-gray-500">
+              <div className="flex items-center gap-1.5 text-gummy-dark/60">
                 <MessageCircle className="w-5 h-5" />
-                <span className="text-sm">{capsule.comments}</span>
+                <span className="text-sm font-medium">{capsule.comments}</span>
               </div>
               
               <button 
@@ -118,10 +118,10 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
                   e.stopPropagation();
                   onFavorite?.(capsule.id);
                 }}
-                className="flex items-center gap-1 text-gray-500 hover:text-yellow-500 transition-colors"
+                className="flex items-center gap-1.5 text-gummy-dark/60 hover:text-gummy-orange transition-colors duration-300 transform hover:scale-110"
               >
                 <Star className="w-5 h-5" />
-                <span className="text-sm">{capsule.favorites}</span>
+                <span className="text-sm font-medium">{capsule.favorites}</span>
               </button>
             </div>
           )}

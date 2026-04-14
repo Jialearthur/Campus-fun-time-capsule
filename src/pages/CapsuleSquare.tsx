@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useCapsuleStore } from '../store/useCapsuleStore';
 import CapsuleCard from '../components/CapsuleCard';
-import { Sparkles, Clock, TrendingUp, RefreshCw, Tag } from 'lucide-react';
+import { Sparkles, Clock, TrendingUp, RefreshCw, Tag, Gift } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -44,7 +44,7 @@ export default function CapsuleSquare() {
     });
     return Object.entries(tagCount)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([tag]) => tag);
   }, [capsules]);
 
@@ -59,7 +59,7 @@ export default function CapsuleSquare() {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
       if (sortBy === 'popular') {
-        return b.likes - a.likes;
+        return (b.likes + b.comments + b.favorites) - (a.likes + a.comments + a.favorites);
       }
       return new Date(a.openAt).getTime() - new Date(b.openAt).getTime();
     });
@@ -77,48 +77,51 @@ export default function CapsuleSquare() {
   }, [capsules, blindBoxCapsules]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 pb-24">
-      <div className="max-w-md mx-auto px-4 pt-6">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-pink-100 mb-4">
-            <Sparkles className="w-5 h-5 text-yellow-400" />
-            <span className="font-semibold text-gray-800">胶囊广场</span>
+    <div className="min-h-screen bg-gradient-to-b from-gummy-cream to-gummy-pink/30 pb-24">
+      <div className="max-w-md mx-auto px-4 pt-8">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-gummy border-2 border-gummy-pink/30 mb-5">
+            <Sparkles className="w-5 h-5 text-gummy-orange" />
+            <span className="font-bold text-gummy-dark font-title">胶囊广场</span>
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-gummy-dark font-title mb-3">
             探索校园时光
           </h1>
+          <p className="text-gummy-dark/60 font-body">
+            发现他人的美好回忆
+          </p>
         </div>
 
         {/* 时光盲盒板块 */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-gray-800 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-yellow-400" />
+        <div className="mb-10">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-bold text-gummy-dark flex items-center gap-2 font-title">
+              <Gift className="w-5 h-5 text-gummy-orange" />
               时光盲盒
             </h2>
             <button
               onClick={generateBlindBox}
-              className="flex items-center gap-1 text-sm text-pink-500 hover:text-pink-600"
+              className="flex items-center gap-1.5 text-sm text-gummy-orange hover:text-gummy-pink transition-colors p-2 rounded-full hover:bg-gummy-pink/10"
             >
               <RefreshCw className="w-4 h-4" />
               换一批
             </button>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            {blindBoxDetails.map((capsule) => (
-              <div key={capsule.id} className="bg-white rounded-xl p-3 shadow-sm border border-pink-100">
-                <div className="aspect-square rounded-lg overflow-hidden mb-2">
+          <div className="grid grid-cols-3 gap-4">
+            {blindBoxDetails.map((capsule, index) => (
+              <div key={capsule.id} className="bg-white rounded-2xl p-4 border-2 border-gummy-pink/30 shadow-gummy hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.03] gummy-card animate-bounce-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="aspect-square rounded-xl overflow-hidden mb-3">
                   <img 
                     src={capsule.images[0]} 
                     alt="盲盒胶囊"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-gray-500 mb-1">
+                  <p className="text-xs font-medium text-gummy-dark mb-2 line-clamp-2">
                     {capsule.blindBoxDescription || '神秘时光胶囊'}
                   </p>
-                  <p className="text-xs text-pink-500">
+                  <p className="text-xs text-gummy-orange font-medium">
                     {Math.ceil((new Date(capsule.openAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))}天后开启
                   </p>
                 </div>
@@ -128,9 +131,9 @@ export default function CapsuleSquare() {
         </div>
 
         {/* 热门标签板块 */}
-        <div className="mb-6">
-          <h2 className="font-bold text-gray-800 flex items-center gap-2 mb-3">
-            <Tag className="w-5 h-5 text-pink-500" />
+        <div className="mb-8">
+          <h2 className="font-bold text-gummy-dark flex items-center gap-2 mb-4 font-title">
+            <Tag className="w-5 h-5 text-gummy-pink" />
             热门标签
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -139,10 +142,10 @@ export default function CapsuleSquare() {
                 key={tag}
                 onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-sm transition-all",
+                  "px-4 py-2 rounded-full text-sm transition-all duration-300 transform hover:scale-105",
                   selectedTag === tag
-                    ? "bg-pink-100 text-pink-600 border border-pink-200"
-                    : "bg-white text-gray-600 border border-gray-200 hover:border-pink-200"
+                    ? "bg-gummy-pink text-white border-2 border-gummy-pink shadow-md"
+                    : "bg-white text-gummy-dark border-2 border-gummy-pink/30 hover:border-gummy-pink"
                 )}
               >
                 #{tag}
@@ -151,7 +154,7 @@ export default function CapsuleSquare() {
             {selectedTag && (
               <button
                 onClick={() => setSelectedTag(null)}
-                className="px-3 py-1.5 rounded-full text-sm bg-gray-100 text-gray-600 border border-gray-200"
+                className="px-4 py-2 rounded-full text-sm bg-gummy-cream text-gummy-dark border-2 border-gummy-pink/30 hover:border-gummy-pink transition-all"
               >
                 清除筛选
               </button>
@@ -160,7 +163,7 @@ export default function CapsuleSquare() {
         </div>
 
         {/* 排序按钮 */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-3 mb-8">
           <SortButton 
             active={sortBy === 'latest'} 
             onClick={() => setSortBy('latest')}
@@ -182,19 +185,19 @@ export default function CapsuleSquare() {
         </div>
 
         {/* 胶囊列表 */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {paginatedCapsules.length === 0 ? (
             <div className="text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-4 bg-pink-100 rounded-full flex items-center justify-center">
-                <Sparkles className="w-10 h-10 text-pink-300" />
+              <div className="w-24 h-24 mx-auto mb-6 bg-gummy-pink/20 rounded-full flex items-center justify-center shadow-gummy">
+                <Sparkles className="w-12 h-12 text-gummy-pink/60" />
               </div>
-              <p className="text-gray-500">
+              <p className="text-gummy-dark/70 font-medium mb-2">
                 {selectedTag ? `没有包含「${selectedTag}」标签的胶囊` : '广场还没有胶囊'}
               </p>
-              <p className="text-gray-400 text-sm mt-1">快来创建第一个吧！</p>
+              <p className="text-gummy-dark/50 text-sm font-body">快来创建第一个吧！</p>
             </div>
           ) : (
-            paginatedCapsules.map((capsule) => (
+            paginatedCapsules.map((capsule, index) => (
               <CapsuleCard
                 key={capsule.id}
                 capsule={capsule}
@@ -207,21 +210,31 @@ export default function CapsuleSquare() {
 
         {/* 分页 */}
         {filteredCapsules.length > pageSize && (
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-10">
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 rounded-l-full border border-gray-200 bg-white text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={cn(
+                "px-5 py-3 rounded-l-full border-2 transition-all duration-300",
+                currentPage === 1 
+                  ? "border-gummy-pink/30 bg-gummy-cream text-gummy-dark/40 cursor-not-allowed"
+                  : "border-gummy-pink/30 bg-white text-gummy-dark hover:border-gummy-pink hover:bg-gummy-pink/5"
+              )}
             >
               上一页
             </button>
-            <span className="px-4 py-2 border-t border-b border-gray-200 bg-white text-gray-600">
+            <span className="px-5 py-3 border-t-2 border-b-2 border-gummy-pink/30 bg-white text-gummy-dark font-medium">
               {currentPage} / {Math.ceil(filteredCapsules.length / pageSize)}
             </span>
             <button
               onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredCapsules.length / pageSize), prev + 1))}
               disabled={currentPage >= Math.ceil(filteredCapsules.length / pageSize)}
-              className="px-4 py-2 rounded-r-full border border-gray-200 bg-white text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={cn(
+                "px-5 py-3 rounded-r-full border-2 transition-all duration-300",
+                currentPage >= Math.ceil(filteredCapsules.length / pageSize)
+                  ? "border-gummy-pink/30 bg-gummy-cream text-gummy-dark/40 cursor-not-allowed"
+                  : "border-gummy-pink/30 bg-white text-gummy-dark hover:border-gummy-pink hover:bg-gummy-pink/5"
+              )}
             >
               下一页
             </button>
@@ -237,10 +250,10 @@ function SortButton({ active, onClick, icon, label }: { active: boolean; onClick
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 py-2.5 px-4 rounded-full text-sm font-medium transition-all flex items-center justify-center gap-1.5",
+        "flex-1 py-3 px-4 rounded-2xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2",
         active 
-          ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-200"
-          : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+          ? "gummy-gradient text-white shadow-gummy"
+          : "bg-white text-gummy-dark/70 hover:bg-gummy-pink/10 border-2 border-gummy-pink/30"
       )}
     >
       {icon}
