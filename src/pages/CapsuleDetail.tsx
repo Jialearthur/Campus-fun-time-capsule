@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useCapsuleStore } from '../store/useCapsuleStore';
 import CommentSection from '../components/CommentSection';
 import CountdownTimer from '../components/CountdownTimer';
-import { ArrowLeft, Heart, Star, MessageCircle, Play, User, Lock, Unlock } from 'lucide-react';
+import { ArrowLeft, Heart, Star, MessageCircle, Play, User, Lock, Unlock, Edit, Save } from 'lucide-react';
 import { isCapsuleOpened, formatDate } from '../utils/date';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -14,7 +15,7 @@ function cn(...inputs: any[]) {
 export default function CapsuleDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getCapsuleById, comments, currentUser, likeCapsule, addComment, favoriteCapsule } = useCapsuleStore();
+  const { getCapsuleById, comments, currentUser, likeCapsule, addComment, favoriteCapsule, updateCapsule } = useCapsuleStore();
 
   const capsule = id ? getCapsuleById(id) : undefined;
 
@@ -33,6 +34,13 @@ export default function CapsuleDetail() {
 
   const isOpened = isCapsuleOpened(capsule.openAt);
   const capsuleComments = comments[capsule.id] || [];
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(capsule.content);
+
+  const handleSaveEdit = () => {
+    updateCapsule(capsule.id, { content: editedContent });
+    setIsEditing(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 pb-32">
@@ -42,7 +50,14 @@ export default function CapsuleDetail() {
             <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <h1 className="font-bold text-lg text-gray-800">胶囊详情</h1>
-          <div className="w-10" />
+          {isOpened && (
+            <button 
+              onClick={() => setIsEditing(!isEditing)}
+              className="p-2 -mr-2 text-pink-500"
+            >
+              {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -103,7 +118,23 @@ export default function CapsuleDetail() {
 
           <div className="mb-4">
             {isOpened ? (
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{capsule.content}</p>
+              isEditing ? (
+                <textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-xl min-h-[120px] focus:outline-none focus:ring-2 focus:ring-pink-300"
+                  placeholder="写下你的时光记忆..."
+                />
+              ) : (
+                <>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{capsule.content}</p>
+                  {capsule.updatedAt && (
+                    <p className="text-xs text-gray-400 mt-2">
+                      更新于 {formatDate(capsule.updatedAt)}
+                    </p>
+                  )}
+                </>
+              )
             ) : (
               <div className="text-center py-8">
                 <Lock className="w-12 h-12 text-purple-300 mx-auto mb-3" />

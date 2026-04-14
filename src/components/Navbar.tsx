@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, PlusSquare, User, Sparkles } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import NotificationCenter from './NotificationCenter';
 
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
@@ -50,7 +51,14 @@ export default function Navbar() {
                   <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
                 </div>
               ) : (
-                <Icon className={cn('w-6 h-6', isActive && 'fill-current')} />
+                <>
+                  <Icon className={cn('w-6 h-6', isActive && 'fill-current')} />
+                  {item.path === '/my' && (
+                    <div className="absolute -top-1 -right-1">
+                      <NotificationCenter />
+                    </div>
+                  )}
+                </>
               )}
               
               {!item.isPrimary && (

@@ -85,6 +85,8 @@ export const useCapsuleStore = create<CapsuleStore>()(
       capsules: initialCapsules,
       comments: initialComments,
       currentUser,
+      notifications: [],
+      wechatBound: false,
 
       addCapsule: (capsuleData) => set((state) => ({
         capsules: [...state.capsules, {
@@ -95,6 +97,18 @@ export const useCapsuleStore = create<CapsuleStore>()(
           favorites: 0,
           createdAt: new Date().toISOString()
         }]
+      })),
+
+      bindWechat: () => set({ wechatBound: true }),
+
+      addNotification: (notification) => set((state) => ({
+        notifications: [notification, ...state.notifications]
+      })),
+
+      markNotificationAsRead: (id) => set((state) => ({
+        notifications: state.notifications.map(n => 
+          n.id === id ? { ...n, read: true } : n
+        )
       })),
 
       likeCapsule: (id) => set((state) => ({
@@ -130,7 +144,13 @@ export const useCapsuleStore = create<CapsuleStore>()(
 
       getPublicCapsules: () => get().capsules.filter(c => c.isPublic),
 
-      getUserCapsules: (userId) => get().capsules.filter(c => c.userId === userId)
+      getUserCapsules: (userId) => get().capsules.filter(c => c.userId === userId),
+
+      updateCapsule: (id, updates) => set((state) => ({
+        capsules: state.capsules.map(c => 
+          c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c
+        )
+      }))
     }),
     {
       name: 'capsule-storage'

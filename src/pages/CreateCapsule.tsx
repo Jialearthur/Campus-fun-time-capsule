@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useCapsuleStore } from '../store/useCapsuleStore';
 import ImageUploader from '../components/ImageUploader';
 import AudioRecorder from '../components/AudioRecorder';
-import { ArrowLeft, Calendar, Globe, Lock, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Palette, Users, Lock, Tag, Calendar, Globe, CheckCircle2, XCircle } from 'lucide-react';
 import { validateContent, validateOpenDate } from '../utils/validation';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { templates, campusTags, Template } from '../utils/templates';
 
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
@@ -19,10 +20,15 @@ export default function CreateCapsule() {
   const [content, setContent] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [audio, setAudio] = useState<string | null>(null);
-  const [tagsInput, setTagsInput] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [openDate, setOpenDate] = useState<string>('');
   const [isPublic, setIsPublic] = useState(true);
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [password, setPassword] = useState('');
+  const [sharedWith, setSharedWith] = useState<string[]>([]);
+  const [sharedInput, setSharedInput] = useState('');
+  const [blindBoxDescription, setBlindBoxDescription] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,12 +56,22 @@ export default function CreateCapsule() {
       newErrors.push('请至少上传1张图片');
     }
 
+    if (!isPublic && password && (password.length < 4 || password.length > 6)) {
+      newErrors.push('密码长度应在4-6位之间');
+    }
+
+    if (sharedWith.length > 5) {
+      newErrors.push('最多只能邀请5位好友');
+    }
+
+    if (isPublic && blindBoxDescription.length > 20) {
+      newErrors.push('盲盒描述不能超过20字');
+    }
+
     if (newErrors.length > 0) {
       setErrors(newErrors);
       return;
     }
-
-    const tags = tagsInput.split(/[,，\s]+/).filter(t => t.trim());
 
     addCapsule({
       userId: currentUser.id,
@@ -65,10 +81,43 @@ export default function CreateCapsule() {
       openAt: openDate,
       isPublic,
       isAnonymous,
-      tags
+      tags: selectedTags,
+      template: selectedTemplate?.id,
+      backgroundImage: selectedTemplate?.backgroundImage,
+      fontStyle: selectedTemplate?.fontStyle.color,
+      password: password || undefined,
+      sharedWith: sharedWith.length > 0 ? sharedWith : undefined,
+      blindBoxDescription: isPublic && blindBoxDescription ? blindBoxDescription : undefined
     });
 
-    navigate('/my', { replace: true });
+    navigate('/my-capsules', { replace: true });
+  };
+
+  const handleTemplateSelect = (template: Template) => {
+    setSelectedTemplate(template);
+    setContent(template.placeholder);
+  };
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        return prev.filter(t => t !== tag);
+      } else if (prev.length < 3) {
+        return [...prev, tag];
+      }
+      return prev;
+    });
+  };
+
+  const handleAddSharedUser = () => {
+    if (sharedInput.trim() && sharedWith.length < 5 && !sharedWith.includes(sharedInput.trim())) {
+      setSharedWith([...sharedWith, sharedInput.trim()]);
+      setSharedInput('');
+    }
+  };
+
+  const handleRemoveSharedUser = (user: string) => {
+    setSharedWith(sharedWith.filter(u => u !== user));
   };
 
   const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -104,18 +153,59 @@ export default function CreateCapsule() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <Section title="选择模板" subtitle="快速创建专属胶囊">
+            <div className="grid grid-cols-2 gap-3">
+              {templates.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  onClick={() => handleTemplateSelect(template)}
+                  className={cn(
+                    "p-3 rounded-xl border-2 transition-all",
+                    selectedTemplate?.id === template.id
+                      ? "border-pink-400 bg-pink-50"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                  )}
+                >
+                  <div className="aspect-video rounded-lg overflow-hidden mb-2">
+                    <img 
+                      src={template.backgroundImage} 
+                      alt={template.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="font-medium text-sm text-gray-800">{template.name}</h3>
+                  <p className="text-xs text-gray-500">{template.description}</p>
+                </button>
+              ))}
+            </div>
+          </Section>
+
           <Section title="写下你的故事" subtitle="记录此刻的心情">
             <div className="relative">
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="想对未来的自己说些什么..."
+                style={{
+                  color: selectedTemplate?.fontStyle.color,
+                  fontFamily: selectedTemplate?.fontStyle.fontFamily
+                }}
                 className="w-full min-h-[150px] bg-white border border-gray-200 rounded-2xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all"
               />
               <div className="absolute bottom-3 right-3 text-xs text-gray-400">
                 {content.length}/500
               </div>
             </div>
+            {isPublic && (
+              <input
+                type="text"
+                value={blindBoxDescription}
+                onChange={(e) => setBlindBoxDescription(e.target.value)}
+                placeholder="盲盒简介（10-20字）"
+                className="w-full mt-3 bg-white border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all"
+              />
+            )}
           </Section>
 
           <Section title="添加照片" subtitle="留下此刻的画面">
@@ -143,14 +233,24 @@ export default function CreateCapsule() {
             </p>
           </Section>
 
-          <Section title="标签" subtitle="用标签分类你的胶囊（可选）">
-            <input
-              type="text"
-              value={tagsInput}
-              onChange={(e) => setTagsInput(e.target.value)}
-              placeholder="用逗号或空格分隔，如：学习 朋友 青春"
-              className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all"
-            />
+          <Section title="校园标签" subtitle="选择1-3个校园标签">
+            <div className="flex flex-wrap gap-2">
+              {campusTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => handleTagToggle(tag)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm transition-all",
+                    selectedTags.includes(tag)
+                      ? "bg-pink-100 text-pink-600 border border-pink-200"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-pink-200"
+                  )}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
           </Section>
 
           <Section title="隐私设置" subtitle="选择胶囊的可见性">
@@ -170,6 +270,57 @@ export default function CreateCapsule() {
                 description="仅您本人可见"
               />
             </div>
+
+            {!isPublic && (
+              <div className="mt-4 space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">胶囊密码（可选）</h3>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="设置4-6位数字密码"
+                    className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">指定好友可见（可选）</h3>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={sharedInput}
+                      onChange={(e) => setSharedInput(e.target.value)}
+                      placeholder="输入好友昵称"
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddSharedUser()}
+                      className="flex-1 bg-white border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddSharedUser}
+                      className="px-4 py-2.5 bg-pink-500 text-white rounded-2xl hover:bg-pink-600 transition-colors"
+                    >
+                      添加
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {sharedWith.map((user, index) => (
+                      <div key={index} className="flex items-center gap-1 bg-gray-100 rounded-full px-3 py-1 text-sm">
+                        <span>{user}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSharedUser(user)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">最多邀请5位好友</p>
+                </div>
+              </div>
+            )}
           </Section>
 
           <Section title="匿名发布" subtitle="隐藏您的身份">
