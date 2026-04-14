@@ -1,10 +1,9 @@
-
 export function formatCountdown(targetDate: string): { days: number; hours: number; minutes: number; seconds: number } {
   const now = new Date();
   const target = new Date(targetDate);
   const diff = target.getTime() - now.getTime();
 
-  if (diff &lt;= 0) {
+  if (diff <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
 
@@ -17,7 +16,7 @@ export function formatCountdown(targetDate: string): { days: number; hours: numb
 }
 
 export function isCapsuleOpened(openAt: string): boolean {
-  return new Date() &gt;= new Date(openAt);
+  return new Date() >= new Date(openAt);
 }
 
 export function formatDate(date: string): string {

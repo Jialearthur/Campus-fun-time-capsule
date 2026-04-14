@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   nickname: string;
@@ -32,13 +31,13 @@ export interface Comment {
 
 export interface CapsuleStore {
   capsules: Capsule[];
-  comments: Record&lt;string, Comment[]&gt;;
+  comments: Record<string, Comment[]>;
   currentUser: User | null;
-  addCapsule: (capsule: Omit&lt;Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'&gt;) =&gt; void;
-  likeCapsule: (id: string) =&gt; void;
-  addComment: (capsuleId: string, comment: Omit&lt;Comment, 'id' | 'createdAt'&gt;) =&gt; void;
-  favoriteCapsule: (id: string) =&gt; void;
-  getCapsuleById: (id: string) =&gt; Capsule | undefined;
-  getPublicCapsules: () =&gt; Capsule[];
-  getUserCapsules: (userId: string) =&gt; Capsule[];
+  addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => void;
+  likeCapsule: (id: string) => void;
+  addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt'>) => void;
+  favoriteCapsule: (id: string) => void;
+  getCapsuleById: (id: string) => Capsule | undefined;
+  getPublicCapsules: () => Capsule[];
+  getUserCapsules: (userId: string) => Capsule[];
 }
