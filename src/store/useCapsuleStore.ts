@@ -54,7 +54,7 @@ const initialCapsules: Capsule[] = [
     userId: 'demo4',
     content: '毕业快乐！我们402宿舍永远不散！',
     images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=university%20graduation%20group%20photo%20happy%20students&image_size=square'],
-    openAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    openAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     isPublic: true,
     isAnonymous: false,
     tags: ['毕业', '宿舍', '友谊'],
@@ -66,9 +66,29 @@ const initialCapsules: Capsule[] = [
     groupName: '402宿舍毕业胶囊',
     inviteLink: 'https://capsule.example.com/join/402-grad',
     groupMembers: [
-      { id: 'm1', userId: 'demo4', nickname: '老大', joinedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-      { id: 'm2', userId: 'demo5', nickname: '老二', joinedAt: new Date(Date.now() - 1.8 * 24 * 60 * 60 * 1000).toISOString() },
-      { id: 'm3', userId: 'demo6', nickname: '老三', joinedAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000).toISOString() }
+      { 
+        id: 'm1', 
+        userId: 'demo4', 
+        nickname: '老大', 
+        joinedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        content: '四年时光一晃而过，还记得大一刚入学时我们一起军训的样子。感谢四年的陪伴，未来我们都要成为更好的自己！',
+        images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=happy%20university%20students%20in%20dormitory%20room&image_size=square']
+      },
+      { 
+        id: 'm2', 
+        userId: 'demo5', 
+        nickname: '老二', 
+        joinedAt: new Date(Date.now() - 1.8 * 24 * 60 * 60 * 1000).toISOString(),
+        content: '最怀念的是我们一起在宿舍熬夜复习，一起吃外卖的日子。希望以后还能经常聚聚！',
+        images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=friends%20eating%20takeout%20together%20in%20dorm&image_size=square']
+      },
+      { 
+        id: 'm3', 
+        userId: 'demo6', 
+        nickname: '老三', 
+        joinedAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000).toISOString(),
+        content: '402是我们永远的家，毕业不是结束，而是新的开始。愿我们前程似锦，归来仍是少年！'
+      }
     ]
   }
 ];

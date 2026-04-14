@@ -68,6 +68,7 @@ export default function CreateCapsule() {
   const [isGroup, setIsGroup] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [groupMemberCount, setGroupMemberCount] = useState(5);
+  const [inviteLink, setInviteLink] = useState('');
 
   const [aiKeywords, setAiKeywords] = useState<string[]>([]);
   const [aiKeywordInput, setAiKeywordInput] = useState('');
@@ -77,6 +78,8 @@ export default function CreateCapsule() {
 
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [newCapsuleId, setNewCapsuleId] = useState<string | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -257,19 +260,35 @@ export default function CreateCapsule() {
           userId: currentUser.id,
           nickname: currentUser.nickname,
           avatar: currentUser.avatar,
-          joinedAt: new Date().toISOString()
+          joinedAt: new Date().toISOString(),
+          content: content,
+          images: images.length > 0 ? images : undefined,
+          audio: audio || undefined
         }
       ];
     }
 
-    addCapsule(capsuleData);
+    const capsuleId = Date.now().toString();
+    
+    if (isGroup) {
+      const fullInviteLink = `${window.location.origin}/join/${capsuleId}`;
+      capsuleData.inviteLink = fullInviteLink;
+      setInviteLink(fullInviteLink);
+    }
+    
+    addCapsule({ ...capsuleData, id: capsuleId });
+    setNewCapsuleId(capsuleId);
 
     if (currentUser) {
       const drafts = getDrafts(currentUser.id);
       drafts.forEach(draft => deleteDraft(draft.id));
     }
 
-    navigate('/my-capsules', { replace: true });
+    if (isGroup) {
+      setShowSuccess(true);
+    } else {
+      navigate('/my-capsules', { replace: true });
+    }
   };
 
   const handleTemplateSelect = (template: Template) => {
@@ -332,6 +351,65 @@ export default function CreateCapsule() {
       setCurrentStep((prev) => (prev - 1 as Step));
     }
   };
+
+  const handleCopyInviteLink = async () => {
+    if (!inviteLink) return;
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      alert('邀请链接已复制到剪贴板！');
+    } catch {
+      alert('复制失败，请手动复制');
+    }
+  };
+
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl border border-candy-yellow/30">
+          <div className="text-center mb-6">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-green to-candy-teal flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">集体胶囊创建成功！🎉</h1>
+            <p className="text-gray-600">分享邀请链接给你的小伙伴们</p>
+          </div>
+
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">邀请链接</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inviteLink}
+                readOnly
+                className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600"
+              />
+              <button
+                onClick={handleCopyInviteLink}
+                className="px-4 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate(`/capsule/${newCapsuleId}`)}
+              className="w-full py-3 bg-gradient-to-r from-candy-green to-candy-teal text-white rounded-xl font-bold hover:opacity-90 transition-opacity"
+            >
+              查看胶囊详情
+            </button>
+            <button
+              onClick={() => navigate('/my')}
+              className="w-full py-3 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              前往我的胶囊
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] pb-32">

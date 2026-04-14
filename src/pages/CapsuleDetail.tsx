@@ -19,7 +19,8 @@ import {
   Share2,
   Reply,
   Image as ImageIcon,
-  Users
+  Users,
+  Plus
 } from 'lucide-react';
 import { isCapsuleOpened, formatDate } from '../utils/date';
 import { clsx } from 'clsx';
@@ -41,7 +42,8 @@ export default function CapsuleDetail() {
     favoriteCapsule,
     updateCapsule,
     addNotification,
-    addReply
+    addReply,
+    addGroupMemberContent
   } = useCapsuleStore();
 
   const capsule = id ? getCapsuleById(id) : undefined;
@@ -49,6 +51,9 @@ export default function CapsuleDetail() {
   const [replyContent, setReplyContent] = useState('');
   const [replyImages, setReplyImages] = useState<string[]>([]);
   const [showReplySection, setShowReplySection] = useState(false);
+  const [showMemberContentSection, setShowMemberContentSection] = useState(false);
+  const [memberContent, setMemberContent] = useState('');
+  const [memberImages, setMemberImages] = useState<string[]>([]);
 
   if (!capsule) {
     return (
@@ -135,6 +140,28 @@ export default function CapsuleDetail() {
     addNotification({
       title: '回信已发送',
       message: '您的跨时空回信已成功添加',
+      type: 'system',
+      capsuleId: capsule.id
+    });
+  };
+
+  const handleSubmitMemberContent = () => {
+    if (!currentUser || !memberContent.trim()) return;
+    
+    addGroupMemberContent(
+      capsule.id,
+      currentUser.id,
+      memberContent,
+      memberImages.length > 0 ? memberImages : undefined
+    );
+    
+    setMemberContent('');
+    setMemberImages([]);
+    setShowMemberContentSection(false);
+    
+    addNotification({
+      title: '内容已添加',
+      message: '您的集体胶囊内容已成功添加',
       type: 'system',
       capsuleId: capsule.id
     });
@@ -256,7 +283,7 @@ export default function CapsuleDetail() {
               <Users className="w-5 h-5 text-candy-purple" />
               <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-4">
               {capsule.groupMembers.map((member) => (
                 <div key={member.id} className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm">
                   <div className="w-6 h-6 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-xs">
@@ -266,6 +293,80 @@ export default function CapsuleDetail() {
                 </div>
               ))}
             </div>
+            
+            <div className="space-y-4">
+              {capsule.groupMembers.filter(member => member.content).map((member) => (
+                <div key={member.id} className="bg-white rounded-2xl p-4 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-sm">
+                      {member.nickname[0]}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800">{member.nickname}</p>
+                      <p className="text-xs text-gray-500">{formatDate(member.joinedAt)}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed mb-3">{member.content}</p>
+                  {member.images && member.images.length > 0 && (
+                    <div className="flex gap-2 flex-wrap">
+                      {member.images.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`Member image ${idx + 1}`}
+                          className="w-20 h-20 rounded-lg object-cover"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            {currentUser && capsule.groupMembers.some(m => m.userId === currentUser.id) && (
+              <div className="mt-4">
+                {!showMemberContentSection ? (
+                  <button
+                    onClick={() => setShowMemberContentSection(true)}
+                    className="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-2xl font-medium flex items-center justify-center gap-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    添加我的内容
+                  </button>
+                ) : (
+                  <div className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-gray-800">添加我的内容</h4>
+                      <button
+                        onClick={() => setShowMemberContentSection(false)}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        取消
+                      </button>
+                    </div>
+                    <textarea
+                      value={memberContent}
+                      onChange={(e) => setMemberContent(e.target.value)}
+                      placeholder="写下你的时光记忆..."
+                      className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink"
+                    />
+                    <div className="flex items-center justify-between">
+                      <button className="flex items-center gap-2 text-gray-500 hover:text-candy-purple">
+                        <ImageIcon className="w-5 h-5" />
+                        <span className="text-sm">添加图片</span>
+                      </button>
+                      <button
+                        onClick={handleSubmitMemberContent}
+                        disabled={!memberContent.trim()}
+                        className="px-6 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium disabled:opacity-50"
+                      >
+                        提交
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
