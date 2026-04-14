@@ -307,6 +307,50 @@ export default function CapsuleDetail() {
           </div>
         </div>
       )}
+
+      {/* 分享邀请链接模态框 */}
+      {showShareLinkModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg text-[#5a4b7a]">分享邀请链接</h3>
+              <button
+                onClick={() => setShowShareLinkModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">复制链接分享给好友，邀请他们加入集体胶囊：</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={capsule.inviteLink || ''}
+                  readOnly
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600"
+                />
+                <button
+                  onClick={handleCopyInviteLink}
+                  className="px-4 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-sm text-gray-500">
+                链接有效期：永久
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                最多可邀请：{20 - (capsule.groupMembers?.length || 1)} 人
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
