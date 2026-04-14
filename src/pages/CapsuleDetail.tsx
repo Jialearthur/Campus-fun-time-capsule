@@ -244,18 +244,73 @@ export default function CapsuleDetail() {
   );
 
   const renderNotOpened = () => (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
-      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
-        <Lock className="w-10 h-10 text-candy-purple" />
+    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]">
+      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-40 border-b border-[#e0d6f0]">
+        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft className="w-6 h-6 text-[#8a7ab5]" />
+          </button>
+          <h1 className="font-bold text-lg text-[#5a4b7a]">
+            {capsule.isGroup ? (capsule.groupName || '集体胶囊') : '胶囊详情'}
+          </h1>
+          <div className="flex items-center gap-2">
+            {currentUser && capsule.userId === currentUser.id && capsule.inviteLink && capsule.isGroup && (
+              <button 
+                onClick={() => setShowShareLinkModal(true)}
+                className="p-2 text-candy-pink"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-      <h2 className="text-xl font-bold text-[#5a4b7a] mb-2">胶囊尚未开启</h2>
-      <p className="text-[#8a7ab5] text-center mb-8">
-        静待时光，美好终将呈现
-      </p>
-      <CountdownTimer openAt={capsule.openAt} />
-      <button onClick={() => navigate('/')} className="mt-8 px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium">
-        返回广场
-      </button>
+      
+      <div className="max-w-md mx-auto px-4 py-12 flex flex-col items-center justify-center">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
+          <Lock className="w-10 h-10 text-candy-purple" />
+        </div>
+        <h2 className="text-xl font-bold text-[#5a4b7a] mb-2">胶囊尚未开启</h2>
+        <p className="text-[#8a7ab5] text-center mb-8">
+          静待时光，美好终将呈现
+        </p>
+        <CountdownTimer openAt={capsule.openAt} />
+        <button onClick={() => navigate('/')} className="mt-8 px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium">
+          返回广场
+        </button>
+      </div>
+      
+      {capsule.isGroup && capsule.groupMembers && (
+        <div className="max-w-md mx-auto px-4 pb-12">
+          <div className="bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 rounded-2xl p-4 border border-candy-pink/20">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-candy-purple" />
+                <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
+              </div>
+              {currentUser && capsule.userId === currentUser.id && capsule.inviteLink && (
+                <button
+                  onClick={() => setShowShareLinkModal(true)}
+                  className="px-3 py-1.5 bg-white rounded-full text-sm text-candy-purple flex items-center gap-1 hover:bg-candy-purple/10 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  分享链接
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {capsule.groupMembers.map((member) => (
+                <div key={member.id} className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-xs">
+                    {member.nickname[0]}
+                  </div>
+                  <span className="text-sm text-gray-700">{member.nickname}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
