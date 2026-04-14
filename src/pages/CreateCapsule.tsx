@@ -268,16 +268,21 @@ export default function CreateCapsule() {
       ];
     }
 
-    const capsuleId = Date.now().toString();
-    
+    // 生成临时邀请链接（addCapsule会自动更新为实际ID）
     if (isGroup) {
-      const fullInviteLink = `${window.location.origin}/join/${capsuleId}`;
-      capsuleData.inviteLink = fullInviteLink;
-      setInviteLink(fullInviteLink);
+      const tempInviteLink = `${window.location.origin}/join/temp`;
+      capsuleData.inviteLink = tempInviteLink;
     }
     
-    addCapsule({ ...capsuleData, id: capsuleId });
+    // 添加胶囊并获取生成的ID
+    const capsuleId = addCapsule(capsuleData);
     setNewCapsuleId(capsuleId);
+    
+    // 生成正确的邀请链接
+    if (isGroup) {
+      const fullInviteLink = `${window.location.origin}/join/${capsuleId}`;
+      setInviteLink(fullInviteLink);
+    }
 
     if (currentUser) {
       const drafts = getDrafts(currentUser.id);

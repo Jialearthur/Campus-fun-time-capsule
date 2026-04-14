@@ -108,7 +108,7 @@ export interface CapsuleStore {
   notifications: Notification[];
   wechatBound: boolean;
   drafts: DraftCapsule[];
-  addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => void;
+  addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => string;
   likeCapsule: (id: string) => void;
   addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'capsuleId'>) => void;
   favoriteCapsule: (id: string) => void;
