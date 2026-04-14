@@ -133,7 +133,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
       drafts: [],
 
       addCapsule: (capsuleData: any) => {
-        const capsuleId = Date.now().toString();
+        const capsuleId = capsuleData.id || Date.now().toString();
         const newCapsule = {
           ...capsuleData,
           id: capsuleId,
@@ -142,10 +142,6 @@ export const useCapsuleStore = create<CapsuleStore>()(
           favorites: 0,
           createdAt: new Date().toISOString()
         };
-        // 如果是集体胶囊，更新邀请链接中的ID
-        if (newCapsule.isGroup && newCapsule.inviteLink) {
-          newCapsule.inviteLink = newCapsule.inviteLink.replace(/\/join\/\w+/, `/join/${capsuleId}`);
-        }
         set((state) => ({
           capsules: [...state.capsules, newCapsule]
         }));

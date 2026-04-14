@@ -268,21 +268,19 @@ export default function CreateCapsule() {
       ];
     }
 
-    // 生成临时邀请链接（addCapsule会自动更新为实际ID）
-    if (isGroup) {
-      const tempInviteLink = `${window.location.origin}/join/temp`;
-      capsuleData.inviteLink = tempInviteLink;
-    }
+    // 生成胶囊ID
+    const capsuleId = Date.now().toString();
     
-    // 添加胶囊并获取生成的ID
-    const capsuleId = addCapsule(capsuleData);
-    setNewCapsuleId(capsuleId);
-    
-    // 生成正确的邀请链接
+    // 生成邀请链接
     if (isGroup) {
       const fullInviteLink = `${window.location.origin}/join/${capsuleId}`;
+      capsuleData.inviteLink = fullInviteLink;
       setInviteLink(fullInviteLink);
     }
+    
+    // 添加胶囊（使用我们生成的ID）
+    addCapsule({ ...capsuleData, id: capsuleId });
+    setNewCapsuleId(capsuleId);
 
     if (currentUser) {
       const drafts = getDrafts(currentUser.id);
