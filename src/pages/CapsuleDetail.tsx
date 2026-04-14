@@ -254,7 +254,7 @@ export default function CapsuleDetail() {
             {capsule.isGroup ? (capsule.groupName || '集体胶囊') : '胶囊详情'}
           </h1>
           <div className="flex items-center gap-2">
-            {currentUser && capsule.userId === currentUser.id && capsule.inviteLink && capsule.isGroup && (
+            {capsule.inviteLink && capsule.isGroup && (
               <button 
                 onClick={() => setShowShareLinkModal(true)}
                 className="p-2 text-candy-pink"
@@ -288,7 +288,7 @@ export default function CapsuleDetail() {
                 <Users className="w-5 h-5 text-candy-purple" />
                 <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
               </div>
-              {currentUser && capsule.userId === currentUser.id && capsule.inviteLink && (
+              {capsule.inviteLink && (
                 <button
                   onClick={() => setShowShareLinkModal(true)}
                   className="px-3 py-1.5 bg-white rounded-full text-sm text-candy-purple flex items-center gap-1 hover:bg-candy-purple/10 transition-colors"
@@ -361,7 +361,7 @@ export default function CapsuleDetail() {
                 <Users className="w-5 h-5 text-candy-purple" />
                 <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
               </div>
-              {currentUser && capsule.userId === currentUser.id && capsule.inviteLink && (
+              {capsule.inviteLink && (
                 <button
                   onClick={() => setShowShareLinkModal(true)}
                   className="px-3 py-1.5 bg-white rounded-full text-sm text-candy-purple flex items-center gap-1 hover:bg-candy-purple/10 transition-colors"
