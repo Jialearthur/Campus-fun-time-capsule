@@ -7,6 +7,8 @@ import MyCapsules from './pages/MyCapsules';
 import CapsuleDetail from './pages/CapsuleDetail';
 import DataDashboard from './pages/DataDashboard';
 import JoinGroupCapsule from './pages/JoinGroupCapsule';
+import CampusMap from './pages/CampusMap';
+import AnniversaryManager from './pages/AnniversaryManager';
 
 const AppContent = () => {
   const location = useLocation();
@@ -24,6 +26,8 @@ const AppContent = () => {
         <Route path="/capsule/:id" element={<CapsuleDetail />} />
         <Route path="/dashboard" element={<DataDashboard />} />
         <Route path="/join/:id" element={<JoinGroupCapsule />} />
+        <Route path="/campus-map" element={<CampusMap />} />
+        <Route path="/anniversaries" element={<AnniversaryManager />} />
       </Routes>
       {showNavbar && <Navbar />}
     </div>

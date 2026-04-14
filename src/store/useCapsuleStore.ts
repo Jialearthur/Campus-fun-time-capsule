@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Capsule, Comment, User, CapsuleStore, CapsuleMember, CapsuleReply, DraftCapsule } from '../types';
+import { Capsule, Comment, User, CapsuleStore, CapsuleMember, CapsuleReply, DraftCapsule, CampusLandmark, Anniversary } from '../types';
 
 const initialCapsules: Capsule[] = [
   {
@@ -116,6 +116,19 @@ const initialComments: Record<string, Comment[]> = {
   ]
 };
 
+const initialLandmarks: CampusLandmark[] = [
+  { id: '1', name: '图书馆', description: '知识的海洋', latitude: 39.9042, longitude: 116.4074, icon: '📚' },
+  { id: '2', name: '教学楼', description: '学习的殿堂', latitude: 39.9052, longitude: 116.4084, icon: '🏫' },
+  { id: '3', name: '操场', description: '运动的天地', latitude: 39.9032, longitude: 116.4064, icon: '⚽' },
+  { id: '4', name: '食堂', description: '美食的聚集地', latitude: 39.9022, longitude: 116.4054, icon: '🍜' },
+  { id: '5', name: '校门', description: '校园的入口', latitude: 39.9062, longitude: 116.4094, icon: '🚪' },
+  { id: '6', name: '宿舍区', description: '生活的港湾', latitude: 39.9012, longitude: 116.4044, icon: '🏠' },
+  { id: '7', name: '体育馆', description: '竞技的舞台', latitude: 39.9002, longitude: 116.4034, icon: '🏟️' },
+  { id: '8', name: '实验楼', description: '探索的实验室', latitude: 39.9072, longitude: 116.4104, icon: '🔬' },
+  { id: '9', name: '行政楼', description: '管理的中心', latitude: 39.9082, longitude: 116.4114, icon: '🏛️' },
+  { id: '10', name: '花坛', description: '校园的花园', latitude: 39.9042, longitude: 116.4074, icon: '🌸' }
+];
+
 const currentUser: User = {
   id: 'user-' + Date.now(),
   nickname: '校园旅人',
@@ -131,6 +144,8 @@ export const useCapsuleStore = create<CapsuleStore>()(
       notifications: [],
       wechatBound: false,
       drafts: [],
+      landmarks: initialLandmarks,
+      anniversaries: [],
 
       addCapsule: (capsuleData: any) => {
         const capsuleId = capsuleData.id || Date.now().toString();
@@ -288,6 +303,57 @@ export const useCapsuleStore = create<CapsuleStore>()(
                 }
                 return m;
               })
+            };
+          }
+          return c;
+        })
+      })),
+
+      getCapsulesByLandmark: (landmarkId) => get().capsules.filter(c => c.landmarkId === landmarkId),
+
+      addAnniversary: (anniversaryData) => set((state) => ({
+        anniversaries: [{
+          ...anniversaryData,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }, ...state.anniversaries]
+      })),
+
+      updateAnniversary: (id, updates) => set((state) => ({
+        anniversaries: state.anniversaries.map(a => 
+          a.id === id ? { ...a, ...updates, updatedAt: new Date().toISOString() } : a
+        )
+      })),
+
+      deleteAnniversary: (id) => set((state) => ({
+        anniversaries: state.anniversaries.filter(a => a.id !== id),
+        capsules: state.capsules.map(c => ({
+          ...c,
+          anniversaryIds: c.anniversaryIds?.filter(aid => aid !== id)
+        }))
+      })),
+
+      getUserAnniversaries: (userId) => get().anniversaries.filter(a => a.userId === userId),
+
+      bindCapsuleToAnniversary: (capsuleId, anniversaryId) => set((state) => ({
+        capsules: state.capsules.map(c => {
+          if (c.id === capsuleId) {
+            return {
+              ...c,
+              anniversaryIds: [...(c.anniversaryIds || []), anniversaryId]
+            };
+          }
+          return c;
+        })
+      })),
+
+      unbindCapsuleFromAnniversary: (capsuleId, anniversaryId) => set((state) => ({
+        capsules: state.capsules.map(c => {
+          if (c.id === capsuleId) {
+            return {
+              ...c,
+              anniversaryIds: c.anniversaryIds?.filter(aid => aid !== anniversaryId)
             };
           }
           return c;

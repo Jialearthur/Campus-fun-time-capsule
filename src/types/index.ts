@@ -43,6 +43,7 @@ export interface DraftCapsule {
   isGroup?: boolean;
   groupMembers?: string[];
   groupName?: string;
+  landmarkId?: string;
   savedAt: string;
   updatedAt: string;
 }
@@ -61,6 +62,26 @@ export interface Comment {
   nickname: string;
   content: string;
   createdAt: string;
+}
+
+export interface CampusLandmark {
+  id: string;
+  name: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  icon: string;
+}
+
+export interface Anniversary {
+  id: string;
+  userId: string;
+  name: string;
+  date: string;
+  type: 'birthday' | 'schoolEntry' | 'anniversary' | 'graduation' | 'custom';
+  reminderTime: '00:00' | '09:00';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Capsule {
@@ -89,6 +110,8 @@ export interface Capsule {
   groupMembers?: CapsuleMember[];
   inviteLink?: string;
   replies?: CapsuleReply[];
+  landmarkId?: string;
+  anniversaryIds?: string[];
 }
 
 export interface Notification {
@@ -108,6 +131,8 @@ export interface CapsuleStore {
   notifications: Notification[];
   wechatBound: boolean;
   drafts: DraftCapsule[];
+  landmarks: CampusLandmark[];
+  anniversaries: Anniversary[];
   addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => string;
   likeCapsule: (id: string) => void;
   addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'capsuleId'>) => void;
@@ -115,6 +140,7 @@ export interface CapsuleStore {
   getCapsuleById: (id: string) => Capsule | undefined;
   getPublicCapsules: () => Capsule[];
   getUserCapsules: (userId: string) => Capsule[];
+  getCapsulesByLandmark: (landmarkId: string) => Capsule[];
   bindWechat: () => void;
   addNotification: (notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) => void;
   markNotificationAsRead: (id: string) => void;
@@ -125,4 +151,10 @@ export interface CapsuleStore {
   addReply: (capsuleId: string, reply: Omit<CapsuleReply, 'id' | 'createdAt'>) => void;
   joinGroupCapsule: (capsuleId: string, userId: string, nickname: string, avatar?: string) => void;
   addGroupMemberContent: (capsuleId: string, userId: string, content?: string, images?: string[], audio?: string) => void;
+  addAnniversary: (anniversary: Omit<Anniversary, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateAnniversary: (id: string, updates: Partial<Anniversary>) => void;
+  deleteAnniversary: (id: string) => void;
+  getUserAnniversaries: (userId: string) => Anniversary[];
+  bindCapsuleToAnniversary: (capsuleId: string, anniversaryId: string) => void;
+  unbindCapsuleFromAnniversary: (capsuleId: string, anniversaryId: string) => void;
 }

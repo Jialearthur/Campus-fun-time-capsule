@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PlusSquare, User, Sparkles, BarChart3 } from 'lucide-react';
+import { Home, PlusSquare, User, Sparkles, BarChart3, MapPin, Calendar } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import NotificationCenter from './NotificationCenter';
@@ -29,14 +29,14 @@ export default function Navbar() {
       isPrimary: true,
     },
     {
-      path: '/my',
-      label: '我的',
-      icon: User,
+      path: '/campus-map',
+      label: '地图',
+      icon: MapPin,
     },
     {
-      path: '/dashboard',
-      label: '数据',
-      icon: BarChart3,
+      path: '/anniversaries',
+      label: '纪念日',
+      icon: Calendar,
     },
   ];
 

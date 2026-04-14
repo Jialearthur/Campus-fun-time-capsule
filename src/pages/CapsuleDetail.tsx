@@ -127,6 +127,13 @@ export default function CapsuleDetail() {
   const handleSubmitReply = () => {
     if (!currentUser || !replyContent.trim()) return;
     
+    // 检查用户是否已经添加了3条回信
+    const userReplies = capsule.replies?.filter(reply => reply.userId === currentUser.id) || [];
+    if (userReplies.length >= 3) {
+      alert('每个人最多只能添加3条回信哦！');
+      return;
+    }
+    
     addReply(capsule.id, {
       capsuleId: capsule.id,
       userId: currentUser.id,
@@ -641,10 +648,11 @@ export default function CapsuleDetail() {
             {!showReplySection ? (
               <button
                 onClick={() => setShowReplySection(true)}
-                className="w-full py-3 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-2xl font-medium flex items-center justify-center gap-2"
+                disabled={currentUser && capsule.replies?.filter(reply => reply.userId === currentUser.id).length >= 3}
+                className="w-full py-3 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-2xl font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Reply className="w-5 h-5" />
-                添加跨时空回信
+                {currentUser && capsule.replies?.filter(reply => reply.userId === currentUser.id).length >= 3 ? '已达到回信上限' : '添加跨时空回信'}
               </button>
             ) : (
               <div className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
@@ -702,9 +710,9 @@ export default function CapsuleDetail() {
         <CommentSection
           comments={capsuleComments}
           currentUser={currentUser}
-          onAddComment={(content) => currentUser && addComment(capsule.id, {
-            userId: currentUser.id,
-            nickname: currentUser.nickname,
+          onAddComment={(content) => addComment(capsule.id, {
+            userId: currentUser?.id || 'anonymous',
+            nickname: currentUser?.nickname || '匿名时光访客',
             content
           })}
         />

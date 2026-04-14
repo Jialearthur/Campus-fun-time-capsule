@@ -38,7 +38,7 @@ function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 }
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export default function CreateCapsule() {
   const navigate = useNavigate();
@@ -47,7 +47,8 @@ export default function CreateCapsule() {
     currentUser,
     saveDraft,
     getDrafts,
-    deleteDraft
+    deleteDraft,
+    landmarks
   } = useCapsuleStore();
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
@@ -69,6 +70,7 @@ export default function CreateCapsule() {
   const [groupName, setGroupName] = useState('');
   const [groupMemberCount, setGroupMemberCount] = useState(5);
   const [inviteLink, setInviteLink] = useState('');
+  const [selectedLandmarkId, setSelectedLandmarkId] = useState<string | null>(null);
 
   const [aiKeywords, setAiKeywords] = useState<string[]>([]);
   const [aiKeywordInput, setAiKeywordInput] = useState('');
@@ -114,7 +116,8 @@ export default function CreateCapsule() {
           sharedWith: sharedWith.length > 0 ? sharedWith : undefined,
           isGroup,
           groupName: groupName || undefined,
-          groupMembers: sharedWith.length > 0 ? sharedWith : undefined
+          groupMembers: sharedWith.length > 0 ? sharedWith : undefined,
+          landmarkId: selectedLandmarkId || undefined
         });
         setLastSavedAt(new Date());
       }, 30000);
@@ -154,6 +157,7 @@ export default function CreateCapsule() {
     setSharedWith(draft.sharedWith || []);
     setIsGroup(draft.isGroup ?? false);
     setGroupName(draft.groupName || '');
+    setSelectedLandmarkId(draft.landmarkId || null);
     setShowDraftPrompt(false);
   };
 
@@ -247,7 +251,8 @@ export default function CreateCapsule() {
       fontStyle: selectedTemplate?.fontStyle.color,
       password: password || undefined,
       sharedWith: sharedWith.length > 0 && !isGroup ? sharedWith : undefined,
-      blindBoxDescription: isPublic && blindBoxDescription ? blindBoxDescription : undefined
+      blindBoxDescription: isPublic && blindBoxDescription ? blindBoxDescription : undefined,
+      landmarkId: selectedLandmarkId || undefined
     };
 
     if (isGroup) {
@@ -333,7 +338,8 @@ export default function CreateCapsule() {
         { id: 3 as Step, title: '记录回忆', subtitle: '写下故事，添加照片和语音' },
         { id: 4 as Step, title: '设置时间', subtitle: '选择胶囊开启的日期' },
         { id: 5 as Step, title: '添加标签', subtitle: '选择校园标签' },
-        { id: 6 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
+        { id: 6 as Step, title: '校园地标', subtitle: '选择胶囊所在的校园地标' },
+        { id: 7 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
       ]
     : [
         { id: 1 as Step, title: '胶囊类型', subtitle: '选择个人或集体胶囊' },
@@ -341,7 +347,8 @@ export default function CreateCapsule() {
         { id: 3 as Step, title: '记录回忆', subtitle: '写下故事，添加照片和语音' },
         { id: 4 as Step, title: '设置时间', subtitle: '选择胶囊开启的日期' },
         { id: 5 as Step, title: '添加标签', subtitle: '选择校园标签' },
-        { id: 6 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
+        { id: 6 as Step, title: '校园地标', subtitle: '选择胶囊所在的校园地标' },
+        { id: 7 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
       ];
 
   const handleNext = () => {
@@ -822,6 +829,32 @@ export default function CreateCapsule() {
           ) : null}
 
           {(currentStep === 6 && !isGroup) || (currentStep === 6 && isGroup) ? (
+            <Section title="校园地标" subtitle="选择胶囊所在的校园地标">
+              <p className="text-sm text-[#a093c2] mb-3">选择一个与你的回忆相关的校园地标</p>
+              <div className="grid grid-cols-2 gap-3">
+                {landmarks.map((landmark) => (
+                  <button
+                    key={landmark.id}
+                    type="button"
+                    onClick={() => setSelectedLandmarkId(landmark.id)}
+                    className={cn(
+                      "p-3 rounded-xl border-2 transition-all flex flex-col items-center text-center",
+                      selectedLandmarkId === landmark.id
+                        ? "border-candy-pink bg-candy-pink/10"
+                        : "border-[#e0d6f0] bg-white hover:border-candy-pink"
+                    )}
+                  >
+                    <span className="text-2xl mb-2">{landmark.icon}</span>
+                    <h3 className="font-medium text-sm text-[#5a4b7a]">{landmark.name}</h3>
+                    <p className="text-xs text-[#a093c2] mt-1">{landmark.description}</p>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-[#a093c2] mt-3 text-center">选择地标后，你的胶囊将在校园时光地图上显示</p>
+            </Section>
+          ) : null}
+
+          {(currentStep === 7 && !isGroup) || (currentStep === 7 && isGroup) ? (
             <>
               <Section title="隐私设置" subtitle="选择胶囊的可见性">
                 <div className="space-y-3">
