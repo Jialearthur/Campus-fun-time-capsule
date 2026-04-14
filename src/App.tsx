@@ -5,6 +5,7 @@ import CapsuleSquare from './pages/CapsuleSquare';
 import CreateCapsule from './pages/CreateCapsule';
 import MyCapsules from './pages/MyCapsules';
 import CapsuleDetail from './pages/CapsuleDetail';
+import DataDashboard from './pages/DataDashboard';
 
 const AppContent = () => {
   const location = useLocation();
@@ -18,6 +19,7 @@ const AppContent = () => {
         <Route path="/create" element={<CreateCapsule />} />
         <Route path="/my" element={<MyCapsules />} />
         <Route path="/capsule/:id" element={<CapsuleDetail />} />
+        <Route path="/dashboard" element={<DataDashboard />} />
       </Routes>
       {showNavbar && <Navbar />}
     </div>
