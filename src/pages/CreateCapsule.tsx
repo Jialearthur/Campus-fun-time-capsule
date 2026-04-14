@@ -273,7 +273,8 @@ export default function CreateCapsule() {
     
     // 生成邀请链接
     if (isGroup) {
-      const fullInviteLink = `${window.location.origin}/join/${capsuleId}`;
+      // 使用当前页面的域名，确保链接是可访问的
+      const fullInviteLink = `${window.location.protocol}//${window.location.host}/join/${capsuleId}`;
       capsuleData.inviteLink = fullInviteLink;
       setInviteLink(fullInviteLink);
     }

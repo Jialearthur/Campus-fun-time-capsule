@@ -64,7 +64,7 @@ const initialCapsules: Capsule[] = [
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     isGroup: true,
     groupName: '402宿舍毕业胶囊',
-    inviteLink: 'https://capsule.example.com/join/402-grad',
+    inviteLink: 'http://localhost:5176/join/4',
     groupMembers: [
       { 
         id: 'm1', 
