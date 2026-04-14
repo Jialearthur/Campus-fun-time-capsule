@@ -34,8 +34,11 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
     };
   }, []);
 
+  const [micError, setMicError] = useState<string | null>(null);
+
   const startRecording = async () => {
     try {
+      setMicError(null);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
@@ -55,6 +58,7 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
       startTimer();
     } catch (error) {
       console.error('Error accessing microphone:', error);
+      setMicError('无法访问麦克风，请检查权限设置');
     }
   };
 
@@ -166,7 +170,12 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
       )}
 
       {!isRecording && (
-        <p className="text-sm text-gray-400">点击麦克风录制语音</p>
+        <>
+          {micError && (
+            <p className="text-sm text-red-500 mb-2">{micError}</p>
+          )}
+          <p className="text-sm text-gray-400">点击麦克风录制语音</p>
+        </>
       )}
     </div>
   );
