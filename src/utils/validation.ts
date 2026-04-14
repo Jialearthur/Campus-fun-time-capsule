@@ -8,6 +8,13 @@ export function validateContent(content: string): { valid: boolean; message?: st
   return { valid: true };
 }
 
+export function validateAudio(duration: number): { valid: boolean; message?: string } {
+  if (duration > 60) {
+    return { valid: false, message: '语音不能超过60秒' };
+  }
+  return { valid: true };
+}
+
 export function validateImages(images: File[]): { valid: boolean; message?: string } {
   if (images.length < 1) {
     return { valid: false, message: '请至少上传1张图片' };

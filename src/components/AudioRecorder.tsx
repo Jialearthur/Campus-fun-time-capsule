@@ -104,7 +104,14 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
-      setRecordingTime(prev => prev + 1);
+      setRecordingTime(prev => {
+        const newTime = prev + 1;
+        if (newTime >= 60) {
+          stopRecording();
+          return 0;
+        }
+        return newTime;
+      });
     }, 1000);
   };
 

@@ -197,7 +197,7 @@ export default function ImageUploader({ images, onChange, maxImages = 3 }: Image
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png"
         multiple
         className="hidden"
         onChange={handleFileSelect}

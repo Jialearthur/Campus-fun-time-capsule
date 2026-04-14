@@ -101,8 +101,13 @@ export const useCapsuleStore = create<CapsuleStore>()(
 
       bindWechat: () => set({ wechatBound: true }),
 
-      addNotification: (notification) => set((state) => ({
-        notifications: [notification, ...state.notifications]
+      addNotification: (notificationData) => set((state) => ({
+        notifications: [{
+          ...notificationData,
+          id: Date.now().toString(),
+          read: false,
+          createdAt: new Date().toISOString()
+        }, ...state.notifications]
       })),
 
       markNotificationAsRead: (id) => set((state) => ({

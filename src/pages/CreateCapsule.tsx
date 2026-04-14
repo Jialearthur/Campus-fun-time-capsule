@@ -235,16 +235,32 @@ export default function CreateCapsule() {
                 <div className="relative">
                   <textarea
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="请输入回忆内容..."
+                    onChange={(e) => {
+                      if (e.target.value.length <= 500) {
+                        setContent(e.target.value);
+                      }
+                    }}
+                    placeholder="请输入10-500字的回忆内容..."
                     style={{
                       color: selectedTemplate?.fontStyle.color,
                       fontFamily: selectedTemplate?.fontStyle.fontFamily
                     }}
-                    className="w-full min-h-[150px] bg-white border border-[#e0d6f0] rounded-2xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-[#c8b6e2] focus:border-[#c8b6e2] transition-all"
+                    className={cn(
+                      "w-full min-h-[150px] bg-white border rounded-2xl p-4 resize-none focus:outline-none focus:ring-2 transition-all",
+                      content.length > 0 && content.length < 10
+                        ? "border-[#e57373] focus:ring-[#e57373] focus:border-[#e57373]"
+                        : content.length === 500
+                        ? "border-[#ff9800] focus:ring-[#ff9800] focus:border-[#ff9800]"
+                        : "border-[#e0d6f0] focus:ring-[#c8b6e2] focus:border-[#c8b6e2]"
+                    )}
                   />
-                  <div className="absolute bottom-3 right-3 text-xs text-[#a093c2]">
+                  <div className={cn(
+                    "absolute bottom-3 right-3 text-xs font-medium",
+                    content.length > 0 && content.length < 10 ? "text-[#e57373]" :
+                    content.length === 500 ? "text-[#ff9800]" : "text-[#a093c2]"
+                  )}>
                     {content.length}/500
+                    {content.length > 0 && content.length < 10 && <span className="ml-1">（至少10字）</span>}
                   </div>
                 </div>
                 {isPublic && (

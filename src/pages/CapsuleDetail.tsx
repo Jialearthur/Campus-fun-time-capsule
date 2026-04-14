@@ -81,11 +81,9 @@ export default function CapsuleDetail() {
         // 添加访问成功通知
         if (currentUser) {
           addNotification({
-            id: Date.now().toString(),
             title: '访问成功',
             message: '您已成功访问私密胶囊',
-            read: false,
-            createdAt: new Date().toISOString()
+            type: 'system'
           });
         }
       } else {
