@@ -173,21 +173,17 @@ export default function CapsuleDetail() {
     if (!capsule.inviteLink) return;
     try {
       await navigator.clipboard.writeText(capsule.inviteLink);
-      addNotification({
-        title: '复制成功',
-        message: '邀请链接已复制到剪贴板',
-        type: 'system',
-        capsuleId: capsule.id
-      });
+      alert('邀请链接已复制到剪贴板！');
     } catch {
-      addNotification({
-        title: '复制失败',
-        message: '请手动复制邀请链接',
-        type: 'system',
-        capsuleId: capsule.id
-      });
+      alert('复制失败，请手动复制邀请链接！');
     }
   };
+
+  // 直接测试分享链接功能
+  useEffect(() => {
+    console.log('Capsule invite link:', capsule.inviteLink);
+    console.log('Is group capsule:', capsule.isGroup);
+  }, [capsule.inviteLink, capsule.isGroup]);
 
   const renderNoAccess = () => (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
