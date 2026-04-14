@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Mic, Play, Square, Trash2, Pause } from 'lucide-react';
+import { Mic, Play, Square, Trash2, Pause, Volume2, VolumeX } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -16,23 +16,53 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.7);
+  const [isMuted, setIsMuted] = useState(false);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     audioRef.current = new Audio();
-    audioRef.current.onended = () => setIsPlaying(false);
+    audioRef.current.onended = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+    audioRef.current.ontimeupdate = () => {
+      if (audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime);
+      }
+    };
+    audioRef.current.onloadedmetadata = () => {
+      if (audioRef.current) {
+        setDuration(audioRef.current.duration || 0);
+      }
+    };
     
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
       stopTimer();
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current);
+      }
     };
   }, []);
+
+  // 当音频URL变化时，重置状态
+  useEffect(() => {
+    if (audioUrl && audioRef.current) {
+      audioRef.current.src = audioUrl;
+      setCurrentTime(0);
+      setDuration(0);
+    }
+  }, [audioUrl]);
 
   const [micError, setMicError] = useState<string | null>(null);
 
@@ -90,7 +120,6 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.src = audioUrl;
       audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
@@ -102,7 +131,32 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
       audioRef.current.src = '';
     }
     setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
     onChange(null);
+  };
+
+  const handleVolumeChange = (value: number) => {
+    if (audioRef.current) {
+      audioRef.current.volume = value;
+      setVolume(value);
+      setIsMuted(value === 0);
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audioRef.current) {
+      const seekTime = parseFloat(e.target.value);
+      audioRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -113,32 +167,68 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
 
   if (audioUrl) {
     return (
-      <div className="flex items-center gap-3 bg-purple-50 rounded-2xl p-4">
-        <button
-          type="button"
-          onClick={togglePlay}
-          className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-purple-200 active:scale-95 transition-transform"
-        >
-          {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-1" />}
-        </button>
-        
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="flex-1 h-2 bg-purple-200 rounded-full overflow-hidden">
-              <div className="h-full bg-purple-500 w-1/3 rounded-full" />
+      <div className="bg-[#f5f3f7] rounded-2xl p-4 border border-[#e0d6f0]">
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            type="button"
+            onClick={togglePlay}
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] flex items-center justify-center text-[#5a4b7a] shadow-lg shadow-[#e8dff5]/50 active:scale-95 transition-transform"
+          >
+            {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-1" />}
+          </button>
+          
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="range"
+                min="0"
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleSeek}
+                className="flex-1 h-2 bg-[#e0d6f0] rounded-full appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #c8b6e2 0%, #c8b6e2 ${(currentTime / (duration || 1)) * 100}%, #e0d6f0 ${(currentTime / (duration || 1)) * 100}%, #e0d6f0 100%)`
+                }}
+              />
             </div>
-            <span className="text-xs text-purple-600 font-medium">00:15</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#a093c2] font-medium">{formatTime(currentTime)}</span>
+              <span className="text-xs text-[#a093c2] font-medium">{formatTime(duration)}</span>
+            </div>
           </div>
-          <p className="text-xs text-purple-400">语音留言</p>
         </div>
-
-        <button
-          type="button"
-          onClick={deleteAudio}
-          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
+        
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-[#8a7ab5]">语音留言</p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleMute}
+              className="p-1 text-[#8a7ab5] hover:text-[#5a4b7a] transition-colors"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={isMuted ? 0 : volume}
+              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              className="w-24 h-2 bg-[#e0d6f0] rounded-full appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, #c8b6e2 0%, #c8b6e2 ${(isMuted ? 0 : volume) * 100}%, #e0d6f0 ${(isMuted ? 0 : volume) * 100}%, #e0d6f0 100%)`
+              }}
+            />
+            <button
+              type="button"
+              onClick={deleteAudio}
+              className="p-2 text-[#a093c2] hover:text-[#e57373] transition-colors"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -151,30 +241,30 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
         className={cn(
           "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
           isRecording 
-            ? "bg-red-500 shadow-red-200 animate-pulse" 
-            : "bg-gradient-to-br from-pink-400 to-purple-500 shadow-purple-200 hover:scale-105 active:scale-95"
+            ? "bg-[#e57373] shadow-[#fdecea] animate-pulse" 
+            : "bg-gradient-to-br from-[#e8dff5] to-[#d8f0e3] shadow-[#e8dff5]/50 hover:scale-105 active:scale-95"
         )}
       >
         {isRecording ? (
           <Square className="w-8 h-8 text-white fill-current" />
         ) : (
-          <Mic className="w-8 h-8 text-white" />
+          <Mic className="w-8 h-8 text-[#5a4b7a]" />
         )}
       </button>
 
       {isRecording && (
         <div className="text-center">
-          <p className="text-2xl font-bold text-red-500 font-mono">{formatTime(recordingTime)}</p>
-          <p className="text-xs text-gray-400 mt-1">正在录音...</p>
+          <p className="text-2xl font-bold text-[#e57373] font-mono">{formatTime(recordingTime)}</p>
+          <p className="text-xs text-[#a093c2] mt-1">正在录音...</p>
         </div>
       )}
 
       {!isRecording && (
         <>
           {micError && (
-            <p className="text-sm text-red-500 mb-2">{micError}</p>
+            <p className="text-sm text-[#e57373] mb-2">{micError}</p>
           )}
-          <p className="text-sm text-gray-400">点击麦克风录制语音</p>
+          <p className="text-sm text-[#a093c2]">点击麦克风录制语音</p>
         </>
       )}
     </div>

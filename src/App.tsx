@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Home from './pages/Home';
 import CapsuleSquare from './pages/CapsuleSquare';
 import CreateCapsule from './pages/CreateCapsule';
 import MyCapsules from './pages/MyCapsules';
@@ -12,7 +13,8 @@ const AppContent = () => {
   return (
     <div className="min-h-screen">
       <Routes>
-        <Route path="/" element={<CapsuleSquare />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/square" element={<CapsuleSquare />} />
         <Route path="/create" element={<CreateCapsule />} />
         <Route path="/my" element={<MyCapsules />} />
         <Route path="/capsule/:id" element={<CapsuleDetail />} />
