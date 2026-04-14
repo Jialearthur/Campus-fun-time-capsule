@@ -17,6 +17,12 @@ export default {
         'gummy-cream': '#FFF8DC',
         'gummy-gray': '#F5F5F5',
         'gummy-dark': '#4A4A4A',
+        'candy-pink': '#FF6B9D',
+        'candy-purple': '#C06C84',
+        'candy-yellow': '#FFD93D',
+        'candy-orange': '#FF9A8B',
+        'candy-green': '#6BCB77',
+        'candy-teal': '#4ECDC4',
       },
       fontFamily: {
         'title': ['"ZCOOL QingKe HuangYou"', 'cursive'],

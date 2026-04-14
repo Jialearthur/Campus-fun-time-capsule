@@ -437,7 +437,7 @@ export default function CreateCapsule() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {currentStep === 1 && (
             <Section title="胶囊类型" subtitle="选择个人或集体胶囊">
-              <div className="space-y-3">
+              <div className="space-y-6">
                 <ToggleButton
                   active={!isGroup}
                   onClick={() => setIsGroup(false)}
@@ -452,6 +452,11 @@ export default function CreateCapsule() {
                   title="集体胶囊"
                   description="1-20人共同创建，毕业季/社团专属"
                 />
+                <div className="h-16 flex items-center justify-center">
+                  <p className="text-sm text-gray-500 text-center">
+                    选择一种胶囊类型后，点击"下一步"继续
+                  </p>
+                </div>
               </div>
             </Section>
           )}
@@ -850,7 +855,7 @@ export default function CreateCapsule() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-candy-pink to-candy-purple text-white rounded-2xl hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-6 py-4 bg-gradient-to-br from-candy-pink to-candy-purple text-white rounded-2xl font-bold shadow-lg shadow-candy-pink/30 hover:opacity-90 transition-all active:scale-95"
               >
                 下一步
                 <ChevronRight className="w-5 h-5" />
@@ -858,7 +863,7 @@ export default function CreateCapsule() {
             ) : (
               <button
                 type="submit"
-                className="px-8 py-3 bg-gradient-to-br from-candy-pink to-candy-purple text-white font-bold rounded-2xl shadow-lg shadow-candy-pink/30 active:scale-[0.98] transition-transform"
+                className="px-8 py-4 bg-gradient-to-br from-candy-pink to-candy-purple text-white font-bold rounded-2xl shadow-lg shadow-candy-pink/30 active:scale-[0.98] transition-transform"
               >
                 封印时光胶囊 ✨
               </button>
