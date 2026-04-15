@@ -371,7 +371,11 @@ export default function CreateCapsule() {
 
   console.log('steps.length:', steps.length, 'isGroup:', isGroup);
 
-  const handleNext = () => {
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     console.log('handleNext called, currentStep:', currentStep, 'steps.length:', steps.length, 'isGroup:', isGroup);
     if (currentStep < steps.length) {
       setCurrentStep((prevStep) => {
@@ -536,7 +540,7 @@ export default function CreateCapsule() {
               <h2 className="font-bold text-[#5a4b7a]">{steps[currentStep - 1].title}</h2>
               <p className="text-sm text-[#a093c2]">{steps[currentStep - 1].subtitle}</p>
             </div>
-            <span className="text-sm text-[#c8b6e2]">{currentStep}/{steps.length}</span>
+            <span className="text-sm text-[#c8b6e2]">DEBUG: currentStep={currentStep}, steps.length={steps.length}</span>
           </div>
           <div className="flex items-center gap-2">
             {steps.map((step) => (
@@ -863,9 +867,7 @@ export default function CreateCapsule() {
                   <button
                     key={landmark.id}
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={() => {
                       setSelectedLandmarkId(landmark.id);
                     }}
                     className={cn(
@@ -981,6 +983,34 @@ export default function CreateCapsule() {
             </>
           ) : null}
 
+          {currentStep >= steps.length && (
+            <div className="flex items-center justify-between mt-8">
+              <button
+                type="button"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+                className={cn(
+                  "flex items-center gap-2 px-6 py-3 rounded-2xl transition-all",
+                  currentStep === 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "bg-white border border-[#e0d6f0] text-[#5a4b7a] hover:border-candy-pink"
+                )}
+              >
+                <ChevronLeft className="w-5 h-5" />
+                上一步
+              </button>
+              
+              <button
+                type="submit"
+                className="px-8 py-4 bg-gradient-to-br from-candy-pink to-candy-purple text-white font-bold rounded-2xl shadow-lg shadow-candy-pink/30 active:scale-[0.98] transition-transform"
+              >
+                封印时光胶囊 ✨
+              </button>
+            </div>
+          )}
+        </form>
+
+        {currentStep < steps.length && (
           <div className="flex items-center justify-between mt-8">
             <button
               type="button"
@@ -997,25 +1027,23 @@ export default function CreateCapsule() {
               上一步
             </button>
             
-            {currentStep < steps.length ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-4 bg-gradient-to-br from-candy-pink to-candy-purple text-white rounded-2xl font-bold shadow-lg shadow-candy-pink/30 hover:opacity-90 transition-all active:scale-95"
-              >
-                下一步
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="px-8 py-4 bg-gradient-to-br from-candy-pink to-candy-purple text-white font-bold rounded-2xl shadow-lg shadow-candy-pink/30 active:scale-[0.98] transition-transform"
-              >
-                封印时光胶囊 ✨
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                console.log('Next button clicked, currentStep:', currentStep);
+                if (currentStep < steps.length) {
+                  const nextStep = currentStep + 1 as Step;
+                  console.log('Setting currentStep to:', nextStep);
+                  setCurrentStep(nextStep);
+                }
+              }}
+              className="flex items-center gap-2 px-6 py-4 bg-gradient-to-br from-candy-pink to-candy-purple text-white rounded-2xl font-bold shadow-lg shadow-candy-pink/30 hover:opacity-90 transition-all active:scale-95"
+            >
+              下一步
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
-        </form>
+        )}
       </div>
     </div>
   );
