@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Plus, Users, BookOpen, Search, BarChart3, MapPin } from 'lucide-react';
+import { Sparkles, Plus, Users, BookOpen, Search, BarChart3, MapPin, MessageSquare } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useTheme } from '../hooks/useTheme';
