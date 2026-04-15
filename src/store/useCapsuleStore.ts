@@ -448,11 +448,18 @@ export const useCapsuleStore = create<CapsuleStore>()(
       getDriftBottle: (userId) => {
         const state = get();
         
-        const availableBottles = state.capsules.filter(c => 
-          c.isDriftBottle && 
-          c.isPublic && 
-          c.userId !== userId
-        );
+        console.log('Current user ID:', userId);
+        console.log('All capsules:', state.capsules);
+        
+        const availableBottles = state.capsules.filter(c => {
+          const isDriftBottle = c.isDriftBottle;
+          const isPublic = c.isPublic;
+          const isNotCurrentUser = c.userId !== userId;
+          console.log(`Capsule ${c.id}: isDriftBottle=${isDriftBottle}, isPublic=${isPublic}, isNotCurrentUser=${isNotCurrentUser}`);
+          return isDriftBottle && isPublic && isNotCurrentUser;
+        });
+        
+        console.log('Available bottles:', availableBottles);
         
         if (availableBottles.length === 0) {
           return null;
@@ -461,6 +468,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
         const randomIndex = Math.floor(Math.random() * availableBottles.length);
         const selectedBottle = availableBottles[randomIndex];
         
+        console.log('Selected bottle:', selectedBottle);
         return selectedBottle;
       },
 
