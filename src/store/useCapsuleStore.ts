@@ -17,7 +17,9 @@ const initialCapsules: Capsule[] = [
     favorites: 15,
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
     replies: [],
-    landmarkId: '1'
+    landmarkId: '1',
+    isDriftBottle: true,
+    driftBottleReceivedBy: []
   },
   {
     id: '2',
@@ -35,7 +37,9 @@ const initialCapsules: Capsule[] = [
     comments: 12,
     favorites: 23,
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    landmarkId: '3'
+    landmarkId: '3',
+    isDriftBottle: true,
+    driftBottleReceivedBy: []
   },
   {
     id: '3',
@@ -50,7 +54,9 @@ const initialCapsules: Capsule[] = [
     comments: 5,
     favorites: 18,
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    landmarkId: '4'
+    landmarkId: '4',
+    isDriftBottle: true,
+    driftBottleReceivedBy: []
   },
   {
     id: '4',
