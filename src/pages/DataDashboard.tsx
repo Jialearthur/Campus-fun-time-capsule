@@ -7,6 +7,7 @@ import {
 import { formatDate } from '../utils/date';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useTheme } from '../hooks/useTheme';
 
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
@@ -15,6 +16,7 @@ function cn(...inputs: any[]) {
 type TimeRange = 'day' | 'week' | 'month';
 
 export default function DataDashboard() {
+  const { isDark } = useTheme();
   const { capsules, comments, currentUser } = useCapsuleStore();
   const [timeRange, setTimeRange] = useState<TimeRange>('day');
   const [viewMode, setViewMode] = useState<'overview' | 'heatmap' | 'timeline' | 'realtime'>('overview');
@@ -168,11 +170,24 @@ export default function DataDashboard() {
   const maxThemeCount = Math.max(...Object.values(dashboardData.themeHeatmap).map(t => t.count), 1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 pb-24">
-      <div className="sticky top-0 bg-white/90 backdrop-blur-xl z-40 border-b border-slate-200 shadow-sm">
+    <div className={cn(
+      "min-h-screen pb-24",
+      isDark
+        ? "bg-gradient-to-br from-dark-bg-primary via-dark-bg-secondary to-dark-bg-primary"
+        : "bg-gradient-to-br from-slate-50 via-white to-blue-50"
+    )}>
+      <div className={cn(
+        "sticky top-0 backdrop-blur-xl z-40 border-b shadow-sm",
+        isDark
+          ? "bg-dark-bg-secondary/90 border-dark-border-primary"
+          : "bg-white/90 border-slate-200"
+      )}>
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-slate-800">数据统计看板</h1>
+            <h1 className={cn(
+              "text-xl font-bold",
+              isDark ? "text-dark-text-primary" : "text-slate-800"
+            )}>数据统计看板</h1>
           </div>
           <button
             onClick={handleExport}
@@ -187,21 +202,27 @@ export default function DataDashboard() {
       <div className="max-w-6xl mx-auto px-4 pt-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-slate-600" />
-            <span className="text-slate-700 font-medium">数据范围</span>
+            <Calendar className={cn(
+              "w-5 h-5",
+              isDark ? "text-dark-text-secondary" : "text-slate-600"
+            )} />
+            <span className={cn(
+              "font-medium",
+              isDark ? "text-dark-text-primary" : "text-slate-700"
+            )}>数据范围</span>
           </div>
           <div className="flex gap-2">
-            <TimeRangeButton active={timeRange === 'day'} onClick={() => setTimeRange('day')} label="今日" />
-            <TimeRangeButton active={timeRange === 'week'} onClick={() => setTimeRange('week')} label="本周" />
-            <TimeRangeButton active={timeRange === 'month'} onClick={() => setTimeRange('month')} label="本月" />
+            <TimeRangeButton active={timeRange === 'day'} onClick={() => setTimeRange('day')} label="今日" isDark={isDark} />
+            <TimeRangeButton active={timeRange === 'week'} onClick={() => setTimeRange('week')} label="本周" isDark={isDark} />
+            <TimeRangeButton active={timeRange === 'month'} onClick={() => setTimeRange('month')} label="本月" isDark={isDark} />
           </div>
         </div>
 
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          <ViewModeButton active={viewMode === 'overview'} onClick={() => setViewMode('overview')} icon={<BarChart3 className="w-4 h-4" />} label="总览" />
-          <ViewModeButton active={viewMode === 'heatmap'} onClick={() => setViewMode('heatmap')} icon={<Map className="w-4 h-4" />} label="情感热力图" />
-          <ViewModeButton active={viewMode === 'timeline'} onClick={() => setViewMode('timeline')} icon={<Clock className="w-4 h-4" />} label="时光轨迹" />
-          <ViewModeButton active={viewMode === 'realtime'} onClick={() => setViewMode('realtime')} icon={<Activity className="w-4 h-4" />} label="实时大屏" />
+          <ViewModeButton active={viewMode === 'overview'} onClick={() => setViewMode('overview')} icon={<BarChart3 className="w-4 h-4" />} label="总览" isDark={isDark} />
+          <ViewModeButton active={viewMode === 'heatmap'} onClick={() => setViewMode('heatmap')} icon={<Map className="w-4 h-4" />} label="情感热力图" isDark={isDark} />
+          <ViewModeButton active={viewMode === 'timeline'} onClick={() => setViewMode('timeline')} icon={<Clock className="w-4 h-4" />} label="时光轨迹" isDark={isDark} />
+          <ViewModeButton active={viewMode === 'realtime'} onClick={() => setViewMode('realtime')} icon={<Activity className="w-4 h-4" />} label="实时大屏" isDark={isDark} />
         </div>
 
         {viewMode === 'overview' && (
@@ -213,6 +234,7 @@ export default function DataDashboard() {
                 value={dashboardData.users.total.toLocaleString()}
                 change="+12%"
                 positive
+                isDark={isDark}
               />
               <DataCard
                 icon={<Sparkles className="w-6 h-6" />}
@@ -220,6 +242,7 @@ export default function DataDashboard() {
                 value={dashboardData.capsules.total.toLocaleString()}
                 change="+8%"
                 positive
+                isDark={isDark}
               />
               <DataCard
                 icon={<Heart className="w-6 h-6" />}
@@ -227,6 +250,7 @@ export default function DataDashboard() {
                 value={dashboardData.interactions.total.toLocaleString()}
                 change="+15%"
                 positive
+                isDark={isDark}
               />
               <DataCard
                 icon={<Star className="w-6 h-6" />}
@@ -234,37 +258,51 @@ export default function DataDashboard() {
                 value={dashboardData.users.active.toLocaleString()}
                 change="+5%"
                 positive
+                isDark={isDark}
               />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Section title="胶囊数据">
+              <Section title="胶囊数据" isDark={isDark}>
                 <div className="grid grid-cols-2 gap-4">
-                  <DataItem label="胶囊总数" value={dashboardData.capsules.total.toLocaleString()} />
-                  <DataItem label="公开胶囊" value={dashboardData.capsules.public.toLocaleString()} />
-                  <DataItem label="私密胶囊" value={dashboardData.capsules.private.toLocaleString()} />
-                  <DataItem label="每日新增" value={dashboardData.capsules.dailyNew.toLocaleString()} />
+                  <DataItem label="胶囊总数" value={dashboardData.capsules.total.toLocaleString()} isDark={isDark} />
+                  <DataItem label="公开胶囊" value={dashboardData.capsules.public.toLocaleString()} isDark={isDark} />
+                  <DataItem label="私密胶囊" value={dashboardData.capsules.private.toLocaleString()} isDark={isDark} />
+                  <DataItem label="每日新增" value={dashboardData.capsules.dailyNew.toLocaleString()} isDark={isDark} />
                 </div>
               </Section>
 
-              <Section title="互动数据">
+              <Section title="互动数据" isDark={isDark}>
                 <div className="grid grid-cols-2 gap-4">
-                  <DataItem label="总互动次数" value={dashboardData.interactions.total.toLocaleString()} />
-                  <DataItem label="点赞数" value={dashboardData.interactions.likes.toLocaleString()} />
-                  <DataItem label="评论数" value={dashboardData.interactions.comments.toLocaleString()} />
-                  <DataItem label="收藏数" value={dashboardData.interactions.favorites.toLocaleString()} />
+                  <DataItem label="总互动次数" value={dashboardData.interactions.total.toLocaleString()} isDark={isDark} />
+                  <DataItem label="点赞数" value={dashboardData.interactions.likes.toLocaleString()} isDark={isDark} />
+                  <DataItem label="评论数" value={dashboardData.interactions.comments.toLocaleString()} isDark={isDark} />
+                  <DataItem label="收藏数" value={dashboardData.interactions.favorites.toLocaleString()} isDark={isDark} />
                 </div>
               </Section>
             </div>
 
-            <Section title="热门标签 TOP 5">
+            <Section title="热门标签 TOP 5" isDark={isDark}>
               <div className="flex flex-wrap gap-3">
                 {dashboardData.popularTags.map((tag, index) => (
-                  <div key={tag.name} className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-cyan-100 px-4 py-2 rounded-full">
-                    <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-sm font-bold text-blue-600">
+                  <div key={tag.name} className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-full",
+                    isDark
+                      ? "bg-dark-bg-tertiary border border-dark-border-secondary"
+                      : "bg-gradient-to-r from-blue-100 to-cyan-100"
+                  )}>
+                    <span className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold",
+                      isDark
+                        ? "bg-dark-bg-secondary text-dark-text-primary"
+                        : "bg-white text-blue-600"
+                    )}>
                       {index + 1}
                     </span>
-                    <span className="font-medium text-slate-700">#{tag.name}</span>
+                    <span className={cn(
+                      "font-medium",
+                      isDark ? "text-dark-text-secondary" : "text-slate-700"
+                    )}>#{tag.name}</span>
                     <span className="text-sm font-bold text-blue-600">{tag.count}</span>
                   </div>
                 ))}
@@ -275,26 +313,41 @@ export default function DataDashboard() {
 
         {viewMode === 'heatmap' && (
           <div className="space-y-6">
-            <Section title="校园情感热力图">
-              <p className="text-sm text-slate-600 mb-4">
+            <Section title="校园情感热力图" isDark={isDark}>
+              <p className={cn(
+                "text-sm mb-4",
+                isDark ? "text-dark-text-tertiary" : "text-slate-600"
+              )}>
                 颜色深浅表示热度，越深表示该主题的胶囊发布量和互动量越高
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(dashboardData.themeHeatmap).map(([theme, data]) => (
                   <div
                     key={theme}
-                    className="rounded-xl p-4 border transition-all hover:scale-105 cursor-pointer"
+                    className={cn(
+                      "rounded-xl p-4 border transition-all hover:scale-105 cursor-pointer",
+                      isDark && data.count === 0 && "bg-dark-bg-tertiary border-dark-border-secondary"
+                    )}
                     style={{
-                      backgroundColor: getHeatmapColor(data.count, maxThemeCount),
-                      borderColor: data.count > 0 ? '#3b82f6' : '#e2e8f0'
+                      backgroundColor: data.count > 0 ? getHeatmapColor(data.count, maxThemeCount) : undefined,
+                      borderColor: data.count > 0 ? '#3b82f6' : isDark ? '#334155' : '#e2e8f0'
                     }}
                   >
-                    <h3 className="font-bold text-slate-800 mb-2">{theme}</h3>
+                    <h3 className={cn(
+                      "font-bold mb-2",
+                      isDark ? "text-dark-text-primary" : "text-slate-800"
+                    )}>{theme}</h3>
                     <div className="space-y-1">
-                      <p className="text-sm text-slate-600">
+                      <p className={cn(
+                        "text-sm",
+                        isDark ? "text-dark-text-secondary" : "text-slate-600"
+                      )}>
                         发布量: <span className="font-bold">{data.count}</span>
                       </p>
-                      <p className="text-sm text-slate-600">
+                      <p className={cn(
+                        "text-sm",
+                        isDark ? "text-dark-text-secondary" : "text-slate-600"
+                      )}>
                         互动量: <span className="font-bold">{data.interactions}</span>
                       </p>
                     </div>
@@ -307,11 +360,17 @@ export default function DataDashboard() {
 
         {viewMode === 'timeline' && (
           <div className="space-y-6">
-            <Section title="个人时光轨迹">
+            <Section title="个人时光轨迹" isDark={isDark}>
               {Object.keys(dashboardData.timelineData).length === 0 ? (
                 <div className="text-center py-12">
-                  <Clock className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500">还没有发布胶囊</p>
+                  <Clock className={cn(
+                    "w-16 h-16 mx-auto mb-4",
+                    isDark ? "text-dark-text-tertiary" : "text-slate-300"
+                  )} />
+                  <p className={cn(
+                    "",
+                    isDark ? "text-dark-text-tertiary" : "text-slate-500"
+                  )}>还没有发布胶囊</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -324,16 +383,32 @@ export default function DataDashboard() {
                           <div className="w-0.5 flex-1 bg-gradient-to-b from-blue-500 to-cyan-500" />
                         </div>
                         <div className="flex-1 pb-6">
-                          <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                            <h4 className="font-bold text-slate-800 mb-2">
+                          <div className={cn(
+                            "rounded-xl p-4 border shadow-sm",
+                            isDark
+                              ? "bg-dark-bg-secondary border-dark-border-secondary"
+                              : "bg-white border-slate-200"
+                          )}>
+                            <h4 className={cn(
+                              "font-bold mb-2",
+                              isDark ? "text-dark-text-primary" : "text-slate-800"
+                            )}>
                               {new Date(date).toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}
                             </h4>
-                            <p className="text-sm text-slate-600 mb-2">
+                            <p className={cn(
+                              "text-sm mb-2",
+                              isDark ? "text-dark-text-secondary" : "text-slate-600"
+                            )}>
                               发布 <span className="font-bold text-blue-600">{data.count}</span> 个胶囊
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {[...new Set(data.tags)].slice(0, 5).map(tag => (
-                                <span key={tag} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                <span key={tag} className={cn(
+                                  "text-xs px-2 py-1 rounded-full",
+                                  isDark
+                                    ? "bg-dark-bg-tertiary text-dark-text-secondary border border-dark-border-secondary"
+                                    : "bg-blue-100 text-blue-700"
+                                )}>
                                   #{tag}
                                 </span>
                               ))}
@@ -413,7 +488,7 @@ export default function DataDashboard() {
   );
 }
 
-function TimeRangeButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+function TimeRangeButton({ active, onClick, label, isDark }: { active: boolean; onClick: () => void; label: string; isDark: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -421,7 +496,9 @@ function TimeRangeButton({ active, onClick, label }: { active: boolean; onClick:
         "px-4 py-2 rounded-full text-sm font-medium transition-all",
         active
           ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
-          : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
+          : isDark
+            ? "bg-dark-bg-secondary border border-dark-border-secondary text-dark-text-secondary hover:border-blue-400"
+            : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
       )}
     >
       {label}
@@ -429,7 +506,7 @@ function TimeRangeButton({ active, onClick, label }: { active: boolean; onClick:
   );
 }
 
-function ViewModeButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
+function ViewModeButton({ active, onClick, icon, label, isDark }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string; isDark: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -437,7 +514,9 @@ function ViewModeButton({ active, onClick, icon, label }: { active: boolean; onC
         "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all flex-shrink-0",
         active
           ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
-          : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
+          : isDark
+            ? "bg-dark-bg-secondary border border-dark-border-secondary text-dark-text-secondary hover:border-blue-400"
+            : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
       )}
     >
       {icon}
@@ -446,9 +525,14 @@ function ViewModeButton({ active, onClick, icon, label }: { active: boolean; onC
   );
 }
 
-function DataCard({ icon, title, value, change, positive }: { icon: React.ReactNode; title: string; value: string; change: string; positive: boolean }) {
+function DataCard({ icon, title, value, change, positive, isDark }: { icon: React.ReactNode; title: string; value: string; change: string; positive: boolean; isDark: boolean }) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-all">
+    <div className={cn(
+      "rounded-2xl p-5 border shadow-sm hover:shadow-md transition-all",
+      isDark
+        ? "bg-dark-bg-secondary border-dark-border-secondary"
+        : "bg-white border-slate-200"
+    )}>
       <div className="flex items-center justify-between mb-4">
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center text-blue-600">
           {icon}
@@ -461,31 +545,56 @@ function DataCard({ icon, title, value, change, positive }: { icon: React.ReactN
           {change}
         </span>
       </div>
-      <h3 className="text-sm text-slate-500 mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-slate-800">{value}</p>
+      <h3 className={cn(
+        "text-sm mb-1",
+        isDark ? "text-dark-text-tertiary" : "text-slate-500"
+      )}>{title}</h3>
+      <p className={cn(
+        "text-2xl font-bold",
+        isDark ? "text-dark-text-primary" : "text-slate-800"
+      )}>{value}</p>
     </div>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, isDark }: { title: string; children: React.ReactNode; isDark: boolean }) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <h2 className={cn(
+        "text-lg font-bold mb-4 flex items-center gap-2",
+        isDark ? "text-dark-text-primary" : "text-slate-800"
+      )}>
         <BarChart3 className="w-5 h-5 text-blue-500" />
         {title}
       </h2>
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+      <div className={cn(
+        "rounded-2xl p-6 border shadow-sm",
+        isDark
+          ? "bg-dark-bg-secondary border-dark-border-secondary"
+          : "bg-white border-slate-200"
+      )}>
         {children}
       </div>
     </div>
   );
 }
 
-function DataItem({ label, value }: { label: string; value: string }) {
+function DataItem({ label, value, isDark }: { label: string; value: string; isDark: boolean }) {
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4">
-      <p className="text-sm text-slate-500 mb-1">{label}</p>
-      <p className="text-xl font-bold text-slate-800">{value}</p>
+    <div className={cn(
+      "rounded-xl p-4",
+      isDark
+        ? "bg-dark-bg-tertiary border border-dark-border-secondary"
+        : "bg-gradient-to-br from-slate-50 to-blue-50"
+    )}>
+      <p className={cn(
+        "text-sm mb-1",
+        isDark ? "text-dark-text-tertiary" : "text-slate-500"
+      )}>{label}</p>
+      <p className={cn(
+        "text-xl font-bold",
+        isDark ? "text-dark-text-primary" : "text-slate-800"
+      )}>{value}</p>
     </div>
   );
 }

@@ -27,6 +27,7 @@ import {
 import { isCapsuleOpened, formatDate } from '../utils/date';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useTheme } from '../hooks/useTheme';
 
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
@@ -48,6 +49,7 @@ export default function CapsuleDetail() {
     addGroupMemberContent,
     setCapsuleAsDriftBottle
   } = useCapsuleStore();
+  const { isDark } = useTheme();
 
   const capsule = id ? getCapsuleById(id) : undefined;
   const [showPosterModal, setShowPosterModal] = useState(false);
@@ -61,10 +63,21 @@ export default function CapsuleDetail() {
 
   if (!capsule) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex items-center justify-center">
+      <div className={cn(
+        "min-h-screen flex items-center justify-center",
+        isDark 
+          ? "bg-dark-bg-primary text-dark-text-primary"
+          : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
+      )}>
         <div className="text-center">
-          <p className="text-[#8a7ab5] mb-4">胶囊不存在</p>
-          <button onClick={() => navigate('/')} className="px-6 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-full">
+          <p className={cn(
+            "mb-4",
+            isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+          )}>胶囊不存在</p>
+          <button onClick={() => navigate('/')} className={cn(
+            "px-6 py-2 text-white rounded-full",
+            isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+          )}>
             返回广场
           </button>
         </div>
@@ -195,26 +208,60 @@ export default function CapsuleDetail() {
   }, [capsule.inviteLink, capsule.isGroup]);
 
   const renderNoAccess = () => (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
-      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
-        <Lock className="w-10 h-10 text-candy-purple" />
+    <div className={cn(
+      "min-h-screen flex flex-col items-center justify-center px-4",
+      isDark 
+        ? "bg-dark-bg-primary text-dark-text-primary"
+        : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
+    )}>
+      <div className={cn(
+        "w-20 h-20 rounded-full flex items-center justify-center mb-6",
+        isDark ? "bg-dark-bg-secondary" : "bg-gradient-to-r from-candy-pink/20 to-candy-purple/20"
+      )}>
+        <Lock className={cn(
+          "w-10 h-10",
+          isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+        )} />
       </div>
-      <h2 className="text-xl font-bold text-[#5a4b7a] mb-2">无访问权限</h2>
-      <p className="text-[#8a7ab5] text-center mb-8">
+      <h2 className={cn(
+        "text-xl font-bold mb-2",
+        isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+      )}>无访问权限</h2>
+      <p className={cn(
+        "text-center mb-8",
+        isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+      )}>
         这是一个私密胶囊，只有被邀请的用户或输入正确密码才能访问
       </p>
-      <button onClick={() => navigate('/')} className="px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium">
+      <button onClick={() => navigate('/')} className={cn(
+        "px-6 py-3 text-white rounded-xl font-medium",
+        isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+      )}>
         返回广场
       </button>
     </div>
   );
 
   const renderPasswordForm = () => (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] flex flex-col items-center justify-center px-4">
-      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
-        <Lock className="w-10 h-10 text-candy-purple" />
+    <div className={cn(
+      "min-h-screen flex flex-col items-center justify-center px-4",
+      isDark 
+        ? "bg-dark-bg-primary text-dark-text-primary"
+        : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
+    )}>
+      <div className={cn(
+        "w-20 h-20 rounded-full flex items-center justify-center mb-6",
+        isDark ? "bg-dark-bg-secondary" : "bg-gradient-to-r from-candy-pink/20 to-candy-purple/20"
+      )}>
+        <Lock className={cn(
+          "w-10 h-10",
+          isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+        )} />
       </div>
-      <h2 className="text-xl font-bold text-[#5a4b7a] mb-6">输入密码访问胶囊</h2>
+      <h2 className={cn(
+        "text-xl font-bold mb-6",
+        isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+      )}>输入密码访问胶囊</h2>
       
       <form onSubmit={handlePasswordSubmit} className="w-full max-w-md space-y-4">
         <div>
@@ -224,10 +271,18 @@ export default function CapsuleDetail() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="请输入4-6位数字密码"
             maxLength={6}
-            className="w-full px-4 py-3 bg-white border border-[#e0d6f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink transition-all"
+            className={cn(
+              "w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all",
+              isDark
+                ? "bg-dark-bg-secondary border-dark-border-primary focus:ring-dark-accent-secondary"
+                : "bg-white border-[#e0d6f0] focus:ring-candy-pink focus:border-candy-pink"
+            )}
           />
           {passwordError && (
-            <div className="flex items-center gap-2 mt-2 text-[#e57373] text-sm">
+            <div className={cn(
+              "flex items-center gap-2 mt-2 text-sm",
+              isDark ? "text-red-400" : "text-[#e57373]"
+            )}>
               <AlertCircle className="w-4 h-4" />
               <span>{passwordError}</span>
             </div>
@@ -236,33 +291,58 @@ export default function CapsuleDetail() {
         <button
           type="submit"
           disabled={isVerifying || !password}
-          className="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className={cn(
+            "w-full py-3 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all",
+            isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+          )}
         >
           {isVerifying ? '验证中...' : '验证密码'}
         </button>
       </form>
       
-      <button onClick={() => navigate('/')} className="mt-6 text-[#8a7ab5] hover:text-[#5a4b7a] transition-colors">
+      <button onClick={() => navigate('/')} className={cn(
+        "mt-6 transition-colors",
+        isDark ? "text-dark-text-secondary hover:text-dark-text-primary" : "text-[#8a7ab5] hover:text-[#5a4b7a]"
+      )}>
         返回广场
       </button>
     </div>
   );
 
   const renderNotOpened = () => (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]">
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-40 border-b border-[#e0d6f0]">
+    <div className={cn(
+      "min-h-screen",
+      isDark 
+        ? "bg-dark-bg-primary text-dark-text-primary"
+        : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
+    )}>
+      <div className={cn(
+        "sticky top-0 backdrop-blur-md z-40 border-b",
+        isDark
+          ? "bg-dark-bg-secondary/80 border-dark-border-primary"
+          : "bg-white/80 border-[#e0d6f0]"
+      )}>
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-[#8a7ab5]" />
+            <ArrowLeft className={cn(
+              "w-6 h-6",
+              isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+            )} />
           </button>
-          <h1 className="font-bold text-lg text-[#5a4b7a]">
+          <h1 className={cn(
+            "font-bold text-lg",
+            isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+          )}>
             {capsule.isGroup ? (capsule.groupName || '集体胶囊') : '胶囊详情'}
           </h1>
           <div className="flex items-center gap-2">
             {capsule.inviteLink && capsule.isGroup && (
               <button 
                 onClick={() => setShowShareLinkModal(true)}
-                className="p-2 text-candy-pink"
+                className={cn(
+                  "p-2",
+                  isDark ? "text-dark-accent-secondary" : "text-candy-pink"
+                )}
               >
                 <Share2 className="w-5 h-5" />
               </button>
@@ -272,31 +352,62 @@ export default function CapsuleDetail() {
       </div>
       
       <div className="max-w-md mx-auto px-4 py-12 flex flex-col items-center justify-center">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-pink/20 to-candy-purple/20 flex items-center justify-center mb-6">
-          <Lock className="w-10 h-10 text-candy-purple" />
+        <div className={cn(
+          "w-20 h-20 rounded-full flex items-center justify-center mb-6",
+          isDark ? "bg-dark-bg-secondary" : "bg-gradient-to-r from-candy-pink/20 to-candy-purple/20"
+        )}>
+          <Lock className={cn(
+            "w-10 h-10",
+            isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+          )} />
         </div>
-        <h2 className="text-xl font-bold text-[#5a4b7a] mb-2">胶囊尚未开启</h2>
-        <p className="text-[#8a7ab5] text-center mb-8">
+        <h2 className={cn(
+          "text-xl font-bold mb-2",
+          isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+        )}>胶囊尚未开启</h2>
+        <p className={cn(
+          "text-center mb-8",
+          isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+        )}>
           静待时光，美好终将呈现
         </p>
-        <CountdownTimer openAt={capsule.openAt} />
-        <button onClick={() => navigate('/')} className="mt-8 px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium">
+        <CountdownTimer openAt={capsule.openAt} isDark={isDark} />
+        <button onClick={() => navigate('/')} className={cn(
+          "mt-8 px-6 py-3 text-white rounded-xl font-medium",
+          isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+        )}>
           返回广场
         </button>
       </div>
       
       {capsule.isGroup && capsule.groupMembers && (
         <div className="max-w-md mx-auto px-4 pb-12">
-          <div className="bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 rounded-2xl p-4 border border-candy-pink/20">
+          <div className={cn(
+            "rounded-2xl p-4 border",
+            isDark
+              ? "bg-dark-bg-secondary border-dark-border-primary"
+              : "bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 border border-candy-pink/20"
+          )}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-candy-purple" />
-                <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
+                <Users className={cn(
+                  "w-5 h-5",
+                  isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+                )} />
+                <span className={cn(
+                  "font-medium",
+                  isDark ? "text-dark-text-primary" : "text-gray-800"
+                )}>集体成员 ({capsule.groupMembers.length})</span>
               </div>
               {capsule.inviteLink && (
                 <button
                   onClick={() => setShowShareLinkModal(true)}
-                  className="px-3 py-1.5 bg-white rounded-full text-sm text-candy-purple flex items-center gap-1 hover:bg-candy-purple/10 transition-colors"
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors",
+                    isDark
+                      ? "bg-dark-bg-tertiary text-dark-accent-secondary hover:bg-dark-bg-tertiary"
+                      : "bg-white text-candy-purple hover:bg-candy-purple/10"
+                  )}
                 >
                   <Share2 className="w-4 h-4" />
                   分享链接
@@ -305,11 +416,22 @@ export default function CapsuleDetail() {
             </div>
             <div className="flex flex-wrap gap-2">
               {capsule.groupMembers.map((member) => (
-                <div key={member.id} className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-xs">
+                <div key={member.id} className={cn(
+                  "flex items-center gap-1 px-3 py-1.5 rounded-full shadow-sm",
+                  isDark
+                    ? "bg-dark-bg-tertiary"
+                    : "bg-white"
+                )}>
+                  <div className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center text-white text-xs",
+                    isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                  )}>
                     {member.nickname[0]}
                   </div>
-                  <span className="text-sm text-gray-700">{member.nickname}</span>
+                  <span className={cn(
+                    "text-sm",
+                    isDark ? "text-dark-text-secondary" : "text-gray-700"
+                  )}>{member.nickname}</span>
                 </div>
               ))}
             </div>
@@ -320,40 +442,72 @@ export default function CapsuleDetail() {
       {/* 分享邀请链接模态框 */}
       {showShareLinkModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full">
+          <div className={cn(
+            "rounded-3xl p-6 max-w-md w-full",
+            isDark ? "bg-dark-bg-secondary" : "bg-white"
+          )}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg text-[#5a4b7a]">分享邀请链接</h3>
+              <h3 className={cn(
+                "font-bold text-lg",
+                isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+              )}>分享邀请链接</h3>
               <button
                 onClick={() => setShowShareLinkModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className={cn(
+                  "p-2 rounded-full",
+                  isDark ? "hover:bg-dark-bg-tertiary" : "hover:bg-gray-100"
+                )}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className={cn(
+                  "h-5 w-5",
+                  isDark ? "text-dark-text-secondary" : "text-gray-500"
+                )} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">复制链接分享给好友，邀请他们加入集体胶囊：</p>
+              <p className={cn(
+                "text-sm mb-2",
+                isDark ? "text-dark-text-secondary" : "text-gray-600"
+              )}>复制链接分享给好友，邀请他们加入集体胶囊：</p>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={capsule.inviteLink || ''}
                   readOnly
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600"
+                  className={cn(
+                    "flex-1 px-3 py-2 text-sm rounded-lg",
+                    isDark
+                      ? "bg-dark-bg-tertiary border border-dark-border-primary text-dark-text-secondary"
+                      : "bg-gray-50 border border-gray-200 text-gray-600"
+                  )}
                 />
                 <button
                   onClick={handleCopyInviteLink}
-                  className="px-4 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                  className={cn(
+                    "px-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity",
+                    isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                  )}
                 >
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-sm text-gray-500">
+            <div className={cn(
+              "rounded-xl p-4",
+              isDark ? "bg-dark-bg-tertiary" : "bg-gray-50"
+            )}>
+              <p className={cn(
+                "text-sm",
+                isDark ? "text-dark-text-secondary" : "text-gray-500"
+              )}>
                 链接有效期：永久
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className={cn(
+                "text-sm mt-1",
+                isDark ? "text-dark-text-secondary" : "text-gray-500"
+              )}>
                 最多可邀请：{20 - (capsule.groupMembers?.length || 1)} 人
               </p>
             </div>
@@ -372,20 +526,39 @@ export default function CapsuleDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] pb-32">
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-40 border-b border-[#e0d6f0]">
+    <div className={cn(
+      "min-h-screen pb-32",
+      isDark 
+        ? "bg-dark-bg-primary text-dark-text-primary"
+        : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
+    )}>
+      <div className={cn(
+        "sticky top-0 backdrop-blur-md z-40 border-b",
+        isDark
+          ? "bg-dark-bg-secondary/80 border-dark-border-primary"
+          : "bg-white/80 border-[#e0d6f0]"
+      )}>
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-[#8a7ab5]" />
+            <ArrowLeft className={cn(
+              "w-6 h-6",
+              isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+            )} />
           </button>
-          <h1 className="font-bold text-lg text-[#5a4b7a]">
+          <h1 className={cn(
+            "font-bold text-lg",
+            isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+          )}>
             {capsule.isGroup ? (capsule.groupName || '集体胶囊') : '胶囊详情'}
           </h1>
           <div className="flex items-center gap-2">
             {isOpened && (
               <button 
                 onClick={() => setShowPosterModal(true)}
-                className="p-2 text-candy-pink"
+                className={cn(
+                  "p-2",
+                  isDark ? "text-dark-accent-secondary" : "text-candy-pink"
+                )}
                 title="分享海报"
               >
                 <Share2 className="w-5 h-5" />
@@ -394,7 +567,10 @@ export default function CapsuleDetail() {
             {capsule.inviteLink && capsule.isGroup && (
               <button 
                 onClick={() => setShowShareLinkModal(true)}
-                className="p-2 text-candy-purple"
+                className={cn(
+                  "p-2",
+                  isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+                )}
                 title="分享邀请链接"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -406,7 +582,10 @@ export default function CapsuleDetail() {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setIsEditing(!isEditing)}
-                  className="p-2 text-candy-purple"
+                  className={cn(
+                    "p-2",
+                    isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+                  )}
                 >
                   {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
                 </button>
@@ -420,7 +599,10 @@ export default function CapsuleDetail() {
                         type: 'system'
                       });
                     }}
-                    className="p-2 text-candy-blue"
+                    className={cn(
+                      "p-2",
+                      isDark ? "text-dark-accent-secondary" : "text-candy-blue"
+                    )}
                     title="设置为漂流瓶"
                   >
                     <MessageSquare className="w-5 h-5" />
@@ -434,16 +616,32 @@ export default function CapsuleDetail() {
 
       <div className="max-w-md mx-auto px-4 pt-6">
         {capsule.isGroup && capsule.groupMembers && (
-          <div className="mb-6 bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 rounded-2xl p-4 border border-candy-pink/20">
+          <div className={cn(
+            "mb-6 rounded-2xl p-4 border",
+            isDark
+              ? "bg-dark-bg-secondary border-dark-border-primary"
+              : "bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 border border-candy-pink/20"
+          )}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-candy-purple" />
-                <span className="font-medium text-gray-800">集体成员 ({capsule.groupMembers.length})</span>
+                <Users className={cn(
+                  "w-5 h-5",
+                  isDark ? "text-dark-accent-secondary" : "text-candy-purple"
+                )} />
+                <span className={cn(
+                  "font-medium",
+                  isDark ? "text-dark-text-primary" : "text-gray-800"
+                )}>集体成员 ({capsule.groupMembers.length})</span>
               </div>
               {capsule.inviteLink && (
                 <button
                   onClick={() => setShowShareLinkModal(true)}
-                  className="px-3 py-1.5 bg-white rounded-full text-sm text-candy-purple flex items-center gap-1 hover:bg-candy-purple/10 transition-colors"
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors",
+                    isDark
+                      ? "bg-dark-bg-tertiary text-dark-accent-secondary hover:bg-dark-bg-tertiary"
+                      : "bg-white text-candy-purple hover:bg-candy-purple/10"
+                  )}
                 >
                   <Share2 className="w-4 h-4" />
                   分享链接
@@ -452,28 +650,54 @@ export default function CapsuleDetail() {
             </div>
             <div className="flex flex-wrap gap-2 mb-4">
               {capsule.groupMembers.map((member) => (
-                <div key={member.id} className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-xs">
+                <div key={member.id} className={cn(
+                  "flex items-center gap-1 px-3 py-1.5 rounded-full shadow-sm",
+                  isDark
+                    ? "bg-dark-bg-tertiary"
+                    : "bg-white"
+                )}>
+                  <div className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center text-white text-xs",
+                    isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                  )}>
                     {member.nickname[0]}
                   </div>
-                  <span className="text-sm text-gray-700">{member.nickname}</span>
+                  <span className={cn(
+                    "text-sm",
+                    isDark ? "text-dark-text-secondary" : "text-gray-700"
+                  )}>{member.nickname}</span>
                 </div>
               ))}
             </div>
             
             <div className="space-y-4">
               {capsule.groupMembers.filter(member => member.content).map((member) => (
-                <div key={member.id} className="bg-white rounded-2xl p-4 shadow-sm">
+                <div key={member.id} className={cn(
+                  "rounded-2xl p-4 shadow-sm",
+                  isDark ? "bg-dark-bg-tertiary" : "bg-white"
+                )}>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white text-sm">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center text-white text-sm",
+                      isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                    )}>
                       {member.nickname[0]}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-800">{member.nickname}</p>
-                      <p className="text-xs text-gray-500">{formatDate(member.joinedAt)}</p>
+                      <p className={cn(
+                        "font-medium",
+                        isDark ? "text-dark-text-primary" : "text-gray-800"
+                      )}>{member.nickname}</p>
+                      <p className={cn(
+                        "text-xs",
+                        isDark ? "text-dark-text-tertiary" : "text-gray-500"
+                      )}>{formatDate(member.joinedAt)}</p>
                     </div>
                   </div>
-                  <p className="text-gray-700 leading-relaxed mb-3">{member.content}</p>
+                  <p className={cn(
+                    "leading-relaxed mb-3",
+                    isDark ? "text-dark-text-secondary" : "text-gray-700"
+                  )}>{member.content}</p>
                   {member.images && member.images.length > 0 && (
                     <div className="flex gap-2 flex-wrap">
                       {member.images.map((img, idx) => (
@@ -495,18 +719,30 @@ export default function CapsuleDetail() {
                 {!showMemberContentSection ? (
                   <button
                     onClick={() => setShowMemberContentSection(true)}
-                    className="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-2xl font-medium flex items-center justify-center gap-2"
+                    className={cn(
+                      "w-full py-3 text-white rounded-2xl font-medium flex items-center justify-center gap-2",
+                      isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                    )}
                   >
                     <Plus className="w-5 h-5" />
                     添加我的内容
                   </button>
                 ) : (
-                  <div className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
+                  <div className={cn(
+                    "rounded-2xl p-4 border",
+                    isDark ? "bg-dark-bg-tertiary border-dark-border-primary" : "bg-white border-[#e0d6f0]"
+                  )}>
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-gray-800">添加我的内容</h4>
+                      <h4 className={cn(
+                        "font-medium",
+                        isDark ? "text-dark-text-primary" : "text-gray-800"
+                      )}>添加我的内容</h4>
                       <button
                         onClick={() => setShowMemberContentSection(false)}
-                        className="text-gray-500 hover:text-gray-700"
+                        className={cn(
+                          "transition-colors",
+                          isDark ? "text-dark-text-secondary hover:text-dark-text-primary" : "text-gray-500 hover:text-gray-700"
+                        )}
                       >
                         取消
                       </button>
@@ -515,17 +751,28 @@ export default function CapsuleDetail() {
                       value={memberContent}
                       onChange={(e) => setMemberContent(e.target.value)}
                       placeholder="写下你的时光记忆..."
-                      className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink"
+                      className={cn(
+                        "w-full p-3 border rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:border-transparent transition-all",
+                        isDark
+                          ? "bg-dark-bg-secondary border-dark-border-primary focus:ring-dark-accent-secondary"
+                          : "border-[#e0d6f0] focus:ring-candy-pink focus:border-candy-pink"
+                      )}
                     />
                     <div className="flex items-center justify-between">
-                      <button className="flex items-center gap-2 text-gray-500 hover:text-candy-purple">
+                      <button className={cn(
+                        "flex items-center gap-2 transition-colors",
+                        isDark ? "text-dark-text-secondary hover:text-dark-accent-secondary" : "text-gray-500 hover:text-candy-purple"
+                      )}>
                         <ImageIcon className="w-5 h-5" />
                         <span className="text-sm">添加图片</span>
                       </button>
                       <button
                         onClick={handleSubmitMemberContent}
                         disabled={!memberContent.trim()}
-                        className="px-6 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium disabled:opacity-50"
+                        className={cn(
+                          "px-6 py-2 text-white rounded-xl font-medium disabled:opacity-50",
+                          isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                        )}
                       >
                         提交
                       </button>
@@ -553,42 +800,80 @@ export default function CapsuleDetail() {
         )}
 
         {capsule.audio && (
-          <div className="mb-6 bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 rounded-2xl p-4 border border-candy-pink/20">
+          <div className={cn(
+            "mb-6 rounded-2xl p-4 border",
+            isDark
+              ? "bg-dark-bg-secondary border-dark-border-primary"
+              : "bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 border border-candy-pink/20"
+          )}>
             <div className="flex items-center gap-3">
-              <button className="w-12 h-12 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center text-white shadow-lg">
+              <button className={cn(
+                "w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg",
+                isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+              )}>
                 <Play className="w-5 h-5 fill-current ml-1" />
               </button>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="flex-1 h-2 bg-white rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-candy-pink to-candy-purple w-1/3 rounded-full" />
+                  <div className={cn(
+                    "flex-1 h-2 rounded-full overflow-hidden",
+                    isDark ? "bg-dark-bg-tertiary" : "bg-white"
+                  )}>
+                    <div className={cn(
+                      "h-full w-1/3 rounded-full",
+                      isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                    )} />
                   </div>
-                  <span className="text-xs text-gray-600 font-medium">00:15</span>
+                  <span className={cn(
+                    "text-xs font-medium",
+                    isDark ? "text-dark-text-secondary" : "text-gray-600"
+                  )}>00:15</span>
                 </div>
-                <p className="text-xs text-gray-500">语音留言</p>
+                <p className={cn(
+                  "text-xs",
+                  isDark ? "text-dark-text-tertiary" : "text-gray-500"
+                )}>语音留言</p>
               </div>
             </div>
           </div>
         )}
 
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#e0d6f0] mb-6">
+        <div className={cn(
+          "rounded-3xl p-6 shadow-sm border mb-6",
+          isDark ? "bg-dark-bg-secondary border-dark-border-primary" : "bg-white border-[#e0d6f0]"
+        )}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-candy-pink to-candy-purple flex items-center justify-center">
+              <div className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center",
+                isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+              )}>
                 <User className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="font-medium text-[#5a4b7a]">
+                <p className={cn(
+                  "font-medium",
+                  isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+                )}>
                   {capsule.isAnonymous ? '匿名用户' : '校园旅人'}
                 </p>
-                <p className="text-xs text-[#a093c2]">{formatDate(capsule.createdAt)}</p>
+                <p className={cn(
+                  "text-xs",
+                  isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+                )}>{formatDate(capsule.createdAt)}</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               {capsule.isPublic ? (
-                <Unlock className="w-4 h-4 text-candy-green" />
+                <Unlock className={cn(
+                  "w-4 h-4",
+                  isDark ? "text-dark-accent-secondary" : "text-candy-green"
+                )} />
               ) : (
-                <Lock className="w-4 h-4 text-gray-400" />
+                <Lock className={cn(
+                  "w-4 h-4",
+                  isDark ? "text-dark-text-tertiary" : "text-gray-400"
+                )} />
               )}
             </div>
           </div>
@@ -598,14 +883,25 @@ export default function CapsuleDetail() {
               <textarea
                 value={editedContent}
                 onChange={(e) => setEditedContent(e.target.value)}
-                className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[120px] focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink transition-all"
+                className={cn(
+                  "w-full p-3 border rounded-xl min-h-[120px] focus:outline-none focus:ring-2 focus:border-transparent transition-all",
+                  isDark
+                    ? "bg-dark-bg-tertiary border-dark-border-primary focus:ring-dark-accent-secondary"
+                    : "border-[#e0d6f0] focus:ring-candy-pink focus:border-candy-pink"
+                )}
                 placeholder="写下你的时光记忆..."
               />
             ) : (
               <>
-                <p className="text-[#5a4b7a] leading-relaxed whitespace-pre-wrap">{capsule.content}</p>
+                <p className={cn(
+                  "leading-relaxed whitespace-pre-wrap",
+                  isDark ? "text-dark-text-secondary" : "text-[#5a4b7a]"
+                )}>{capsule.content}</p>
                 {capsule.updatedAt && (
-                  <p className="text-xs text-[#a093c2] mt-2">
+                  <p className={cn(
+                    "text-xs mt-2",
+                    isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+                  )}>
                     更新于 {formatDate(capsule.updatedAt)}
                   </p>
                 )}
@@ -615,36 +911,65 @@ export default function CapsuleDetail() {
 
           <div className="flex flex-wrap gap-2 mb-4">
             {capsule.tags.map((tag, idx) => (
-              <span key={idx} className="px-3 py-1 bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 text-candy-purple text-xs rounded-full border border-candy-pink/20">
+              <span key={idx} className={cn(
+                "px-3 py-1 text-xs rounded-full border",
+                isDark
+                  ? "bg-dark-bg-tertiary text-dark-accent-secondary border-dark-border-primary"
+                  : "bg-gradient-to-r from-candy-pink/10 to-candy-purple/10 text-candy-purple border border-candy-pink/20"
+              )}>
                 #{tag}
               </span>
             ))}
           </div>
 
-          <div className="pt-4 border-t border-[#e0d6f0]">
-            <CountdownTimer openAt={capsule.openAt} />
+          <div className={cn(
+            "pt-4 border-t",
+            isDark ? "border-dark-border-primary" : "border-[#e0d6f0]"
+          )}>
+            <CountdownTimer openAt={capsule.openAt} isDark={isDark} />
           </div>
         </div>
 
         {capsule.replies && capsule.replies.length > 0 && (
           <div className="mb-6">
-            <h3 className="font-bold text-lg text-[#5a4b7a] mb-4 flex items-center gap-2">
-              <Reply className="w-5 h-5 text-candy-orange" />
+            <h3 className={cn(
+              "font-bold text-lg mb-4 flex items-center gap-2",
+              isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+            )}>
+              <Reply className={cn(
+                "w-5 h-5",
+                isDark ? "text-dark-accent-secondary" : "text-candy-orange"
+              )} />
               跨时空回信 ({capsule.replies.length})
             </h3>
             <div className="space-y-4">
               {capsule.replies.map((reply) => (
-                <div key={reply.id} className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
+                <div key={reply.id} className={cn(
+                  "rounded-2xl p-4 border",
+                  isDark ? "bg-dark-bg-secondary border-dark-border-primary" : "bg-white border-[#e0d6f0]"
+                )}>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-candy-yellow to-candy-orange flex items-center justify-center text-white text-sm">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center text-white text-sm",
+                      isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-yellow to-candy-orange"
+                    )}>
                       {reply.nickname[0]}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-800">{reply.nickname}</p>
-                      <p className="text-xs text-gray-500">{formatDate(reply.createdAt)}</p>
+                      <p className={cn(
+                        "font-medium",
+                        isDark ? "text-dark-text-primary" : "text-gray-800"
+                      )}>{reply.nickname}</p>
+                      <p className={cn(
+                        "text-xs",
+                        isDark ? "text-dark-text-tertiary" : "text-gray-500"
+                      )}>{formatDate(reply.createdAt)}</p>
                     </div>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">{reply.content}</p>
+                  <p className={cn(
+                    "leading-relaxed",
+                    isDark ? "text-dark-text-secondary" : "text-gray-700"
+                  )}>{reply.content}</p>
                   {reply.images && reply.images.length > 0 && (
                     <div className="mt-3 flex gap-2">
                       {reply.images.map((img, idx) => (
@@ -669,18 +994,30 @@ export default function CapsuleDetail() {
               <button
                 onClick={() => setShowReplySection(true)}
                 disabled={currentUser && capsule.replies?.filter(reply => reply.userId === currentUser.id).length >= 3}
-                className="w-full py-3 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-2xl font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={cn(
+                  "w-full py-3 text-white rounded-2xl font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed",
+                  isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-yellow to-candy-orange"
+                )}
               >
                 <Reply className="w-5 h-5" />
                 {currentUser && capsule.replies?.filter(reply => reply.userId === currentUser.id).length >= 3 ? '已达到回信上限' : '添加跨时空回信'}
               </button>
             ) : (
-              <div className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
+              <div className={cn(
+                "rounded-2xl p-4 border",
+                isDark ? "bg-dark-bg-secondary border-dark-border-primary" : "bg-white border-[#e0d6f0]"
+              )}>
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-800">写回信</h4>
+                  <h4 className={cn(
+                    "font-medium",
+                    isDark ? "text-dark-text-primary" : "text-gray-800"
+                  )}>写回信</h4>
                   <button
                     onClick={() => setShowReplySection(false)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className={cn(
+                      "transition-colors",
+                      isDark ? "text-dark-text-secondary hover:text-dark-text-primary" : "text-gray-500 hover:text-gray-700"
+                    )}
                   >
                     取消
                   </button>
@@ -689,17 +1026,28 @@ export default function CapsuleDetail() {
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
                   placeholder="写下你想对过去/未来说的话..."
-                  className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:ring-candy-yellow focus:border-candy-yellow"
+                  className={cn(
+                    "w-full p-3 border rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:border-transparent transition-all",
+                    isDark
+                      ? "bg-dark-bg-tertiary border-dark-border-primary focus:ring-dark-accent-secondary"
+                      : "border-[#e0d6f0] focus:ring-candy-yellow focus:border-candy-yellow"
+                  )}
                 />
                 <div className="flex items-center justify-between">
-                  <button className="flex items-center gap-2 text-gray-500 hover:text-candy-orange">
+                  <button className={cn(
+                    "flex items-center gap-2 transition-colors",
+                    isDark ? "text-dark-text-secondary hover:text-dark-accent-secondary" : "text-gray-500 hover:text-candy-orange"
+                  )}>
                     <ImageIcon className="w-5 h-5" />
                     <span className="text-sm">添加图片</span>
                   </button>
                   <button
                     onClick={handleSubmitReply}
                     disabled={!replyContent.trim()}
-                    className="px-6 py-2 bg-gradient-to-r from-candy-yellow to-candy-orange text-white rounded-xl font-medium disabled:opacity-50"
+                    className={cn(
+                      "px-6 py-2 text-white rounded-xl font-medium disabled:opacity-50",
+                      isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-yellow to-candy-orange"
+                    )}
                   >
                     发送
                   </button>
@@ -714,16 +1062,19 @@ export default function CapsuleDetail() {
             icon={<Heart className="w-5 h-5" />}
             count={capsule.likes}
             onClick={() => likeCapsule(capsule.id)}
+            isDark={isDark}
           />
           <ActionButton
             icon={<MessageCircle className="w-5 h-5" />}
             count={capsule.comments}
             onClick={() => {}}
+            isDark={isDark}
           />
           <ActionButton
             icon={<Star className="w-5 h-5" />}
             count={capsule.favorites}
             onClick={() => favoriteCapsule(capsule.id)}
+            isDark={isDark}
           />
         </div>
 
@@ -735,46 +1086,79 @@ export default function CapsuleDetail() {
             nickname: currentUser?.nickname || '匿名时光访客',
             content
           })}
+          isDark={isDark}
         />
       </div>
 
       {/* 分享邀请链接模态框 */}
       {showShareLinkModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full">
+          <div className={cn(
+            "rounded-3xl p-6 max-w-md w-full",
+            isDark ? "bg-dark-bg-secondary" : "bg-white"
+          )}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg text-[#5a4b7a]">分享邀请链接</h3>
+              <h3 className={cn(
+                "font-bold text-lg",
+                isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+              )}>分享邀请链接</h3>
               <button
                 onClick={() => setShowShareLinkModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className={cn(
+                  "p-2 rounded-full",
+                  isDark ? "hover:bg-dark-bg-tertiary" : "hover:bg-gray-100"
+                )}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className={cn(
+                  "h-5 w-5",
+                  isDark ? "text-dark-text-secondary" : "text-gray-500"
+                )} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">复制链接分享给好友，邀请他们加入集体胶囊：</p>
+              <p className={cn(
+                "text-sm mb-2",
+                isDark ? "text-dark-text-secondary" : "text-gray-600"
+              )}>复制链接分享给好友，邀请他们加入集体胶囊：</p>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={capsule.inviteLink || ''}
                   readOnly
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600"
+                  className={cn(
+                    "flex-1 px-3 py-2 text-sm rounded-lg",
+                    isDark
+                      ? "bg-dark-bg-tertiary border border-dark-border-primary text-dark-text-secondary"
+                      : "bg-gray-50 border border-gray-200 text-gray-600"
+                  )}
                 />
                 <button
                   onClick={handleCopyInviteLink}
-                  className="px-4 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                  className={cn(
+                    "px-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity",
+                    isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                  )}
                 >
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-sm text-gray-500">
+            <div className={cn(
+              "rounded-xl p-4",
+              isDark ? "bg-dark-bg-tertiary" : "bg-gray-50"
+            )}>
+              <p className={cn(
+                "text-sm",
+                isDark ? "text-dark-text-secondary" : "text-gray-500"
+              )}>
                 链接有效期：永久
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className={cn(
+                "text-sm mt-1",
+                isDark ? "text-dark-text-secondary" : "text-gray-500"
+              )}>
                 最多可邀请：{20 - (capsule.groupMembers?.length || 1)} 人
               </p>
             </div>
@@ -786,6 +1170,7 @@ export default function CapsuleDetail() {
         isOpen={showPosterModal}
         onClose={() => setShowPosterModal(false)}
         capsule={capsule}
+        isDark={isDark}
       />
     </div>
   );
@@ -794,20 +1179,30 @@ export default function CapsuleDetail() {
 function ActionButton({ 
   icon, 
   count, 
-  onClick 
+  onClick, 
+  isDark 
 }: { 
   icon: React.ReactNode; 
   count: number; 
   onClick: () => void; 
+  isDark: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 py-3 rounded-2xl bg-white border border-[#e0d6f0] flex items-center justify-center gap-2 hover:border-candy-pink transition-all active:scale-95"
+      className={cn(
+        "flex-1 py-3 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95",
+        isDark
+          ? "bg-dark-bg-secondary border border-dark-border-primary hover:border-dark-accent-secondary"
+          : "bg-white border border-[#e0d6f0] hover:border-candy-pink"
+      )}
     >
       {icon}
-      <span className="font-medium text-[#5a4b7a]">{count}</span>
+      <span className={cn(
+        "font-medium",
+        isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+      )}>{count}</span>
     </button>
   );
 }

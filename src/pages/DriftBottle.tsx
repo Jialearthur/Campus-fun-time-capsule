@@ -4,6 +4,7 @@ import { useCapsuleStore } from '../store/useCapsuleStore';
 import { ArrowLeft, MessageCircle, Share2, MessageSquare, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useTheme } from '../hooks/useTheme';
 
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
@@ -19,6 +20,7 @@ export default function DriftBottle() {
     addNotification,
     resetDriftBottleReceives
   } = useCapsuleStore();
+  const { isDark } = useTheme();
   
   const [currentBottle, setCurrentBottle] = useState<any>(null);
   const [showMessage, setShowMessage] = useState(false);
@@ -75,55 +77,116 @@ export default function DriftBottle() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7] pb-32">
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-40 border-b border-[#e0d6f0]">
+    <div className={cn(
+      "min-h-screen pb-32 transition-colors duration-300",
+      isDark 
+        ? "bg-dark-bg-primary text-dark-text-primary"
+        : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
+    )}>
+      <div className={cn(
+        "sticky top-0 backdrop-blur-md z-40 border-b",
+        isDark
+          ? "bg-dark-bg-secondary/80 border-dark-border-primary"
+          : "bg-white/80 border-[#e0d6f0]"
+      )}>
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-[#8a7ab5]" />
+            <ArrowLeft className={cn(
+              "w-6 h-6",
+              isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+            )} />
           </button>
-          <h1 className="font-bold text-lg text-[#5a4b7a]">时光漂流瓶</h1>
+          <h1 className={cn(
+            "font-bold text-lg",
+            isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+          )}>时光漂流瓶</h1>
           <div className="w-10"></div>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 pt-6">
         <div className="mb-8 text-center">
-          <MessageSquare className="w-16 h-16 text-candy-blue mx-auto mb-4" />
-          <h2 className="font-bold text-xl text-[#5a4b7a] mb-2">时光漂流瓶</h2>
-          <p className="text-sm text-[#a093c2] mb-4">
+          <MessageSquare className={cn(
+            "w-16 h-16 mx-auto mb-4",
+            isDark ? "text-dark-accent-secondary" : "text-candy-blue"
+          )} />
+          <h2 className={cn(
+            "font-bold text-xl mb-2",
+            isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+          )}>时光漂流瓶</h2>
+          <p className={cn(
+            "text-sm mb-4",
+            isDark ? "text-dark-text-secondary" : "text-[#a093c2]"
+          )}>
             每一个漂流瓶都承载着一段校园回忆，快来开启你的奇遇吧
           </p>
-          <p className="text-xs text-[#a093c2]">
+          <p className={cn(
+            "text-xs",
+            isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+          )}>
             每日最多可接收5个漂流瓶，抛出数量不限
           </p>
         </div>
 
         {!currentBottle ? (
-          <div className="text-center py-12 bg-gradient-to-r from-candy-blue/10 to-candy-teal/10 rounded-2xl border border-candy-blue/20">
-            <MessageSquare className="w-20 h-20 text-candy-blue/40 mx-auto mb-4" />
-            <p className="text-[#a093c2] mb-6">还没有漂流瓶</p>
+          <div className={cn(
+            "text-center py-12 rounded-2xl border",
+            isDark
+              ? "bg-dark-bg-secondary border-dark-border-primary"
+              : "bg-gradient-to-r from-candy-blue/10 to-candy-teal/10 border border-candy-blue/20"
+          )}>
+            <MessageSquare className={cn(
+              "w-20 h-20 mx-auto mb-4",
+              isDark ? "text-dark-text-tertiary" : "text-candy-blue/40"
+            )} />
+            <p className={cn(
+              "mb-6",
+              isDark ? "text-dark-text-secondary" : "text-[#a093c2]"
+            )}>还没有漂流瓶</p>
             <button 
               onClick={handleGetBottle}
-              className="px-12 py-5 bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] text-white rounded-2xl font-bold text-xl shadow-xl shadow-indigo-500/30 hover:opacity-90 transition-all active:scale-95"
+              className={cn(
+                "px-12 py-5 text-white rounded-2xl font-bold text-xl shadow-xl shadow-indigo-500/30 hover:opacity-90 transition-all active:scale-95",
+                isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-[#4F46E5] to-[#06B6D4]"
+              )}
             >
               捞一个漂流瓶 🎣
             </button>
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl p-6 border border-[#e0d6f0] shadow-sm">
+            <div className={cn(
+              "rounded-2xl p-6 border shadow-sm",
+              isDark
+                ? "bg-dark-bg-secondary border-dark-border-primary"
+                : "bg-white border-[#e0d6f0]"
+            )}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-candy-blue" />
-                  <span className="font-medium text-[#5a4b7a]">漂流瓶</span>
+                  <MessageSquare className={cn(
+                    "w-5 h-5",
+                    isDark ? "text-dark-accent-secondary" : "text-candy-blue"
+                  )} />
+                  <span className={cn(
+                    "font-medium",
+                    isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+                  )}>漂流瓶</span>
                 </div>
-                <span className="text-xs bg-candy-yellow/20 text-candy-yellow px-2 py-1 rounded-full">
+                <span className={cn(
+                  "text-xs px-2 py-1 rounded-full",
+                  isDark
+                    ? "bg-dark-accent-secondary/20 text-dark-accent-secondary"
+                    : "bg-candy-yellow/20 text-candy-yellow"
+                )}>
                   来自陌生人的回忆
                 </span>
               </div>
               
               <div className="mb-4">
-                <p className="text-[#5a4b7a] leading-relaxed whitespace-pre-wrap">
+                <p className={cn(
+                  "leading-relaxed whitespace-pre-wrap",
+                  isDark ? "text-dark-text-secondary" : "text-[#5a4b7a]"
+                )}>
                   {currentBottle.content}
                 </p>
               </div>
@@ -138,17 +201,30 @@ export default function DriftBottle() {
                 </div>
               )}
               
-              <div className="flex items-center justify-between pt-4 border-t border-[#e0d6f0]">
+              <div className={cn(
+                "flex items-center justify-between pt-4 border-t",
+                isDark ? "border-dark-border-primary" : "border-[#e0d6f0]"
+              )}>
                 <button
                   onClick={() => setShowMessage(true)}
-                  className="flex items-center gap-2 text-[#8a7ab5] hover:text-candy-pink transition-colors"
+                  className={cn(
+                    "flex items-center gap-2 transition-colors",
+                    isDark
+                      ? "text-dark-text-secondary hover:text-dark-accent-secondary"
+                      : "text-[#8a7ab5] hover:text-candy-pink"
+                  )}
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span className="text-sm">留言</span>
                 </button>
                 <button
                   onClick={handleThrowBottle}
-                  className="flex items-center gap-2 text-[#8a7ab5] hover:text-candy-blue transition-colors"
+                  className={cn(
+                    "flex items-center gap-2 transition-colors",
+                    isDark
+                      ? "text-dark-text-secondary hover:text-dark-accent-secondary"
+                      : "text-[#8a7ab5] hover:text-candy-blue"
+                  )}
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span className="text-sm">重新抛出</span>
@@ -157,25 +233,46 @@ export default function DriftBottle() {
             </div>
 
             {showMessage && (
-              <div className="bg-white rounded-2xl p-4 border border-[#e0d6f0]">
-                <h3 className="font-medium text-[#5a4b7a] mb-3">给陌生人留言</h3>
+              <div className={cn(
+                "rounded-2xl p-4 border",
+                isDark
+                  ? "bg-dark-bg-secondary border-dark-border-primary"
+                  : "bg-white border-[#e0d6f0]"
+              )}>
+                <h3 className={cn(
+                  "font-medium mb-3",
+                  isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+                )}>给陌生人留言</h3>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="写下你想对陌生人说的话..."
-                  className="w-full p-3 border border-[#e0d6f0] rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:ring-candy-pink focus:border-candy-pink"
+                  className={cn(
+                    "w-full p-3 border rounded-xl min-h-[100px] mb-3 focus:outline-none focus:ring-2 focus:border-transparent transition-all",
+                    isDark
+                      ? "bg-dark-bg-tertiary border-dark-border-primary focus:ring-dark-accent-secondary"
+                      : "border-[#e0d6f0] focus:ring-candy-pink focus:border-candy-pink"
+                  )}
                 />
                 <div className="flex items-center justify-end gap-3">
                   <button
                     onClick={() => setShowMessage(false)}
-                    className="px-4 py-2 text-[#8a7ab5] hover:text-[#5a4b7a] transition-colors"
+                    className={cn(
+                      "px-4 py-2 transition-colors",
+                      isDark
+                        ? "text-dark-text-secondary hover:text-dark-text-primary"
+                        : "text-[#8a7ab5] hover:text-[#5a4b7a]"
+                    )}
                   >
                     取消
                   </button>
                   <button
                     onClick={handleSendMessage}
                     disabled={!message.trim()}
-                    className="px-6 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={cn(
+                      "px-6 py-2 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed",
+                      isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-candy-pink to-candy-purple"
+                    )}
                   >
                     发送
                   </button>
@@ -185,19 +282,36 @@ export default function DriftBottle() {
 
             <button 
               onClick={handleGetBottle}
-              className="w-full py-5 bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] text-white rounded-2xl font-bold text-xl shadow-xl shadow-indigo-500/30 hover:opacity-90 transition-all active:scale-95"
+              className={cn(
+                "w-full py-5 text-white rounded-2xl font-bold text-xl shadow-xl shadow-indigo-500/30 hover:opacity-90 transition-all active:scale-95",
+                isDark ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary" : "bg-gradient-to-r from-[#4F46E5] to-[#06B6D4]"
+              )}
             >
               再捞一个漂流瓶 🎣
             </button>
           </div>
         )}
 
-        <div className="bg-gradient-to-r from-candy-blue/10 to-candy-teal/10 rounded-2xl p-4 border border-candy-blue/20 mt-8">
-          <h3 className="font-medium text-[#5a4b7a] mb-2 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-candy-blue" />
+        <div className={cn(
+          "rounded-2xl p-4 border mt-8",
+          isDark
+            ? "bg-dark-bg-secondary border-dark-border-primary"
+            : "bg-gradient-to-r from-candy-blue/10 to-candy-teal/10 border border-candy-blue/20"
+        )}>
+          <h3 className={cn(
+            "font-medium mb-2 flex items-center gap-2",
+            isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
+          )}>
+            <MessageSquare className={cn(
+              "w-4 h-4",
+              isDark ? "text-dark-accent-secondary" : "text-candy-blue"
+            )} />
             漂流瓶规则
           </h3>
-          <ul className="text-sm text-[#a093c2] space-y-1">
+          <ul className={cn(
+            "text-sm space-y-1",
+            isDark ? "text-dark-text-secondary" : "text-[#a093c2]"
+          )}>
             <li>• 只有公开胶囊可以设置为漂流瓶</li>
             <li>• 每日最多可接收5个漂流瓶</li>
             <li>• 收到的漂流瓶可以留言或重新抛出</li>

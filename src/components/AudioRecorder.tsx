@@ -10,9 +10,10 @@ function cn(...inputs: any[]) {
 interface AudioRecorderProps {
   audioUrl: string | null;
   onChange: (audioUrl: string | null) => void;
+  isDark?: boolean;
 }
 
-export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps) {
+export default function AudioRecorder({ audioUrl, onChange, isDark = false }: AudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -174,7 +175,12 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
 
   if (audioUrl) {
     return (
-      <div className="bg-[#f5f3f7] rounded-2xl p-4 border border-[#e0d6f0]">
+      <div className={cn(
+        "rounded-2xl p-4 border",
+        isDark
+          ? "bg-dark-bg-secondary border-dark-border-secondary"
+          : "bg-[#f5f3f7] border-[#e0d6f0]"
+      )}>
         <div className="flex items-center gap-3 mb-4">
           <button
             type="button"
@@ -192,26 +198,43 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
-                className="flex-1 h-2 bg-[#e0d6f0] rounded-full appearance-none cursor-pointer"
+                className={cn(
+                  "flex-1 h-2 rounded-full appearance-none cursor-pointer",
+                  isDark ? "bg-dark-border-secondary" : "bg-[#e0d6f0]"
+                )}
                 style={{
-                  background: `linear-gradient(to right, #c8b6e2 0%, #c8b6e2 ${(currentTime / (duration || 1)) * 100}%, #e0d6f0 ${(currentTime / (duration || 1)) * 100}%, #e0d6f0 100%)`
+                  background: `linear-gradient(to right, #c8b6e2 0%, #c8b6e2 ${(currentTime / (duration || 1)) * 100}%, ${isDark ? '#334155' : '#e0d6f0'} ${(currentTime / (duration || 1)) * 100}%, ${isDark ? '#334155' : '#e0d6f0'} 100%)`
                 }}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-[#a093c2] font-medium">{formatTime(currentTime)}</span>
-              <span className="text-xs text-[#a093c2] font-medium">{formatTime(duration)}</span>
+              <span className={cn(
+                "text-xs font-medium",
+                isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+              )}>{formatTime(currentTime)}</span>
+              <span className={cn(
+                "text-xs font-medium",
+                isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+              )}>{formatTime(duration)}</span>
             </div>
           </div>
         </div>
         
         <div className="flex items-center justify-between">
-          <p className="text-xs text-[#8a7ab5]">语音留言</p>
+          <p className={cn(
+            "text-xs",
+            isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
+          )}>语音留言</p>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={toggleMute}
-              className="p-1 text-[#8a7ab5] hover:text-[#5a4b7a] transition-colors"
+              className={cn(
+                "p-1 transition-colors",
+                isDark
+                  ? "text-dark-text-tertiary hover:text-dark-text-secondary"
+                  : "text-[#8a7ab5] hover:text-[#5a4b7a]"
+              )}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
@@ -222,15 +245,23 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
               step="0.1"
               value={isMuted ? 0 : volume}
               onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-              className="w-24 h-2 bg-[#e0d6f0] rounded-full appearance-none cursor-pointer"
+              className={cn(
+                "w-24 h-2 rounded-full appearance-none cursor-pointer",
+                isDark ? "bg-dark-border-secondary" : "bg-[#e0d6f0]"
+              )}
               style={{
-                background: `linear-gradient(to right, #c8b6e2 0%, #c8b6e2 ${(isMuted ? 0 : volume) * 100}%, #e0d6f0 ${(isMuted ? 0 : volume) * 100}%, #e0d6f0 100%)`
+                background: `linear-gradient(to right, #c8b6e2 0%, #c8b6e2 ${(isMuted ? 0 : volume) * 100}%, ${isDark ? '#334155' : '#e0d6f0'} ${(isMuted ? 0 : volume) * 100}%, ${isDark ? '#334155' : '#e0d6f0'} 100%)`
               }}
             />
             <button
               type="button"
               onClick={deleteAudio}
-              className="p-2 text-[#a093c2] hover:text-[#e57373] transition-colors"
+              className={cn(
+                "p-2 transition-colors",
+                isDark
+                  ? "text-dark-text-tertiary hover:text-[#e57373]"
+                  : "text-[#a093c2] hover:text-[#e57373]"
+              )}
             >
               <Trash2 className="w-5 h-5" />
             </button>
@@ -255,14 +286,20 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
         {isRecording ? (
           <Square className="w-8 h-8 text-white fill-current" />
         ) : (
-          <Mic className="w-8 h-8 text-[#5a4b7a]" />
+          <Mic className={cn(
+            "w-8 h-8",
+            isDark ? "text-dark-text-secondary" : "text-[#5a4b7a]"
+          )} />
         )}
       </button>
 
       {isRecording && (
         <div className="text-center">
           <p className="text-2xl font-bold text-[#e57373] font-mono">{formatTime(recordingTime)}</p>
-          <p className="text-xs text-[#a093c2] mt-1">正在录音...</p>
+          <p className={cn(
+            "text-xs mt-1",
+            isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+          )}>正在录音...</p>
         </div>
       )}
 
@@ -271,7 +308,10 @@ export default function AudioRecorder({ audioUrl, onChange }: AudioRecorderProps
           {micError && (
             <p className="text-sm text-[#e57373] mb-2">{micError}</p>
           )}
-          <p className="text-sm text-[#a093c2]">点击麦克风录制语音</p>
+          <p className={cn(
+            "text-sm",
+            isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+          )}>点击麦克风录制语音</p>
         </>
       )}
     </div>

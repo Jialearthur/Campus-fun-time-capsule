@@ -11,9 +11,10 @@ interface ImageUploaderProps {
   images: string[];
   onChange: (images: string[]) => void;
   maxImages?: number;
+  isDark?: boolean;
 }
 
-export default function ImageUploader({ images, onChange, maxImages = 3 }: ImageUploaderProps) {
+export default function ImageUploader({ images, onChange, maxImages = 3, isDark = false }: ImageUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -138,22 +139,36 @@ export default function ImageUploader({ images, onChange, maxImages = 3 }: Image
     <div className="space-y-4">
       {/* 上传成功提示 */}
       {uploadSuccess && (
-        <div className="flex items-center gap-2 p-3 bg-[#e8f5e8] border border-[#c8e6c9] rounded-xl">
+        <div className={cn(
+          "flex items-center gap-2 p-3 border rounded-xl",
+          isDark
+            ? "bg-dark-success-bg border-dark-success-border"
+            : "bg-[#e8f5e8] border-[#c8e6c9]"
+        )}>
           <CheckCircle2 className="w-5 h-5 text-[#4caf50]" />
-          <p className="text-sm text-[#2e7d32]">上传成功！</p>
+          <p className={cn(
+            "text-sm",
+            isDark ? "text-dark-success-text" : "text-[#2e7d32]"
+          )}>上传成功！</p>
         </div>
       )}
 
       {/* 上传进度条 */}
       {uploading && (
         <div className="space-y-2">
-          <div className="h-2 bg-[#e0d6f0] rounded-full overflow-hidden">
+          <div className={cn(
+            "h-2 rounded-full overflow-hidden",
+            isDark ? "bg-dark-border-secondary" : "bg-[#e0d6f0]"
+          )}>
             <div 
               className="h-full bg-[#c8b6e2] transition-all duration-300" 
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
-          <p className="text-xs text-[#8a7ab5]">上传中... {uploadProgress}%</p>
+          <p className={cn(
+            "text-xs",
+            isDark ? "text-dark-text-tertiary" : "text-[#8a7ab5]"
+          )}>上传中... {uploadProgress}%</p>
         </div>
       )}
 
@@ -182,14 +197,26 @@ export default function ImageUploader({ images, onChange, maxImages = 3 }: Image
             className={cn(
               "aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all",
               uploading 
-                ? "border-[#e0d6f0] bg-[#f5f3f7] cursor-not-allowed"
+                ? isDark
+                  ? "border-dark-border-secondary bg-dark-bg-tertiary cursor-not-allowed"
+                  : "border-[#e0d6f0] bg-[#f5f3f7] cursor-not-allowed"
                 : isDragging 
-                  ? "border-[#c8b6e2] bg-[#f5f3f7]" 
-                  : "border-[#e0d6f0] hover:border-[#c8b6e2] hover:bg-[#f5f3f7]/50"
+                  ? isDark
+                    ? "border-[#c8b6e2] bg-dark-bg-tertiary"
+                    : "border-[#c8b6e2] bg-[#f5f3f7]" 
+                  : isDark
+                    ? "border-dark-border-secondary hover:border-[#c8b6e2] hover:bg-dark-bg-tertiary/50"
+                    : "border-[#e0d6f0] hover:border-[#c8b6e2] hover:bg-[#f5f3f7]/50"
             )}
           >
-            <ImagePlus className="w-8 h-8 text-[#a093c2]" />
-            <span className="text-xs text-[#a093c2]">添加图片</span>
+            <ImagePlus className={cn(
+              "w-8 h-8",
+              isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+            )} />
+            <span className={cn(
+              "text-xs",
+              isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+            )}>添加图片</span>
           </button>
         )}
       </div>
@@ -203,7 +230,10 @@ export default function ImageUploader({ images, onChange, maxImages = 3 }: Image
         onChange={handleFileSelect}
       />
       
-      <p className="text-xs text-[#a093c2]">
+      <p className={cn(
+        "text-xs",
+        isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
+      )}>
         最多上传 {maxImages} 张图片，单张不超过 5MB
       </p>
     </div>
