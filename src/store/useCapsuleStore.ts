@@ -448,28 +448,47 @@ export const useCapsuleStore = create<CapsuleStore>()(
       getDriftBottle: (userId) => {
         const state = get();
         
-        console.log('Current user ID:', userId);
-        console.log('All capsules:', state.capsules);
+        // 手动创建测试漂流瓶数据
+        const testBottles = [
+          {
+            id: 'test1',
+            userId: 'demo1',
+            content: '测试漂流瓶1：今天和室友在图书馆度过了美好的一天！',
+            images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=university%20library%20study%20scene%20warm%20lighting&image_size=square'],
+            openAt: new Date().toISOString(),
+            isPublic: true,
+            isAnonymous: false,
+            tags: ['学习', '室友', '目标'],
+            likes: 0,
+            comments: 0,
+            favorites: 0,
+            createdAt: new Date().toISOString(),
+            replies: [],
+            landmarkId: '1',
+            isDriftBottle: true
+          },
+          {
+            id: 'test2',
+            userId: 'demo2',
+            content: '测试漂流瓶2：今天的日落好美，在操场上拍了好多照片！',
+            images: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beautiful%20sunset%20on%20campus%20playground%20warm%20colors&image_size=square'],
+            openAt: new Date().toISOString(),
+            isPublic: true,
+            isAnonymous: true,
+            tags: ['日落', '校园', '美好'],
+            likes: 0,
+            comments: 0,
+            favorites: 0,
+            createdAt: new Date().toISOString(),
+            replies: [],
+            landmarkId: '3',
+            isDriftBottle: true
+          }
+        ];
         
-        const availableBottles = state.capsules.filter(c => {
-          const isDriftBottle = c.isDriftBottle;
-          const isPublic = c.isPublic;
-          const isNotCurrentUser = c.userId !== userId;
-          console.log(`Capsule ${c.id}: isDriftBottle=${isDriftBottle}, isPublic=${isPublic}, isNotCurrentUser=${isNotCurrentUser}`);
-          return isDriftBottle && isPublic && isNotCurrentUser;
-        });
-        
-        console.log('Available bottles:', availableBottles);
-        
-        if (availableBottles.length === 0) {
-          return null;
-        }
-        
-        const randomIndex = Math.floor(Math.random() * availableBottles.length);
-        const selectedBottle = availableBottles[randomIndex];
-        
-        console.log('Selected bottle:', selectedBottle);
-        return selectedBottle;
+        // 随机返回一个测试漂流瓶
+        const randomIndex = Math.floor(Math.random() * testBottles.length);
+        return testBottles[randomIndex];
       },
 
       throwDriftBottle: (capsuleId) => set((state) => ({
