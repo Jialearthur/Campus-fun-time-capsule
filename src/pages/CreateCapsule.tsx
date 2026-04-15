@@ -369,13 +369,16 @@ export default function CreateCapsule() {
         { id: 7 as Step, title: '隐私设置', subtitle: '选择可见性和匿名选项' }
       ];
 
+  console.log('steps.length:', steps.length, 'isGroup:', isGroup);
+
   const handleNext = () => {
     console.log('handleNext called, currentStep:', currentStep, 'steps.length:', steps.length, 'isGroup:', isGroup);
     if (currentStep < steps.length) {
-      const nextStep = currentStep + 1 as Step;
-      console.log('Setting nextStep:', nextStep);
-      setCurrentStep(nextStep);
-      console.log('After setCurrentStep, currentStep:', currentStep);
+      setCurrentStep((prevStep) => {
+        const nextStep = prevStep + 1 as Step;
+        console.log('Setting nextStep:', nextStep);
+        return nextStep;
+      });
     } else {
       console.log('currentStep is not less than steps.length');
     }
