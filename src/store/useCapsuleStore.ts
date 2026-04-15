@@ -710,9 +710,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
       }
     }),
     {
-      name: 'capsule-storage',
-      // 禁用持久化，每次刷新都使用初始数据（用于测试）
-      enabled: false
+      name: 'capsule-storage'
     }
   )
 );

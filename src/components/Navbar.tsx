@@ -27,7 +27,6 @@ export default function Navbar() {
       path: '/create',
       label: '创建',
       icon: PlusSquare,
-      isPrimary: true,
     },
     {
       path: '/drift-bottle',
@@ -38,6 +37,12 @@ export default function Navbar() {
       path: '/achievements',
       label: '成就',
       icon: Award,
+    },
+    {
+      path: '/theme',
+      label: '主题',
+      icon: isDark ? Sun : Moon,
+      isThemeToggle: true,
     },
   ];
 
@@ -54,54 +59,35 @@ export default function Navbar() {
           const Icon = item.icon;
 
           return (
-            <Link
+            <button
               key={item.path}
-              to={item.path}
+              onClick={() => {
+                if (item.isThemeToggle) {
+                  toggleTheme();
+                } else {
+                  window.location.href = item.path;
+                }
+              }}
               className={cn(
-                'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ease-apple',
+                'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 ease-apple',
                 isActive 
                   ? (isDark ? 'text-dark-accent-secondary' : 'text-apple-purple')
                   : (isDark ? 'text-dark-text-tertiary hover:text-dark-text-secondary' : 'text-apple-gray-400 hover:text-apple-gray-600')
               )}
             >
-              {item.isPrimary ? (
-                <div className={cn(
-                  "absolute -top-8 rounded-apple-2xl p-4 shadow-apple-lg border-4 animate-bounce-float",
-                  isDark
-                    ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary border-dark-bg-secondary"
-                    : "bg-gradient-to-r from-apple-purple to-apple-blue border-white"
-                )}>
-                  <Icon className="w-7 h-7 text-white" strokeWidth={2.5} />
-                </div>
-              ) : (
-                <div className={cn(
-                  "flex flex-col items-center",
-                  isActive && "scale-110"
-                )}>
-                  <Icon className={cn('w-6 h-6', isActive && 'fill-current')} />
-                  <span className={cn(
-                    "text-xs font-medium mt-1.5",
-                    isActive ? "font-semibold" : ""
-                  )}>{item.label}</span>
-                </div>
-              )}
-            </Link>
+              <div className={cn(
+                "flex flex-col items-center",
+                isActive && "scale-105"
+              )}>
+                <Icon className={cn('w-5.5 h-5.5', isActive && 'fill-current')} />
+                <span className={cn(
+                  "text-xs font-medium mt-1.5",
+                  isActive ? "font-semibold" : ""
+                )}>{item.label}</span>
+              </div>
+            </button>
           );
         })}
-        
-        {/* 主题切换按钮 */}
-        <button
-          onClick={toggleTheme}
-          className={cn(
-            'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ease-apple',
-            isDark ? 'text-dark-text-tertiary hover:text-dark-text-secondary' : 'text-apple-gray-400 hover:text-apple-gray-600'
-          )}
-        >
-          {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
-          <span className={cn(
-            "text-xs font-medium mt-1.5"
-          )}>主题</span>
-        </button>
       </div>
     </nav>
   );

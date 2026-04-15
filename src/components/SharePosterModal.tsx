@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { X, Download, Share2, CheckCircle2 } from 'lucide-react';
 import { Capsule } from '../types';
 import { useCapsuleStore } from '../store/useCapsuleStore';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: any[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface SharePosterModalProps {
   isOpen: boolean;

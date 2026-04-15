@@ -23,25 +23,28 @@ export default function Home() {
     )}>
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-16 animate-fade-up">
+        <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className={cn(
-              "w-20 h-20 rounded-apple-2xl flex items-center justify-center shadow-apple-lg animate-bounce-float",
+              "w-16 h-16 rounded-apple-xl flex items-center justify-center shadow-sm",
               isDark 
-                ? "bg-gradient-to-br from-dark-accent-primary to-dark-accent-secondary"
-                : "bg-gradient-to-br from-apple-purple to-apple-blue"
+                ? "bg-dark-bg-tertiary"
+                : "bg-white"
             )}>
-              <Sparkles className="w-10 h-10 text-white" />
+              <Sparkles className={cn(
+                "w-8 h-8",
+                isDark ? "text-dark-accent-secondary" : "text-apple-purple"
+              )} />
             </div>
           </div>
           <h1 className={cn(
-            "text-4xl md:text-5xl font-bold mb-4 tracking-tight",
+            "text-3xl md:text-4xl font-semibold mb-4 tracking-tight",
             isDark ? "text-dark-text-primary" : "text-apple-gray-800"
           )}>
             校园时光胶囊
           </h1>
           <p className={cn(
-            "text-lg md:text-xl font-light leading-relaxed mb-10 max-w-2xl mx-auto",
+            "text-base md:text-lg font-light leading-relaxed mb-8 max-w-2xl mx-auto",
             isDark ? "text-dark-text-secondary" : "text-apple-gray-500"
           )}>
             记录校园时光，珍藏青春回忆
@@ -50,7 +53,7 @@ export default function Home() {
           {/* Search Field */}
           <div className="relative max-w-md mx-auto">
             <div className={cn(
-              "absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none",
+              "absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none",
               isDark ? "text-dark-text-tertiary" : "text-apple-gray-400"
             )}>
               <Search className="w-5 h-5" />
@@ -61,10 +64,10 @@ export default function Home() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="搜索昵称、标签..."
               className={cn(
-                "w-full pl-14 pr-6 py-5 rounded-apple-xl border-0 focus:ring-4 transition-all duration-300 ease-apple shadow-apple text-lg",
+                "w-full pl-12 pr-4 py-3.5 rounded-apple-lg border transition-all duration-300 ease-apple text-base",
                 isDark
-                  ? "bg-dark-bg-secondary text-dark-text-primary placeholder-dark-text-tertiary focus:ring-dark-accent-primary/30"
-                  : "bg-white text-apple-gray-800 placeholder-apple-gray-400 focus:ring-apple-purple/20 focus:outline-none"
+                  ? "bg-dark-bg-secondary text-dark-text-primary placeholder-dark-text-tertiary border-dark-border-primary focus:border-dark-accent-primary"
+                  : "bg-white text-apple-gray-800 placeholder-apple-gray-400 border-apple-gray-200 focus:border-apple-purple focus:outline-none"
               )}
             />
           </div>
@@ -72,61 +75,67 @@ export default function Home() {
 
         {/* Feature Grid */}
         <div className={cn(
-          "grid gap-6 mb-16",
+          "grid gap-4 mb-16",
           "sm:grid-cols-2",
           "lg:grid-cols-3"
         )}>
           <FeatureButton
-            icon={<Plus className="w-8 h-8 text-white" />}
+            icon={<Plus className="w-6 h-6" />}
             title="创建胶囊"
             description="记录此刻的心情和回忆"
             onClick={() => navigate('/create')}
-            gradient={isDark ? "from-dark-accent-primary to-dark-accent-secondary" : "from-apple-purple to-apple-blue"}
+            color={isDark ? "text-dark-accent-secondary" : "text-apple-purple"}
+            bgColor={isDark ? "bg-dark-bg-tertiary/50" : "bg-white"}
             isDark={isDark}
           />
           
           <FeatureButton
-            icon={<Users className="w-8 h-8 text-white" />}
+            icon={<Users className="w-6 h-6" />}
             title="胶囊广场"
             description="发现他人的时光故事"
             onClick={() => navigate('/square')}
-            gradient={isDark ? "from-apple-teal to-dark-accent-primary" : "from-apple-teal to-apple-indigo"}
+            color={isDark ? "text-dark-accent-primary" : "text-apple-blue"}
+            bgColor={isDark ? "bg-dark-bg-tertiary/50" : "bg-white"}
             isDark={isDark}
           />
           
           <FeatureButton
-            icon={<BookOpen className="w-8 h-8 text-white" />}
+            icon={<BookOpen className="w-6 h-6" />}
             title="我的胶囊"
             description="查看我的时光收藏"
             onClick={() => navigate('/my')}
-            gradient={isDark ? "from-apple-green to-apple-teal" : "from-apple-green to-apple-teal"}
+            color={isDark ? "text-apple-green" : "text-apple-green"}
+            bgColor={isDark ? "bg-dark-bg-tertiary/50" : "bg-white"}
             isDark={isDark}
           />
           
           <FeatureButton
-            icon={<MapPin className="w-8 h-8 text-white" />}
+            icon={<MapPin className="w-6 h-6" />}
             title="校园地图"
             description="探索校园里的时光胶囊"
             onClick={() => navigate('/campus-map')}
-            gradient={isDark ? "from-apple-orange to-apple-pink" : "from-apple-orange to-apple-pink"}
+            color={isDark ? "text-apple-orange" : "text-apple-orange"}
+            bgColor={isDark ? "bg-dark-bg-tertiary/50" : "bg-white"}
             isDark={isDark}
           />
           
           <FeatureButton
-            icon={<BarChart3 className="w-8 h-8 text-white" />}
+            icon={<BarChart3 className="w-6 h-6" />}
             title="数据统计"
             description="查看胶囊数据和互动情况"
             onClick={() => navigate('/dashboard')}
-            gradient={isDark ? "from-dark-accent-tertiary to-apple-orange" : "from-apple-indigo to-apple-purple"}
+            color={isDark ? "text-dark-accent-tertiary" : "text-apple-indigo"}
+            bgColor={isDark ? "bg-dark-bg-tertiary/50" : "bg-white"}
             isDark={isDark}
           />
           
           <FeatureButton
-            icon={<MessageSquare className="w-8 h-8 text-white" />}
+            icon={<MessageSquare className="w-6 h-6" />}
             title="漂流瓶"
             description="随机收到他人的时光胶囊"
             onClick={() => navigate('/drift-bottle')}
-            gradient={isDark ? "from-apple-blue to-dark-accent-primary" : "from-apple-blue to-apple-indigo"}
+            color={isDark ? "text-apple-teal" : "text-apple-teal"}
+            bgColor={isDark ? "bg-dark-bg-tertiary/50" : "bg-white"}
             isDark={isDark}
           />
         </div>
@@ -151,43 +160,45 @@ function FeatureButton({
   title,
   description,
   onClick,
-  gradient,
+  color,
+  bgColor,
   isDark,
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
   onClick: () => void;
-  gradient: string;
+  color: string;
+  bgColor: string;
   isDark: boolean;
 }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "group w-full p-6 rounded-apple-2xl transition-all duration-300 ease-apple hover:scale-[1.02] active:scale-[0.98]",
-        isDark
-          ? "bg-dark-bg-secondary border border-dark-border-primary shadow-apple-dark"
-          : "bg-white border border-apple-gray-200 shadow-apple hover:shadow-apple-lg"
+        "group w-full p-5 rounded-apple-lg transition-all duration-200 ease-apple hover:shadow-sm",
+        bgColor,
+        isDark ? "border border-dark-border-primary" : "border border-apple-gray-200"
       )}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3">
         <div className={cn(
-          "shrink-0 flex items-center justify-center shadow-apple rounded-apple-xl bg-gradient-to-br",
-          gradient,
-          "w-16 h-16"
+          "shrink-0 flex items-center justify-center rounded-apple",
+          isDark ? "bg-dark-bg-tertiary/70" : "bg-apple-gray-100",
+          "w-12 h-12",
+          color
         )}>
           {icon}
         </div>
         <div className="flex-1">
           <h3 className={cn(
-            "font-semibold mb-1 text-xl",
+            "font-medium mb-1 text-base",
             isDark ? "text-dark-text-primary" : "text-apple-gray-800"
           )}>
             {title}
           </h3>
           <p className={cn(
-            "font-light text-base",
+            "font-light text-sm",
             isDark ? "text-dark-text-secondary" : "text-apple-gray-500"
           )}>
             {description}

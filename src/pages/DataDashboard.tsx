@@ -152,7 +152,7 @@ export default function DataDashboard() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `dashboard-export-${formatDate(new Date())}.json`;
+    a.download = `dashboard-export-${formatDate(new Date().toISOString())}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

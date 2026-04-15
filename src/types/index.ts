@@ -176,6 +176,7 @@ export interface CapsuleStore {
   setCapsuleAsDriftBottle: (capsuleId: string) => void;
   getDriftBottle: (userId: string) => Capsule | null;
   throwDriftBottle: (capsuleId: string) => void;
+  resetDriftBottleReceives: () => void;
   // 成就系统功能
   getAchievements: (userId: string) => Achievement[];
   unlockAchievement: (userId: string, achievementId: string) => void;
