@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useCapsuleStore } from '../store/useCapsuleStore';
 import CapsuleCard from '../components/CapsuleCard';
-import { Sparkles, Clock, TrendingUp, RefreshCw, Tag, Gift } from 'lucide-react';
+import { Sparkles, Clock, TrendingUp, RefreshCw, Tag, Gift, Star } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -91,6 +91,50 @@ export default function CapsuleSquare() {
             发现他人的美好回忆
           </p>
         </div>
+
+        {/* 限定胶囊板块 */}
+        {(() => {
+          const limitedCapsules = capsules.filter(capsule => capsule.isLimitedEdition);
+          if (limitedCapsules.length > 0) {
+            return (
+              <div className="mb-10">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="font-bold text-gummy-dark flex items-center gap-2 font-title">
+                    <Star className="w-5 h-5 text-gummy-yellow" />
+                    限定胶囊
+                  </h2>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {limitedCapsules.slice(0, 4).map((capsule, index) => (
+                    <div key={capsule.id} className="bg-white rounded-2xl p-4 border-2 border-gummy-yellow/50 shadow-gummy hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.03] gummy-card animate-bounce-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                      <div className="relative">
+                        <div className="aspect-video rounded-xl overflow-hidden mb-3">
+                          <img 
+                            src={capsule.images[0]} 
+                            alt={capsule.content.substring(0, 20)}
+                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                          />
+                        </div>
+                        <div className="absolute top-2 right-2 bg-gradient-to-r from-gummy-yellow to-gummy-orange text-white text-xs px-2 py-1 rounded-full font-bold">
+                          限定
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gummy-dark mb-2 line-clamp-2">
+                          {capsule.content.substring(0, 30)}...
+                        </p>
+                        <p className="text-xs text-gummy-orange font-medium">
+                          {Math.ceil((new Date(capsule.openAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))}天后开启
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
 
         {/* 时光盲盒板块 */}
         <div className="mb-10">

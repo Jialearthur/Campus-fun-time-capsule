@@ -26,7 +26,7 @@ import {
 import { validateContent, validateOpenDate } from '../utils/validation';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { templates, campusTags, Template } from '../utils/templates';
+import { templates, campusTags, Template, getAvailableLimitedTemplates } from '../utils/templates';
 import {
   generateAITextTemplates,
   getStyleIcon,
@@ -270,7 +270,9 @@ export default function CreateCapsule() {
       password: password || undefined,
       sharedWith: sharedWith.length > 0 && !isGroup ? sharedWith : undefined,
       blindBoxDescription: isPublic && blindBoxDescription ? blindBoxDescription : undefined,
-      landmarkId: selectedLandmarkId || undefined
+      landmarkId: selectedLandmarkId || undefined,
+      isLimitedEdition: selectedTemplate?.isLimited || false,
+      limitedEditionTheme: selectedTemplate?.limitedBadge || undefined
     };
 
     if (isGroup) {
@@ -635,8 +637,51 @@ export default function CreateCapsule() {
 
           {currentStep === 2 && !isGroup && (
             <Section title="选择模板" subtitle="快速创建专属胶囊">
+              {(() => {
+                const availableLimitedTemplates = getAvailableLimitedTemplates();
+                if (availableLimitedTemplates.length > 0) {
+                  return (
+                    <div className="mb-6">
+                      <h3 className="font-medium text-[#5a4b7a] mb-3 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-candy-yellow" />
+                        限定模板
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3 mb-6">
+                        {availableLimitedTemplates.map((template) => (
+                          <button
+                            key={template.id}
+                            type="button"
+                            onClick={() => handleTemplateSelect(template)}
+                            className={cn(
+                              "p-3 rounded-xl border-2 transition-all relative",
+                              selectedTemplate?.id === template.id
+                                ? "border-candy-yellow bg-candy-yellow/10"
+                                : "border-[#e0d6f0] bg-white hover:border-candy-yellow"
+                            )}
+                          >
+                            <div className="absolute top-2 right-2 bg-gradient-to-r from-candy-yellow to-candy-orange text-white text-xs px-2 py-1 rounded-full font-bold">
+                              {template.limitedBadge}
+                            </div>
+                            <div className="aspect-video rounded-lg overflow-hidden mb-2">
+                              <img 
+                                src={template.backgroundImage} 
+                                alt={template.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <h3 className="font-medium text-sm text-[#5a4b7a]">{template.name}</h3>
+                            <p className="text-xs text-[#a093c2]">{template.description}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+              <h3 className="font-medium text-[#5a4b7a] mb-3">常规模板</h3>
               <div className="grid grid-cols-2 gap-3">
-                {templates.map((template) => (
+                {templates.filter(t => !t.isLimited).map((template) => (
                   <button
                     key={template.id}
                     type="button"
