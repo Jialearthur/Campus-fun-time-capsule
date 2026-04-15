@@ -58,20 +58,20 @@ export default function Header() {
         : "bg-white/90 border-apple-gray-200"
     )}>
       {/* Logo */}
-      <Link to="/" className="flex items-center gap-2">
+      <Link to="/" className="flex items-center gap-3 flex-shrink-0">
         <div className={cn(
-          "w-9 h-9 rounded-apple flex items-center justify-center",
+          "w-10 h-10 rounded-apple-lg flex items-center justify-center",
           isDark
             ? "bg-dark-bg-tertiary/50"
             : "bg-apple-gray-100"
         )}>
           <Sparkles className={cn(
-            "w-4.5 h-4.5",
+            "w-5 h-5",
             isDark ? "text-dark-accent-secondary/80" : "text-apple-purple/80"
           )} />
         </div>
         <h1 className={cn(
-          "text-lg font-medium tracking-tight",
+          "text-xl font-semibold tracking-tight whitespace-nowrap",
           isDark ? "text-dark-text-primary" : "text-apple-gray-800"
         )}>校园时光胶囊</h1>
       </Link>
