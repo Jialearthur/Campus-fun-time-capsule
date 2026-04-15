@@ -35,82 +35,85 @@ export default function MyCapsules() {
 
   return (
     <div className={cn(
-      "min-h-screen pb-24 transition-colors duration-300",
+      "min-h-screen pb-32 transition-colors duration-500 ease-apple",
       isDark 
-        ? "bg-dark-bg-primary text-dark-text-primary"
-        : "bg-gradient-to-b from-gummy-cream to-gummy-pink/30 text-gummy-dark"
+        ? "bg-dark-bg-primary"
+        : "bg-apple-gray-100"
     )}>
-      <div className="max-w-md mx-auto px-4 pt-8">
+      <div className="max-w-lg mx-auto px-6 pt-10">
         {/* 主题切换按钮 */}
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-8">
           <button
             onClick={toggleTheme}
             className={cn(
-              "p-3 rounded-full transition-colors duration-300",
+              "p-3 rounded-apple-xl transition-all duration-300 ease-apple hover:scale-110",
               isDark
-                ? "bg-dark-bg-secondary text-dark-text-primary hover:bg-dark-bg-tertiary"
-                : "bg-white/80 text-gummy-dark hover:bg-white"
+                ? "bg-dark-bg-secondary text-dark-text-primary hover:bg-dark-bg-tertiary shadow-apple-dark"
+                : "bg-white text-apple-gray-700 hover:bg-apple-gray-50 shadow-apple"
             )}
           >
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
         </div>
 
-        <div className="text-center mb-10">
+        {/* Profile Section */}
+        <div className="text-center mb-12 animate-fade-up">
           <div className={cn(
-            "w-24 h-24 mx-auto mb-5 rounded-full flex items-center justify-center shadow-lg animate-float",
+            "w-28 h-28 mx-auto mb-6 rounded-apple-2xl flex items-center justify-center shadow-apple-lg animate-float",
             isDark
               ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary"
-              : "gummy-gradient shadow-gummy"
+              : "bg-gradient-to-r from-apple-purple to-apple-blue"
           )}>
-            <User className="w-12 h-12 text-white" />
+            <User className="w-14 h-14 text-white" />
           </div>
           <h1 className={cn(
-            "text-3xl font-bold mb-2 font-title",
-            isDark ? "text-dark-text-primary" : "text-gummy-dark"
+            "text-4xl font-bold mb-2 tracking-tight",
+            isDark ? "text-dark-text-primary" : "text-apple-gray-800"
           )}>{currentUser.nickname}</h1>
           <p className={cn(
-            "text-lg font-body",
-            isDark ? "text-dark-text-secondary" : "text-gummy-dark/60"
+            "text-lg font-light",
+            isDark ? "text-dark-text-secondary" : "text-apple-gray-500"
           )}>我的时光胶囊</p>
           
-          <div className="flex justify-center gap-8 mt-8">
+          {/* Stats */}
+          <div className="flex justify-center gap-12 mt-10">
             <div className="text-center">
               <p className={cn(
-                "text-2xl font-bold font-title",
-                isDark ? "text-dark-text-primary" : "text-gummy-dark"
+                "text-3xl font-bold tracking-tight",
+                isDark ? "text-dark-text-primary" : "text-apple-gray-800"
               )}>
                 {myCapsules.length}
               </p>
               <p className={cn(
-                "text-xs mt-1",
-                isDark ? "text-dark-text-tertiary" : "text-gummy-dark/60"
+                "text-sm mt-2 font-medium",
+                isDark ? "text-dark-text-tertiary" : "text-apple-gray-500"
               )}>总胶囊</p>
             </div>
             <div className="text-center">
               <p className={cn(
-                "text-2xl font-bold font-title",
-                isDark ? "text-dark-accent-secondary" : "text-gummy-orange"
+                "text-3xl font-bold tracking-tight",
+                isDark ? "text-dark-accent-secondary" : "text-apple-orange"
               )}>{pendingCapsules.length}</p>
               <p className={cn(
-                "text-xs mt-1",
-                isDark ? "text-dark-text-tertiary" : "text-gummy-dark/60"
+                "text-sm mt-2 font-medium",
+                isDark ? "text-dark-text-tertiary" : "text-apple-gray-500"
               )}>待开启</p>
             </div>
             <div className="text-center">
               <p className={cn(
-                "text-2xl font-bold font-title",
-                isDark ? "text-dark-accent-secondary" : "text-gummy-pink"
+                "text-3xl font-bold tracking-tight",
+                isDark ? "text-dark-accent-secondary" : "text-apple-pink"
               )}>{openedCapsules.length}</p>
               <p className={cn(
-                "text-xs mt-1",
-                isDark ? "text-dark-text-tertiary" : "text-gummy-dark/60"
+                "text-sm mt-2 font-medium",
+                isDark ? "text-dark-text-tertiary" : "text-apple-gray-500"
               )}>已开启</p>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3 mb-8">
+        {/* Tabs */}
+        <div className="flex gap-3 mb-10 bg-apple-gray-200/50 dark:bg-dark-bg-secondary rounded-apple-xl p-1.5">
           <TabButton 
             active={activeTab === 'pending'}
             onClick={() => setActiveTab('pending')}
@@ -127,48 +130,50 @@ export default function MyCapsules() {
           />
         </div>
 
+        {/* Capsules List */}
         <div className="space-y-6">
           {displayCapsules.length === 0 ? (
-            <div className="text-center py-16">
+            <div className="text-center py-20 animate-fade-in">
               <div className={cn(
-                "w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center shadow-lg",
+                "w-28 h-28 mx-auto mb-8 rounded-apple-2xl flex items-center justify-center shadow-apple",
                 isDark
                   ? "bg-dark-bg-secondary"
-                  : "bg-gummy-pink/20 shadow-gummy"
+                  : "bg-white"
               )}>
                 {activeTab === 'pending' ? (
                   <Calendar className={cn(
-                    "w-12 h-12",
-                    isDark ? "text-dark-text-tertiary" : "text-gummy-pink/60"
+                    "w-14 h-14",
+                    isDark ? "text-dark-text-tertiary" : "text-apple-gray-400"
                   )} />
                 ) : (
                   <Sparkles className={cn(
-                    "w-12 h-12",
-                    isDark ? "text-dark-text-tertiary" : "text-gummy-pink/60"
+                    "w-14 h-14",
+                    isDark ? "text-dark-text-tertiary" : "text-apple-gray-400"
                   )} />
                 )}
               </div>
               <p className={cn(
-                "font-medium mb-2",
-                isDark ? "text-dark-text-secondary" : "text-gummy-dark/70"
+                "font-medium mb-2 text-lg",
+                isDark ? "text-dark-text-secondary" : "text-apple-gray-700"
               )}>
                 {activeTab === 'pending' ? '暂无待开启的胶囊' : '暂无已开启的胶囊'}
               </p>
               <p className={cn(
-                "text-sm font-body",
-                isDark ? "text-dark-text-tertiary" : "text-gummy-dark/50"
+                "text-base font-light",
+                isDark ? "text-dark-text-tertiary" : "text-apple-gray-500"
               )}>快来创建你的第一个时光胶囊吧！</p>
             </div>
           ) : (
             displayCapsules.map((capsule, index) => (
-              <CapsuleCard
-                key={capsule.id}
-                capsule={capsule}
-                onLike={likeCapsule}
-                onFavorite={favoriteCapsule}
-                showActions={isCapsuleOpened(capsule.openAt)}
-                isDark={isDark}
-              />
+              <div key={capsule.id} className="animate-fade-up" style={{ animationDelay: `${index * 100}ms` }}>
+                <CapsuleCard
+                  capsule={capsule}
+                  onLike={likeCapsule}
+                  onFavorite={favoriteCapsule}
+                  showActions={isCapsuleOpened(capsule.openAt)}
+                  isDark={isDark}
+                />
+              </div>
             ))
           )}
         </div>
@@ -182,18 +187,18 @@ function TabButton({ active, onClick, label, icon, isDark }: { active: boolean; 
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 py-3.5 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center gap-2",
-        isDark
-          ? active
-            ? "bg-dark-bg-secondary text-dark-text-primary border-2 border-dark-border-primary"
-            : "text-dark-text-tertiary hover:bg-dark-bg-secondary border-2 border-dark-border-primary"
-          : active
-            ? "bg-white text-gummy-dark shadow-gummy border-2 border-gummy-pink/30"
-            : "text-gummy-dark/60 hover:bg-white/80 border-2 border-gummy-pink/30"
+        "flex-1 py-3.5 rounded-apple-lg font-medium transition-all duration-300 ease-apple flex items-center justify-center gap-2.5",
+        active
+          ? isDark
+            ? "bg-dark-bg-tertiary text-dark-text-primary shadow-apple-dark-sm"
+            : "bg-white text-apple-gray-800 shadow-apple-sm"
+          : isDark
+            ? "text-dark-text-tertiary hover:text-dark-text-secondary"
+            : "text-apple-gray-500 hover:text-apple-gray-700"
       )}
     >
       {icon}
-      <span className="font-title">{label}</span>
+      <span className="font-medium">{label}</span>
     </button>
   );
 }

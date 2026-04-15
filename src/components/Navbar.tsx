@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PlusSquare, User, Sparkles, BarChart3, MapPin, Calendar, Award, MessageCircle, MessageSquare, Moon, Sun } from 'lucide-react';
+import { Home, PlusSquare, Sparkles, Award, MessageSquare, Moon, Sun } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import NotificationCenter from './NotificationCenter';
 import { useTheme } from '../hooks/useTheme';
 
 function cn(...inputs: any[]) {
@@ -44,12 +43,12 @@ export default function Navbar() {
 
   return (
     <nav className={cn(
-      "fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t-2 pb-safe shadow-lg",
+      "fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t pb-safe",
       isDark
-        ? "bg-dark-bg-secondary/90 border-dark-border-primary shadow-dark"
-        : "bg-white/90 border-gummy-pink/30 shadow-gummy-pink/20"
+        ? "bg-dark-bg-secondary/80 border-dark-border-primary"
+        : "bg-white/80 border-apple-gray-200"
     )}>
-      <div className="max-w-md mx-auto flex items-center justify-around h-16 px-4">
+      <div className="max-w-lg mx-auto flex items-center justify-around h-20 px-4">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -59,39 +58,32 @@ export default function Navbar() {
               key={item.path}
               to={item.path}
               className={cn(
-                'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300',
+                'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ease-apple',
                 isActive 
-                  ? (isDark ? 'text-dark-accent-secondary font-medium' : 'text-gummy-orange font-medium')
-                  : (isDark ? 'text-dark-text-tertiary hover:text-dark-accent-secondary' : 'text-gummy-dark/60 hover:text-gummy-orange')
+                  ? (isDark ? 'text-dark-accent-secondary' : 'text-apple-purple')
+                  : (isDark ? 'text-dark-text-tertiary hover:text-dark-text-secondary' : 'text-apple-gray-400 hover:text-apple-gray-600')
               )}
             >
               {item.isPrimary ? (
                 <div className={cn(
-                  "absolute -top-5 rounded-full p-3 shadow-gummy border-4 animate-bounce-slow",
+                  "absolute -top-8 rounded-apple-2xl p-4 shadow-apple-lg border-4 animate-float",
                   isDark
                     ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary border-dark-bg-secondary"
-                    : "gummy-gradient border-white"
+                    : "bg-gradient-to-r from-apple-purple to-apple-blue border-white"
                 )}>
-                  <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
+                  <Icon className="w-7 h-7 text-white" strokeWidth={2.5} />
                 </div>
               ) : (
-                <>
-                  <Icon className={cn('w-5 h-5', isActive && 'fill-current')} />
-                  {item.path === '/my' && (
-                    <div className="absolute -top-1 -right-1">
-                      <NotificationCenter isDark={isDark} />
-                    </div>
-                  )}
-                </>
-              )}
-              
-              {!item.isPrimary && (
-                <span className={cn(
-                  "text-xs font-medium mt-1",
-                  isActive
-                    ? (isDark ? 'text-dark-accent-secondary' : 'text-gummy-orange')
-                    : (isDark ? 'text-dark-text-tertiary' : 'text-gummy-dark/60')
-                )}>{item.label}</span>
+                <div className={cn(
+                  "flex flex-col items-center",
+                  isActive && "scale-110"
+                )}>
+                  <Icon className={cn('w-6 h-6', isActive && 'fill-current')} />
+                  <span className={cn(
+                    "text-xs font-medium mt-1.5",
+                    isActive ? "font-semibold" : ""
+                  )}>{item.label}</span>
+                </div>
               )}
             </Link>
           );
@@ -101,14 +93,13 @@ export default function Navbar() {
         <button
           onClick={toggleTheme}
           className={cn(
-            'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300',
-            isDark ? 'text-dark-text-tertiary hover:text-dark-accent-secondary' : 'text-gummy-dark/60 hover:text-gummy-orange'
+            'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ease-apple',
+            isDark ? 'text-dark-text-tertiary hover:text-dark-text-secondary' : 'text-apple-gray-400 hover:text-apple-gray-600'
           )}
         >
-          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
           <span className={cn(
-            "text-xs font-medium mt-1",
-            isDark ? 'text-dark-text-tertiary' : 'text-gummy-dark/60'
+            "text-xs font-medium mt-1.5"
           )}>主题</span>
         </button>
       </div>
