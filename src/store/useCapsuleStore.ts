@@ -447,8 +447,6 @@ export const useCapsuleStore = create<CapsuleStore>()(
 
       getDriftBottle: (userId) => {
         const state = get();
-        // 重置接收次数，确保每次都能捞到漂流瓶（用于测试）
-        set({ driftBottleReceives: {} });
         
         const availableBottles = state.capsules.filter(c => 
           c.isDriftBottle && 
