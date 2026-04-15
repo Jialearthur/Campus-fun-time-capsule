@@ -29,9 +29,9 @@ export default function Navbar() {
       isPrimary: true,
     },
     {
-      path: '/campus-map',
-      label: '地图',
-      icon: MapPin,
+      path: '/drift-bottle',
+      label: '漂流瓶',
+      icon: MessageSquare,
     },
     {
       path: '/achievements',
