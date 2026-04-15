@@ -53,7 +53,7 @@ export default function Navbar() {
         ? "bg-dark-bg-secondary/80 border-dark-border-primary"
         : "bg-white/80 border-apple-gray-200"
     )}>
-      <div className="max-w-lg mx-auto flex items-center justify-around h-20 px-4">
+      <div className="max-w-lg mx-auto flex items-center justify-between h-20 px-6">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -69,7 +69,7 @@ export default function Navbar() {
                 }
               }}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 ease-apple',
+                'flex flex-col items-center justify-center px-4 transition-all duration-200 ease-apple',
                 isActive 
                   ? (isDark ? 'text-dark-accent-secondary' : 'text-apple-purple')
                   : (isDark ? 'text-dark-text-tertiary hover:text-dark-text-secondary' : 'text-apple-gray-400 hover:text-apple-gray-600')

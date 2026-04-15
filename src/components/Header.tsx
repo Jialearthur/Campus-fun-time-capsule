@@ -77,7 +77,7 @@ export default function Header() {
       </Link>
 
       {/* Navigation */}
-      <nav className="flex items-center gap-1">
+      <nav className="flex items-center gap-3">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -87,7 +87,7 @@ export default function Header() {
               key={item.path}
               to={item.path}
               className={cn(
-                'flex items-center gap-1.5 px-3.5 py-2 rounded-apple transition-all duration-200 font-medium',
+                'flex items-center gap-2 px-4 py-2.5 rounded-apple transition-all duration-200 font-medium',
                 isActive
                   ? (isDark 
                       ? "bg-dark-bg-tertiary/70 text-dark-text-primary"
@@ -107,26 +107,12 @@ export default function Header() {
       </nav>
 
       {/* User & Theme */}
-      <div className="flex items-center gap-1">
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          className={cn(
-            "p-2 rounded-apple transition-all duration-200 flex items-center justify-center",
-            isDark
-              ? "text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-bg-tertiary/30"
-              : "text-apple-gray-600 hover:text-apple-gray-700 hover:bg-apple-gray-100/70"
-          )}
-          aria-label={isDark ? "切换到浅色模式" : "切换到深色模式"}
-        >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
-
+      <div className="flex items-center gap-3">
         {/* User profile */}
         <Link
           to="/my"
           className={cn(
-            "flex items-center gap-1.5 px-3.5 py-2 rounded-apple transition-all duration-200 font-medium",
+            "flex items-center gap-2 px-4 py-2.5 rounded-apple transition-all duration-200 font-medium",
             isDark
               ? "text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-bg-tertiary/30"
               : "text-apple-gray-600 hover:text-apple-gray-700 hover:bg-apple-gray-100/70"
@@ -135,6 +121,20 @@ export default function Header() {
           <User className="w-4 h-4" />
           <span className="text-sm">我的</span>
         </Link>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className={cn(
+            "p-2.5 rounded-apple transition-all duration-200 flex items-center justify-center",
+            isDark
+              ? "text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-bg-tertiary/30"
+              : "text-apple-gray-600 hover:text-apple-gray-700 hover:bg-apple-gray-100/70"
+          )}
+          aria-label={isDark ? "切换到浅色模式" : "切换到深色模式"}
+        >
+          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
       </div>
     </header>
   );
