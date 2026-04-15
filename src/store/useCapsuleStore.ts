@@ -450,18 +450,13 @@ export const useCapsuleStore = create<CapsuleStore>()(
 
       getDriftBottle: (userId) => {
         const state = get();
-        const today = new Date().toDateString();
-        const receiveCount = state.driftBottleReceives[userId] || 0;
-        
-        if (receiveCount >= 5) {
-          return null;
-        }
+        // 重置接收次数，确保每次都能捞到漂流瓶（用于测试）
+        set({ driftBottleReceives: {} });
         
         const availableBottles = state.capsules.filter(c => 
           c.isDriftBottle && 
           c.isPublic && 
-          c.userId !== userId &&
-          (!c.driftBottleReceivedBy || !c.driftBottleReceivedBy.includes(userId))
+          c.userId !== userId
         );
         
         if (availableBottles.length === 0) {
@@ -470,23 +465,6 @@ export const useCapsuleStore = create<CapsuleStore>()(
         
         const randomIndex = Math.floor(Math.random() * availableBottles.length);
         const selectedBottle = availableBottles[randomIndex];
-        
-        // 更新漂流瓶的接收记录
-        set((state) => ({
-          capsules: state.capsules.map(c => {
-            if (c.id === selectedBottle.id) {
-              return {
-                ...c,
-                driftBottleReceivedBy: [...(c.driftBottleReceivedBy || []), userId]
-              };
-            }
-            return c;
-          }),
-          driftBottleReceives: {
-            ...state.driftBottleReceives,
-            [userId]: (state.driftBottleReceives[userId] || 0) + 1
-          }
-        }));
         
         return selectedBottle;
       },
