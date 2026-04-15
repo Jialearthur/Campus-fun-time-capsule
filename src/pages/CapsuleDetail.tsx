@@ -21,7 +21,8 @@ import {
   Image as ImageIcon,
   Users,
   Plus,
-  Copy
+  Copy,
+  MessageSquare
 } from 'lucide-react';
 import { isCapsuleOpened, formatDate } from '../utils/date';
 import { clsx } from 'clsx';
@@ -44,7 +45,8 @@ export default function CapsuleDetail() {
     updateCapsule,
     addNotification,
     addReply,
-    addGroupMemberContent
+    addGroupMemberContent,
+    setCapsuleAsDriftBottle
   } = useCapsuleStore();
 
   const capsule = id ? getCapsuleById(id) : undefined;
@@ -401,12 +403,30 @@ export default function CapsuleDetail() {
               </button>
             )}
             {currentUser && capsule.userId === currentUser.id && (
-              <button 
-                onClick={() => setIsEditing(!isEditing)}
-                className="p-2 -mr-2 text-candy-purple"
-              >
-                {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="p-2 text-candy-purple"
+                >
+                  {isEditing ? <Save className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
+                </button>
+                {capsule.isPublic && !capsule.isDriftBottle && (
+                  <button 
+                    onClick={() => {
+                      setCapsuleAsDriftBottle(capsule.id);
+                      addNotification({
+                        title: '设置成功',
+                        message: '你的胶囊已成功设置为漂流瓶',
+                        type: 'system'
+                      });
+                    }}
+                    className="p-2 text-candy-blue"
+                    title="设置为漂流瓶"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>
