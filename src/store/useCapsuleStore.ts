@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Capsule, Comment, User, CapsuleStore, CapsuleMember, CapsuleReply, DraftCapsule, CampusLandmark, Anniversary } from '../types';
+import { Capsule, Comment, User, CapsuleStore, CapsuleMember, CapsuleReply, DraftCapsule, CampusLandmark, Anniversary, Achievement } from '../types';
 
 const initialCapsules: Capsule[] = [
   {
@@ -129,6 +129,65 @@ const initialLandmarks: CampusLandmark[] = [
   { id: '10', name: '花坛', description: '校园的花园', latitude: 39.9042, longitude: 116.4074, icon: '🌸' }
 ];
 
+const initialAchievements: Achievement[] = [
+  {
+    id: 'first_capsule',
+    name: '初次尝试',
+    description: '第一次创建时光胶囊',
+    icon: '🌟',
+    unlocked: false
+  },
+  {
+    id: 'ten_capsules',
+    name: '胶囊收藏家',
+    description: '发布10个时光胶囊',
+    icon: '🏆',
+    unlocked: false
+  },
+  {
+    id: 'ten_likes',
+    name: '受欢迎',
+    description: '收到10个赞',
+    icon: '❤️',
+    unlocked: false
+  },
+  {
+    id: 'group_capsule',
+    name: '团队合作',
+    description: '创建集体胶囊',
+    icon: '👥',
+    unlocked: false
+  },
+  {
+    id: 'cross_reply',
+    name: '时光对话',
+    description: '进行跨时空回信',
+    icon: '📨',
+    unlocked: false
+  },
+  {
+    id: 'share_poster',
+    name: '分享达人',
+    description: '生成分享海报',
+    icon: '📷',
+    unlocked: false
+  },
+  {
+    id: 'ten_drift_bottles',
+    name: '漂流瓶收集者',
+    description: '查看10个漂流瓶',
+    icon: '🏺',
+    unlocked: false
+  },
+  {
+    id: 'bind_anniversary',
+    name: '纪念日守护者',
+    description: '绑定纪念日',
+    icon: '📅',
+    unlocked: false
+  }
+];
+
 const currentUser: User = {
   id: 'user-' + Date.now(),
   nickname: '校园旅人',
@@ -146,6 +205,8 @@ export const useCapsuleStore = create<CapsuleStore>()(
       drafts: [],
       landmarks: initialLandmarks,
       anniversaries: [],
+      achievements: initialAchievements,
+      driftBottleReceives: {},
 
       addCapsule: (capsuleData: any) => {
         const capsuleId = capsuleData.id || Date.now().toString();
@@ -358,7 +419,130 @@ export const useCapsuleStore = create<CapsuleStore>()(
           }
           return c;
         })
-      }))
+      })),
+
+      // 时光漂流瓶功能
+      setCapsuleAsDriftBottle: (capsuleId) => set((state) => ({
+        capsules: state.capsules.map(c => {
+          if (c.id === capsuleId && c.isPublic) {
+            return {
+              ...c,
+              isDriftBottle: true,
+              driftBottleReceivedBy: []
+            };
+          }
+          return c;
+        })
+      })),
+
+      getDriftBottle: (userId) => {
+        const state = get();
+        const today = new Date().toDateString();
+        const receiveCount = state.driftBottleReceives[userId] || 0;
+        
+        if (receiveCount >= 5) {
+          return null;
+        }
+        
+        const availableBottles = state.capsules.filter(c => 
+          c.isDriftBottle && 
+          c.isPublic && 
+          c.userId !== userId &&
+          (!c.driftBottleReceivedBy || !c.driftBottleReceivedBy.includes(userId))
+        );
+        
+        if (availableBottles.length === 0) {
+          return null;
+        }
+        
+        const randomIndex = Math.floor(Math.random() * availableBottles.length);
+        const selectedBottle = availableBottles[randomIndex];
+        
+        // 更新漂流瓶的接收记录
+        set((state) => ({
+          capsules: state.capsules.map(c => {
+            if (c.id === selectedBottle.id) {
+              return {
+                ...c,
+                driftBottleReceivedBy: [...(c.driftBottleReceivedBy || []), userId]
+              };
+            }
+            return c;
+          }),
+          driftBottleReceives: {
+            ...state.driftBottleReceives,
+            [userId]: (state.driftBottleReceives[userId] || 0) + 1
+          }
+        }));
+        
+        return selectedBottle;
+      },
+
+      throwDriftBottle: (capsuleId) => set((state) => ({
+        capsules: state.capsules.map(c => {
+          if (c.id === capsuleId) {
+            return {
+              ...c,
+              driftBottleReceivedBy: []
+            };
+          }
+          return c;
+        })
+      })),
+
+      // 成就系统功能
+      getAchievements: (userId) => {
+        // 这里简化处理，实际应该根据用户ID存储成就
+        return get().achievements;
+      },
+
+      unlockAchievement: (userId, achievementId) => set((state) => ({
+        achievements: state.achievements.map(a => {
+          if (a.id === achievementId && !a.unlocked) {
+            return {
+              ...a,
+              unlocked: true,
+              unlockedAt: new Date().toISOString()
+            };
+          }
+          return a;
+        })
+      })),
+
+      // 节日限定胶囊功能
+      getLimitedEditionTemplates: () => {
+        // 这里返回节日限定模板，实际应该根据当前日期判断
+        return [
+          {
+            id: 'back_to_school',
+            name: '开学季限定',
+            description: '新学期，新开始',
+            backgroundImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=back%20to%20school%20campus%20theme%20colorful&image_size=square',
+            isLimited: true
+          },
+          {
+            id: 'graduation',
+            name: '毕业季限定',
+            description: '青春不散场',
+            backgroundImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=graduation%20ceremony%20campus%20theme&image_size=square',
+            isLimited: true
+          },
+          {
+            id: 'mid_autumn',
+            name: '中秋限定',
+            description: '月圆人团圆',
+            backgroundImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=mid%20autumn%20festival%20moon%20campus&image_size=square',
+            isLimited: true
+          },
+          {
+            id: 'new_year',
+            name: '元旦限定',
+            description: '新年新希望',
+            backgroundImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=new%20year%20celebration%20campus%20theme&image_size=square',
+            isLimited: true
+          }
+        ];
+      }
     }),
     {
       name: 'capsule-storage'

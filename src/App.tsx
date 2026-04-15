@@ -9,6 +9,8 @@ import DataDashboard from './pages/DataDashboard';
 import JoinGroupCapsule from './pages/JoinGroupCapsule';
 import CampusMap from './pages/CampusMap';
 import AnniversaryManager from './pages/AnniversaryManager';
+import DriftBottle from './pages/DriftBottle';
+import Achievements from './pages/Achievements';
 
 const AppContent = () => {
   const location = useLocation();
@@ -28,6 +30,8 @@ const AppContent = () => {
         <Route path="/join/:id" element={<JoinGroupCapsule />} />
         <Route path="/campus-map" element={<CampusMap />} />
         <Route path="/anniversaries" element={<AnniversaryManager />} />
+        <Route path="/drift-bottle" element={<DriftBottle />} />
+        <Route path="/achievements" element={<Achievements />} />
       </Routes>
       {showNavbar && <Navbar />}
     </div>

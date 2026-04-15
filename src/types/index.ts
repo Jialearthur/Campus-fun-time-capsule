@@ -84,6 +84,15 @@ export interface Anniversary {
   updatedAt: string;
 }
 
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+}
+
 export interface Capsule {
   id: string;
   userId: string;
@@ -112,6 +121,10 @@ export interface Capsule {
   replies?: CapsuleReply[];
   landmarkId?: string;
   anniversaryIds?: string[];
+  isDriftBottle?: boolean;
+  driftBottleReceivedBy?: string[];
+  isLimitedEdition?: boolean;
+  limitedEditionTheme?: string;
 }
 
 export interface Notification {
@@ -133,6 +146,8 @@ export interface CapsuleStore {
   drafts: DraftCapsule[];
   landmarks: CampusLandmark[];
   anniversaries: Anniversary[];
+  achievements: Achievement[];
+  driftBottleReceives: Record<string, number>; // userId -> daily receive count
   addCapsule: (capsule: Omit<Capsule, 'id' | 'likes' | 'comments' | 'favorites' | 'createdAt'>) => string;
   likeCapsule: (id: string) => void;
   addComment: (capsuleId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'capsuleId'>) => void;
@@ -157,4 +172,13 @@ export interface CapsuleStore {
   getUserAnniversaries: (userId: string) => Anniversary[];
   bindCapsuleToAnniversary: (capsuleId: string, anniversaryId: string) => void;
   unbindCapsuleFromAnniversary: (capsuleId: string, anniversaryId: string) => void;
+  // 时光漂流瓶功能
+  setCapsuleAsDriftBottle: (capsuleId: string) => void;
+  getDriftBottle: (userId: string) => Capsule | null;
+  throwDriftBottle: (capsuleId: string) => void;
+  // 成就系统功能
+  getAchievements: (userId: string) => Achievement[];
+  unlockAchievement: (userId: string, achievementId: string) => void;
+  // 节日限定胶囊功能
+  getLimitedEditionTemplates: () => any[];
 }
