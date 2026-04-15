@@ -538,12 +538,11 @@ export default function CreateCapsule() {
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <div>
-              <h2 className="font-bold text-[#5a4b7a]">{steps[currentStep - 1].title}</h2>
-              <p className="text-sm text-[#a093c2]">{steps[currentStep - 1].subtitle}</p>
+              <div>
+                <h2 className="font-bold text-[#5a4b7a]">{steps[currentStep - 1].title}</h2>
+                <p className="text-sm text-[#a093c2]">{steps[currentStep - 1].subtitle}</p>
+              </div>
             </div>
-            <span className="text-sm text-[#c8b6e2]">DEBUG: currentStep={currentStep}, steps.length={steps.length}</span>
-          </div>
           <div className="flex items-center gap-2">
             {steps.map((step) => (
               <div key={step.id} className="flex-1">
