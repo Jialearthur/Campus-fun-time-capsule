@@ -26,7 +26,7 @@ export default function Home() {
         <div className="text-center mb-16 animate-fade-up">
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className={cn(
-              "w-20 h-20 rounded-apple-2xl flex items-center justify-center shadow-apple-lg",
+              "w-20 h-20 rounded-apple-2xl flex items-center justify-center shadow-apple-lg animate-bounce-float",
               isDark 
                 ? "bg-gradient-to-br from-dark-accent-primary to-dark-accent-secondary"
                 : "bg-gradient-to-br from-apple-purple to-apple-blue"

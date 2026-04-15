@@ -27,6 +27,7 @@ export default function Navbar() {
       path: '/create',
       label: '创建',
       icon: PlusSquare,
+      isPrimary: true,
     },
     {
       path: '/drift-bottle',
@@ -57,22 +58,33 @@ export default function Navbar() {
               key={item.path}
               to={item.path}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ease-apple',
+                'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ease-apple',
                 isActive 
                   ? (isDark ? 'text-dark-accent-secondary' : 'text-apple-purple')
                   : (isDark ? 'text-dark-text-tertiary hover:text-dark-text-secondary' : 'text-apple-gray-400 hover:text-apple-gray-600')
               )}
             >
-              <div className={cn(
-                "flex flex-col items-center",
-                isActive && "scale-110"
-              )}>
-                <Icon className={cn('w-6 h-6', isActive && 'fill-current')} />
-                <span className={cn(
-                  "text-xs font-medium mt-1.5",
-                  isActive ? "font-semibold" : ""
-                )}>{item.label}</span>
-              </div>
+              {item.isPrimary ? (
+                <div className={cn(
+                  "absolute -top-8 rounded-apple-2xl p-4 shadow-apple-lg border-4 animate-bounce-float",
+                  isDark
+                    ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary border-dark-bg-secondary"
+                    : "bg-gradient-to-r from-apple-purple to-apple-blue border-white"
+                )}>
+                  <Icon className="w-7 h-7 text-white" strokeWidth={2.5} />
+                </div>
+              ) : (
+                <div className={cn(
+                  "flex flex-col items-center",
+                  isActive && "scale-110"
+                )}>
+                  <Icon className={cn('w-6 h-6', isActive && 'fill-current')} />
+                  <span className={cn(
+                    "text-xs font-medium mt-1.5",
+                    isActive ? "font-semibold" : ""
+                  )}>{item.label}</span>
+                </div>
+              )}
             </Link>
           );
         })}

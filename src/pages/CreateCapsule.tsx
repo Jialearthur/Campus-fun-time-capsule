@@ -417,13 +417,13 @@ export default function CreateCapsule() {
           : "bg-gradient-to-b from-[#f9f7f4] via-white to-[#f5f3f7]"
       )}>
         <div className={cn(
-              "max-w-md w-full rounded-3xl p-8 shadow-xl border",
-              isDark
-                ? "bg-dark-bg-secondary border-dark-border-primary shadow-apple-dark"
-                : "bg-white border-apple-gray-200 shadow-apple"
-            )}>
+          "max-w-md w-full rounded-3xl p-8 shadow-xl border",
+          isDark
+            ? "bg-dark-bg-secondary border-dark-border-primary shadow-dark"
+            : "bg-white border-candy-yellow/30 shadow-xl"
+        )}>
           <div className="text-center mb-6">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-apple-green to-apple-teal flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-candy-green to-candy-teal flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-10 h-10 text-white" />
             </div>
             <h1 className={cn(
@@ -458,7 +458,7 @@ export default function CreateCapsule() {
               />
               <button
                 onClick={handleCopyInviteLink}
-                className="px-4 py-2 bg-gradient-to-r from-apple-pink to-apple-purple text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                className="px-4 py-2 bg-gradient-to-r from-candy-pink to-candy-purple text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
               >
                 <Copy className="w-4 h-4" />
               </button>
@@ -468,7 +468,7 @@ export default function CreateCapsule() {
           <div className="space-y-3">
             <button
               onClick={() => navigate(`/capsule/${newCapsuleId}`)}
-              className="w-full py-3 bg-gradient-to-r from-apple-green to-apple-teal text-white rounded-xl font-bold hover:opacity-90 transition-opacity"
+              className="w-full py-3 bg-gradient-to-r from-candy-green to-candy-teal text-white rounded-xl font-bold hover:opacity-90 transition-opacity"
             >
               查看胶囊详情
             </button>
@@ -506,18 +506,18 @@ export default function CreateCapsule() {
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft className={cn(
               "w-6 h-6",
-              isDark ? "text-dark-text-secondary" : "text-apple-gray-600"
+              isDark ? "text-dark-text-secondary" : "text-[#8a7ab5]"
             )} />
           </button>
           <h1 className={cn(
             "font-bold text-lg",
-            isDark ? "text-dark-text-primary" : "text-apple-gray-800"
+            isDark ? "text-dark-text-primary" : "text-[#5a4b7a]"
           )}>创建时光胶囊</h1>
           <div className="w-10 flex items-center justify-center">
             {lastSavedAt && (
               <div className={cn(
                 "flex items-center gap-1 text-xs",
-                isDark ? "text-dark-text-tertiary" : "text-apple-gray-400"
+                isDark ? "text-dark-text-tertiary" : "text-[#a093c2]"
               )}>
                 <Save className="w-3 h-3" />
                 <span>已保存</span>
