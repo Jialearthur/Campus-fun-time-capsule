@@ -16,7 +16,8 @@ const initialCapsules: Capsule[] = [
     comments: 8,
     favorites: 15,
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    replies: []
+    replies: [],
+    landmarkId: '1'
   },
   {
     id: '2',
@@ -33,7 +34,8 @@ const initialCapsules: Capsule[] = [
     likes: 78,
     comments: 12,
     favorites: 23,
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    landmarkId: '3'
   },
   {
     id: '3',
@@ -47,7 +49,8 @@ const initialCapsules: Capsule[] = [
     likes: 56,
     comments: 5,
     favorites: 18,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    landmarkId: '4'
   },
   {
     id: '4',
@@ -89,7 +92,8 @@ const initialCapsules: Capsule[] = [
         joinedAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000).toISOString(),
         content: '402是我们永远的家，毕业不是结束，而是新的开始。愿我们前程似锦，归来仍是少年！'
       }
-    ]
+    ],
+    landmarkId: '6'
   }
 ];
 
