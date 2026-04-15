@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Plus, Users, BookOpen, Search, BarChart3 } from 'lucide-react';
+import { Sparkles, Plus, Users, BookOpen, Search, BarChart3, MapPin } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -70,6 +70,28 @@ export default function Home() {
             gradient="from-gummy-green to-gummy-blue"
             textColor="text-gummy-dark"
           />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate('/campus-map');
+            }}
+            className="group w-full p-6 rounded-3xl bg-white border-2 border-gummy-pink/30 shadow-gummy hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] gummy-card"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gummy-green to-gummy-teal flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                <MapPin className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold mb-1 text-gummy-dark font-title">
+                  校园地图
+                </h3>
+                <p className="text-gummy-dark/60 text-sm font-body">
+                  探索校园里的时光胶囊
+                </p>
+              </div>
+            </div>
+          </button>
           <FeatureButton
             icon={<BarChart3 className="w-8 h-8 text-white" />}
             title="数据统计"
