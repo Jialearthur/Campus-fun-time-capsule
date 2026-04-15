@@ -18,8 +18,7 @@ const initialCapsules: Capsule[] = [
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
     replies: [],
     landmarkId: '1',
-    isDriftBottle: true,
-    driftBottleReceivedBy: []
+    isDriftBottle: true
   },
   {
     id: '2',
@@ -38,8 +37,7 @@ const initialCapsules: Capsule[] = [
     favorites: 23,
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     landmarkId: '3',
-    isDriftBottle: true,
-    driftBottleReceivedBy: []
+    isDriftBottle: true
   },
   {
     id: '3',
@@ -55,8 +53,7 @@ const initialCapsules: Capsule[] = [
     favorites: 18,
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     landmarkId: '4',
-    isDriftBottle: true,
-    driftBottleReceivedBy: []
+    isDriftBottle: true
   },
   {
     id: '4',
@@ -536,7 +533,9 @@ export const useCapsuleStore = create<CapsuleStore>()(
       }
     }),
     {
-      name: 'capsule-storage'
+      name: 'capsule-storage',
+      // 禁用持久化，每次刷新都使用初始数据（用于测试）
+      enabled: false
     }
   )
 );
