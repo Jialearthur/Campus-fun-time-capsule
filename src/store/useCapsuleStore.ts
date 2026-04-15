@@ -240,7 +240,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
           const userCapsules = updatedCapsules.filter(c => c.userId === capsuleData.userId);
           
           // 解锁"初次尝试"成就
-          if (userCapsules.length === 1) {
+          if (userCapsules.length >= 1) {
             updatedAchievements = updatedAchievements.map(a => {
               if (a.id === 'first_capsule' && !a.unlocked) {
                 return {
@@ -254,7 +254,7 @@ export const useCapsuleStore = create<CapsuleStore>()(
           }
           
           // 解锁"胶囊收藏家"成就
-          if (userCapsules.length === 10) {
+          if (userCapsules.length >= 10) {
             updatedAchievements = updatedAchievements.map(a => {
               if (a.id === 'ten_capsules' && !a.unlocked) {
                 return {
