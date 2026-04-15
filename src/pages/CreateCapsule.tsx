@@ -208,8 +208,20 @@ export default function CreateCapsule() {
       }
     }
 
+    // 如果用户没有上传图片，使用默认的AI生成图片
+    let finalImages = images;
     if (images.length === 0) {
-      newErrors.push('请至少上传1张图片');
+      // 根据选择的地标或标签生成默认图片提示词
+      let defaultImagePrompt = 'beautiful campus scenery with warm lighting, university campus';
+      if (selectedLandmarkId) {
+        const selectedLandmark = landmarks.find(l => l.id === selectedLandmarkId);
+        if (selectedLandmark) {
+          defaultImagePrompt = `${selectedLandmark.name} campus scenery, ${selectedLandmark.description}, university campus, warm lighting`;
+        }
+      } else if (selectedTags.length > 0) {
+        defaultImagePrompt = `campus ${selectedTags.join(', ')}, university campus, warm lighting`;
+      }
+      finalImages = [`https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(defaultImagePrompt)}&image_size=square`];
     }
 
     if (!isPublic && password && (password.length < 4 || password.length > 6)) {
@@ -240,7 +252,7 @@ export default function CreateCapsule() {
     const capsuleData: any = {
       userId: currentUser.id,
       content,
-      images,
+      images: finalImages,
       audio,
       openAt: openDate,
       isPublic,
@@ -778,7 +790,7 @@ export default function CreateCapsule() {
               </Section>
 
               <Section title="添加照片" subtitle="留下此刻的画面">
-                <p className="text-sm text-[#a093c2] mb-3">请上传1张或多张照片</p>
+                <p className="text-sm text-[#a093c2] mb-3">上传1张或多张照片（可选，未上传将自动生成）</p>
                 <ImageUploader images={images} onChange={setImages} />
               </Section>
 
