@@ -27,7 +27,6 @@ export default function Header() {
       path: '/create',
       label: '创建',
       icon: PlusSquare,
-      isPrimary: true,
     },
     {
       path: '/drift-bottle',
@@ -53,7 +52,7 @@ export default function Header() {
 
   return (
     <header className={cn(
-      "hidden md:flex items-center justify-between h-16 px-8 border-b sticky top-0 z-50 backdrop-blur-xl",
+      "hidden md:flex items-center justify-between h-16 px-6 border-b sticky top-0 z-50 backdrop-blur-xl",
       isDark
         ? "bg-dark-bg-secondary/90 border-dark-border-primary"
         : "bg-white/90 border-apple-gray-200"
@@ -86,17 +85,10 @@ export default function Header() {
               to={item.path}
               className={cn(
                 'flex items-center gap-2 px-4 py-2.5 rounded-apple-lg transition-all duration-300 font-medium',
-                item.isPrimary
-                  ? cn(
-                      "bg-gradient-to-r from-apple-purple to-apple-blue text-white shadow-apple-sm",
-                      "hover:shadow-apple hover:opacity-90 transform hover:scale-105"
-                    )
-                  : cn(
-                      isActive
-                        ? (isDark ? "text-dark-accent-secondary bg-dark-bg-tertiary" : "text-apple-purple bg-apple-gray-100")
-                        : (isDark ? "text-dark-text-tertiary hover:text-dark-text-secondary hover:bg-dark-bg-tertiary/50" : "text-apple-gray-600 hover:text-apple-gray-800 hover:bg-apple-gray-100"),
-                      "hover:shadow-sm"
-                    )
+                isActive
+                  ? (isDark ? "text-dark-accent-secondary bg-dark-bg-tertiary" : "text-apple-purple bg-apple-gray-100")
+                  : (isDark ? "text-dark-text-tertiary hover:text-dark-text-secondary hover:bg-dark-bg-tertiary/50" : "text-apple-gray-600 hover:text-apple-gray-800 hover:bg-apple-gray-100"),
+                "hover:shadow-sm transform hover:scale-105"
               )}
             >
               <Icon className="w-4 h-4" />
