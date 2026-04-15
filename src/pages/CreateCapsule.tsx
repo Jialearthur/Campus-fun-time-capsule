@@ -199,13 +199,19 @@ export default function CreateCapsule() {
       newErrors.push(contentValidation.message!);
     }
 
-    if (!openDate) {
-      newErrors.push('请选择开启时间');
-    } else {
-      const dateValidation = validateOpenDate(new Date(openDate));
-      if (!dateValidation.valid) {
-        newErrors.push(dateValidation.message!);
-      }
+    // 设置默认开启时间（如果用户未选择）
+    let finalOpenDate = openDate;
+    if (!finalOpenDate) {
+      // 默认设置为7天后
+      const defaultDate = new Date();
+      defaultDate.setDate(defaultDate.getDate() + 7);
+      finalOpenDate = defaultDate.toISOString().slice(0, 16);
+    }
+    
+    // 验证开启时间
+    const dateValidation = validateOpenDate(new Date(finalOpenDate));
+    if (!dateValidation.valid) {
+      newErrors.push(dateValidation.message!);
     }
 
     // 如果用户没有上传图片，使用默认的AI生成图片
@@ -254,7 +260,7 @@ export default function CreateCapsule() {
       content,
       images: finalImages,
       audio,
-      openAt: openDate,
+      openAt: finalOpenDate,
       isPublic,
       isAnonymous,
       tags: selectedTags,
@@ -364,8 +370,14 @@ export default function CreateCapsule() {
       ];
 
   const handleNext = () => {
+    console.log('handleNext called, currentStep:', currentStep, 'steps.length:', steps.length, 'isGroup:', isGroup);
     if (currentStep < steps.length) {
-      setCurrentStep((prev) => (prev + 1 as Step));
+      const nextStep = currentStep + 1 as Step;
+      console.log('Setting nextStep:', nextStep);
+      setCurrentStep(nextStep);
+      console.log('After setCurrentStep, currentStep:', currentStep);
+    } else {
+      console.log('currentStep is not less than steps.length');
     }
   };
 
