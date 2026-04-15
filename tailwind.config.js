@@ -23,6 +23,18 @@ export default {
         'candy-orange': '#FF9A8B',
         'candy-green': '#6BCB77',
         'candy-teal': '#4ECDC4',
+        // 深色模式颜色
+        'dark-bg-primary': '#1A1A1A',
+        'dark-bg-secondary': '#2A2A2A',
+        'dark-bg-tertiary': '#3A3A3A',
+        'dark-text-primary': '#F5F5F5',
+        'dark-text-secondary': '#D1D5DB',
+        'dark-text-tertiary': '#9CA3AF',
+        'dark-border-primary': '#4A4A4A',
+        'dark-border-secondary': '#3A3A3A',
+        'dark-accent-primary': '#A855F7',
+        'dark-accent-secondary': '#D8B4FE',
+        'dark-accent-tertiary': '#F3E8FF',
       },
       fontFamily: {
         'title': ['"ZCOOL QingKe HuangYou"', 'cursive'],

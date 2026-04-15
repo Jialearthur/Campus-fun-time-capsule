@@ -15,17 +15,21 @@ interface CapsuleCardProps {
   onLike?: (id: string) => void;
   onFavorite?: (id: string) => void;
   showActions?: boolean;
+  isDark?: boolean;
 }
 
-export default function CapsuleCard({ capsule, onLike, onFavorite, showActions = true }: CapsuleCardProps) {
+export default function CapsuleCard({ capsule, onLike, onFavorite, showActions = true, isDark = false }: CapsuleCardProps) {
   const navigate = useNavigate();
   const isOpened = isCapsuleOpened(capsule.openAt);
 
   return (
     <div 
       className={cn(
-        "bg-white rounded-3xl shadow-gummy border-2 overflow-hidden mb-6 hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group gummy-card animate-fade-in",
-        capsule.isGroup ? "border-candy-yellow/50" : "border-gummy-pink/30"
+        "rounded-3xl overflow-hidden mb-6 hover:shadow-gummy-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group gummy-card animate-fade-in",
+        isDark
+          ? "bg-dark-bg-secondary border-2 border-dark-border-primary"
+          : "bg-white shadow-gummy border-2 border-gummy-pink/30",
+        capsule.isGroup && !isDark && "border-candy-yellow/50"
       )}
       onClick={() => navigate(`/capsule/${capsule.id}`)}
     >
@@ -70,7 +74,13 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
           <div className="flex items-center gap-2">
             <div className={cn(
               "w-9 h-9 rounded-full flex items-center justify-center shadow-sm",
-              capsule.isGroup ? "bg-gradient-to-r from-candy-yellow to-candy-orange" : "gummy-gradient"
+              isDark
+                ? capsule.isGroup 
+                  ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary"
+                  : "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary"
+                : capsule.isGroup 
+                  ? "bg-gradient-to-r from-candy-yellow to-candy-orange"
+                  : "gummy-gradient"
             )}>
               {capsule.isGroup ? (
                 <Users className="w-4.5 h-4.5 text-white" />
@@ -78,7 +88,10 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
                 <User className="w-4.5 h-4.5 text-white" />
               )}
             </div>
-            <span className="text-sm font-medium text-gummy-dark">
+            <span className={cn(
+              "text-sm font-medium",
+              isDark ? "text-dark-text-primary" : "text-gummy-dark"
+            )}>
               {capsule.isGroup 
                 ? (capsule.groupName || '集体胶囊')
                 : (capsule.isAnonymous ? '匿名用户' : '校园旅人')
@@ -87,33 +100,53 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
           </div>
           <div className="flex items-center gap-1">
             {capsule.isPublic ? (
-              <Unlock className="w-4.5 h-4.5 text-gummy-green" />
+              <Unlock className={cn(
+                "w-4.5 h-4.5",
+                isDark ? "text-dark-accent-secondary" : "text-gummy-green"
+              )} />
             ) : (
-              <Lock className="w-4.5 h-4.5 text-gummy-orange" />
+              <Lock className={cn(
+                "w-4.5 h-4.5",
+                isDark ? "text-dark-accent-secondary" : "text-gummy-orange"
+              )} />
             )}
           </div>
         </div>
 
         <div className="mb-4">
           {isOpened ? (
-            <p className="text-gummy-dark line-clamp-3 leading-relaxed font-body">
+            <p className={cn(
+              "line-clamp-3 leading-relaxed font-body",
+              isDark ? "text-dark-text-primary" : "text-gummy-dark"
+            )}>
               {capsule.content}
             </p>
           ) : (
-            <p className="text-gummy-orange/80 italic font-medium">🔒 胶囊尚未开启，敬请期待...</p>
+            <p className={cn(
+              "italic font-medium",
+              isDark ? "text-dark-accent-secondary" : "text-gummy-orange/80"
+            )}>🔒 胶囊尚未开启，敬请期待...</p>
           )}
         </div>
 
         <div className="flex flex-wrap gap-2 mb-5">
           {capsule.tags.map((tag, idx) => (
-            <span key={idx} className="px-3 py-1.5 bg-gummy-cream text-gummy-dark text-xs rounded-full border border-gummy-pink/30">
+            <span key={idx} className={cn(
+              "px-3 py-1.5 text-xs rounded-full border",
+              isDark
+                ? "bg-dark-bg-tertiary text-dark-text-secondary border-dark-border-primary"
+                : "bg-gummy-cream text-gummy-dark border border-gummy-pink/30"
+            )}>
               #{tag}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-gummy-pink/20">
-          <CountdownTimer openAt={capsule.openAt} showLabel={false} />
+        <div className={cn(
+          "flex items-center justify-between pt-4 border-t",
+          isDark ? "border-dark-border-primary" : "border-gummy-pink/20"
+        )}>
+          <CountdownTimer openAt={capsule.openAt} showLabel={false} isDark={isDark} />
           
           {showActions && isOpened && (
             <div className="flex items-center gap-4">
@@ -123,15 +156,29 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
                   e.stopPropagation();
                   onLike?.(capsule.id);
                 }}
-                className="flex items-center gap-1.5 text-gummy-dark/60 hover:text-gummy-pink transition-colors duration-300 transform hover:scale-110"
+                className={cn(
+                  "flex items-center gap-1.5 transition-colors duration-300 transform hover:scale-110",
+                  isDark
+                    ? "text-dark-text-tertiary hover:text-dark-accent-secondary"
+                    : "text-gummy-dark/60 hover:text-gummy-pink"
+                )}
               >
                 <Heart className="w-5 h-5" />
-                <span className="text-sm font-medium">{capsule.likes}</span>
+                <span className={cn(
+                  "text-sm font-medium",
+                  isDark ? "text-dark-text-secondary" : "text-gummy-dark/60"
+                )}>{capsule.likes}</span>
               </button>
               
-              <div className="flex items-center gap-1.5 text-gummy-dark/60">
+              <div className={cn(
+                "flex items-center gap-1.5",
+                isDark ? "text-dark-text-tertiary" : "text-gummy-dark/60"
+              )}>
                 <MessageCircle className="w-5 h-5" />
-                <span className="text-sm font-medium">{capsule.comments}</span>
+                <span className={cn(
+                  "text-sm font-medium",
+                  isDark ? "text-dark-text-secondary" : "text-gummy-dark/60"
+                )}>{capsule.comments}</span>
               </div>
               
               <button 
@@ -140,10 +187,18 @@ export default function CapsuleCard({ capsule, onLike, onFavorite, showActions =
                   e.stopPropagation();
                   onFavorite?.(capsule.id);
                 }}
-                className="flex items-center gap-1.5 text-gummy-dark/60 hover:text-gummy-orange transition-colors duration-300 transform hover:scale-110"
+                className={cn(
+                  "flex items-center gap-1.5 transition-colors duration-300 transform hover:scale-110",
+                  isDark
+                    ? "text-dark-text-tertiary hover:text-dark-accent-secondary"
+                    : "text-gummy-dark/60 hover:text-gummy-orange"
+                )}
               >
                 <Star className="w-5 h-5" />
-                <span className="text-sm font-medium">{capsule.favorites}</span>
+                <span className={cn(
+                  "text-sm font-medium",
+                  isDark ? "text-dark-text-secondary" : "text-gummy-dark/60"
+                )}>{capsule.favorites}</span>
               </button>
             </div>
           )}
