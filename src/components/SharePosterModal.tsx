@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Download, Share2, CheckCircle2 } from 'lucide-react';
 import { Capsule } from '../types';
+import { useCapsuleStore } from '../store/useCapsuleStore';
 
 interface SharePosterModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ const SharePosterModal: React.FC<SharePosterModalProps> = ({
   const [selectedStyle, setSelectedStyle] = useState<PosterStyle>('simple');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  
+  const { unlockAchievement, currentUser } = useCapsuleStore();
 
   if (!isOpen) return null;
 
@@ -45,6 +48,11 @@ const SharePosterModal: React.FC<SharePosterModalProps> = ({
     setIsSaved(true);
     setIsGenerating(false);
     setTimeout(() => setIsSaved(false), 3000);
+    
+    // 解锁"分享达人"成就
+    if (currentUser) {
+      unlockAchievement(currentUser.id, 'share_poster');
+    }
   };
 
   const handleShare = (platform: string) => {

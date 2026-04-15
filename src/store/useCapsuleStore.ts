@@ -228,9 +228,65 @@ export const useCapsuleStore = create<CapsuleStore>()(
           favorites: 0,
           createdAt: new Date().toISOString()
         };
-        set((state) => ({
-          capsules: [...state.capsules, newCapsule]
-        }));
+        
+        set((state) => {
+          // 添加新胶囊
+          const updatedCapsules = [...state.capsules, newCapsule];
+          
+          // 检查并解锁成就
+          let updatedAchievements = [...state.achievements];
+          
+          // 检查用户的胶囊数量
+          const userCapsules = updatedCapsules.filter(c => c.userId === capsuleData.userId);
+          
+          // 解锁"初次尝试"成就
+          if (userCapsules.length === 1) {
+            updatedAchievements = updatedAchievements.map(a => {
+              if (a.id === 'first_capsule' && !a.unlocked) {
+                return {
+                  ...a,
+                  unlocked: true,
+                  unlockedAt: new Date().toISOString()
+                };
+              }
+              return a;
+            });
+          }
+          
+          // 解锁"胶囊收藏家"成就
+          if (userCapsules.length === 10) {
+            updatedAchievements = updatedAchievements.map(a => {
+              if (a.id === 'ten_capsules' && !a.unlocked) {
+                return {
+                  ...a,
+                  unlocked: true,
+                  unlockedAt: new Date().toISOString()
+                };
+              }
+              return a;
+            });
+          }
+          
+          // 解锁"团队合作"成就（如果是集体胶囊）
+          if (newCapsule.isGroup) {
+            updatedAchievements = updatedAchievements.map(a => {
+              if (a.id === 'group_capsule' && !a.unlocked) {
+                return {
+                  ...a,
+                  unlocked: true,
+                  unlockedAt: new Date().toISOString()
+                };
+              }
+              return a;
+            });
+          }
+          
+          return {
+            capsules: updatedCapsules,
+            achievements: updatedAchievements
+          };
+        });
+        
         return capsuleId;
       },
 
@@ -251,11 +307,36 @@ export const useCapsuleStore = create<CapsuleStore>()(
         )
       })),
 
-      likeCapsule: (id) => set((state) => ({
-        capsules: state.capsules.map(c =>
+      likeCapsule: (id) => set((state) => {
+        const updatedCapsules = state.capsules.map(c =>
           c.id === id ? { ...c, likes: c.likes + 1 } : c
-        )
-      })),
+        );
+        
+        // 检查并解锁成就
+        let updatedAchievements = [...state.achievements];
+        
+        // 检查用户的总点赞数
+        const totalLikes = updatedCapsules.reduce((sum, c) => sum + c.likes, 0);
+        
+        // 解锁"受欢迎"成就
+        if (totalLikes >= 10) {
+          updatedAchievements = updatedAchievements.map(a => {
+            if (a.id === 'ten_likes' && !a.unlocked) {
+              return {
+                ...a,
+                unlocked: true,
+                unlockedAt: new Date().toISOString()
+              };
+            }
+            return a;
+          });
+        }
+        
+        return {
+          capsules: updatedCapsules,
+          achievements: updatedAchievements
+        };
+      }),
 
       addComment: (capsuleId, commentData) => set((state) => {
         const newComment: Comment = {
@@ -329,16 +410,35 @@ export const useCapsuleStore = create<CapsuleStore>()(
           id: Date.now().toString(),
           createdAt: new Date().toISOString()
         };
+        
+        const updatedCapsules = state.capsules.map(c => {
+          if (c.id === capsuleId) {
+            return {
+              ...c,
+              replies: [...(c.replies || []), newReply]
+            };
+          }
+          return c;
+        });
+        
+        // 检查并解锁成就
+        let updatedAchievements = [...state.achievements];
+        
+        // 解锁"时光对话"成就
+        updatedAchievements = updatedAchievements.map(a => {
+          if (a.id === 'cross_reply' && !a.unlocked) {
+            return {
+              ...a,
+              unlocked: true,
+              unlockedAt: new Date().toISOString()
+            };
+          }
+          return a;
+        });
+        
         return {
-          capsules: state.capsules.map(c => {
-            if (c.id === capsuleId) {
-              return {
-                ...c,
-                replies: [...(c.replies || []), newReply]
-              };
-            }
-            return c;
-          })
+          capsules: updatedCapsules,
+          achievements: updatedAchievements
         };
       }),
 
@@ -407,8 +507,8 @@ export const useCapsuleStore = create<CapsuleStore>()(
 
       getUserAnniversaries: (userId) => get().anniversaries.filter(a => a.userId === userId),
 
-      bindCapsuleToAnniversary: (capsuleId, anniversaryId) => set((state) => ({
-        capsules: state.capsules.map(c => {
+      bindCapsuleToAnniversary: (capsuleId, anniversaryId) => set((state) => {
+        const updatedCapsules = state.capsules.map(c => {
           if (c.id === capsuleId) {
             return {
               ...c,
@@ -416,8 +516,28 @@ export const useCapsuleStore = create<CapsuleStore>()(
             };
           }
           return c;
-        })
-      })),
+        });
+        
+        // 检查并解锁成就
+        let updatedAchievements = [...state.achievements];
+        
+        // 解锁"纪念日守护者"成就
+        updatedAchievements = updatedAchievements.map(a => {
+          if (a.id === 'bind_anniversary' && !a.unlocked) {
+            return {
+              ...a,
+              unlocked: true,
+              unlockedAt: new Date().toISOString()
+            };
+          }
+          return a;
+        });
+        
+        return {
+          capsules: updatedCapsules,
+          achievements: updatedAchievements
+        };
+      }),
 
       unbindCapsuleFromAnniversary: (capsuleId, anniversaryId) => set((state) => ({
         capsules: state.capsules.map(c => {
@@ -488,7 +608,39 @@ export const useCapsuleStore = create<CapsuleStore>()(
         
         // 随机返回一个测试漂流瓶
         const randomIndex = Math.floor(Math.random() * testBottles.length);
-        return testBottles[randomIndex];
+        const selectedBottle = testBottles[randomIndex];
+        
+        // 更新漂流瓶接收次数并检查成就
+        set((state) => {
+          const newReceiveCount = (state.driftBottleReceives[userId] || 0) + 1;
+          
+          // 检查并解锁成就
+          let updatedAchievements = [...state.achievements];
+          
+          // 解锁"漂流瓶收集者"成就
+          if (newReceiveCount >= 10) {
+            updatedAchievements = updatedAchievements.map(a => {
+              if (a.id === 'ten_drift_bottles' && !a.unlocked) {
+                return {
+                  ...a,
+                  unlocked: true,
+                  unlockedAt: new Date().toISOString()
+                };
+              }
+              return a;
+            });
+          }
+          
+          return {
+            driftBottleReceives: {
+              ...state.driftBottleReceives,
+              [userId]: newReceiveCount
+            },
+            achievements: updatedAchievements
+          };
+        });
+        
+        return selectedBottle;
       },
 
       throwDriftBottle: (capsuleId) => set((state) => ({
