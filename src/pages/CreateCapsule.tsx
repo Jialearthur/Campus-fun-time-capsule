@@ -836,7 +836,11 @@ export default function CreateCapsule() {
                   <button
                     key={landmark.id}
                     type="button"
-                    onClick={() => setSelectedLandmarkId(landmark.id)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedLandmarkId(landmark.id);
+                    }}
                     className={cn(
                       "p-3 rounded-xl border-2 transition-all flex flex-col items-center text-center",
                       selectedLandmarkId === landmark.id
