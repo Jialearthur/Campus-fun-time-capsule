@@ -16,13 +16,19 @@ export default function DriftBottle() {
     getDriftBottle, 
     throwDriftBottle, 
     addComment, 
-    addNotification 
+    addNotification,
+    resetDriftBottleReceives
   } = useCapsuleStore();
   
   const [currentBottle, setCurrentBottle] = useState<any>(null);
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState('');
   const [receiveCount, setReceiveCount] = useState(0);
+  
+  // 重置漂流瓶接收次数（用于测试）
+  useEffect(() => {
+    resetDriftBottleReceives();
+  }, [resetDriftBottleReceives]);
 
   const handleGetBottle = () => {
     if (!currentUser) return;

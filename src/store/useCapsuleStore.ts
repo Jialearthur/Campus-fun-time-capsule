@@ -199,7 +199,7 @@ const initialAchievements: Achievement[] = [
 ];
 
 const currentUser: User = {
-  id: 'user-' + Date.now(),
+  id: 'current-user',
   nickname: '校园旅人',
   avatar: ''
 };
@@ -217,6 +217,9 @@ export const useCapsuleStore = create<CapsuleStore>()(
       anniversaries: [],
       achievements: initialAchievements,
       driftBottleReceives: {},
+      
+      // 重置漂流瓶接收次数（用于测试）
+      resetDriftBottleReceives: () => set({ driftBottleReceives: {} }),
 
       addCapsule: (capsuleData: any) => {
         const capsuleId = capsuleData.id || Date.now().toString();
