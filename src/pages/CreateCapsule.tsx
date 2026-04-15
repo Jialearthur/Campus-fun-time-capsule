@@ -314,7 +314,7 @@ export default function CreateCapsule() {
     if (isGroup) {
       setShowSuccess(true);
     } else {
-      navigate('/my-capsules', { replace: true });
+      navigate('/my', { replace: true });
     }
   };
 
