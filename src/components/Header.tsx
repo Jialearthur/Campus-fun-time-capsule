@@ -52,7 +52,7 @@ export default function Header() {
 
   return (
     <header className={cn(
-      "hidden md:flex items-center justify-between h-16 px-6 border-b sticky top-0 z-50 backdrop-blur-xl",
+      "hidden md:flex items-center justify-between h-16 px-8 border-b sticky top-0 z-50 backdrop-blur-xl w-full",
       isDark
         ? "bg-dark-bg-secondary/90 border-dark-border-primary"
         : "bg-white/90 border-apple-gray-200"
