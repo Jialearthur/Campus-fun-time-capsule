@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PlusSquare, User, Sparkles, BarChart3, MapPin, Calendar, Award, MessageCircle, MessageSquare } from 'lucide-react';
+import { Home, PlusSquare, User, Sparkles, BarChart3, MapPin, Calendar, Award, MessageCircle, MessageSquare, Moon, Sun } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import NotificationCenter from './NotificationCenter';
@@ -11,7 +11,7 @@ function cn(...inputs: any[]) {
 
 export default function Navbar() {
   const location = useLocation();
-  const { isDark } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
 
   const navItems = [
     {
@@ -96,6 +96,21 @@ export default function Navbar() {
             </Link>
           );
         })}
+        
+        {/* 主题切换按钮 */}
+        <button
+          onClick={toggleTheme}
+          className={cn(
+            'relative flex flex-col items-center justify-center flex-1 h-full transition-all duration-300',
+            isDark ? 'text-dark-text-tertiary hover:text-dark-accent-secondary' : 'text-gummy-dark/60 hover:text-gummy-orange'
+          )}
+        >
+          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          <span className={cn(
+            "text-xs font-medium mt-1",
+            isDark ? 'text-dark-text-tertiary' : 'text-gummy-dark/60'
+          )}>主题</span>
+        </button>
       </div>
     </nav>
   );
