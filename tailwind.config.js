@@ -84,6 +84,7 @@ export default {
         'fade-up': 'fadeUp 0.6s ease-out',
         'scale-in': 'scaleIn 0.3s ease-out',
         'hover-lift': 'hoverLift 0.3s ease-out',
+        'bounce-float': 'bounceFloat 3s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -101,6 +102,10 @@ export default {
         hoverLift: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-4px)' },
+        },
+        bounceFloat: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
         },
       },
       transitionTimingFunction: {

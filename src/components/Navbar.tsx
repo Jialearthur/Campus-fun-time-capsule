@@ -66,7 +66,7 @@ export default function Navbar() {
             >
               {item.isPrimary ? (
                 <div className={cn(
-                  "absolute -top-8 rounded-apple-2xl p-4 shadow-apple-lg border-4 animate-float",
+                  "absolute -top-8 rounded-apple-2xl p-4 shadow-apple-lg border-4 animate-bounce-float",
                   isDark
                     ? "bg-gradient-to-r from-dark-accent-primary to-dark-accent-secondary border-dark-bg-secondary"
                     : "bg-gradient-to-r from-apple-purple to-apple-blue border-white"
