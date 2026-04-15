@@ -12,14 +12,9 @@ function cn(...inputs: any[]) {
 export default function Achievements() {
   const navigate = useNavigate();
   const { currentUser, getAchievements } = useCapsuleStore();
-  const [achievements, setAchievements] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (currentUser) {
-      const userAchievements = getAchievements(currentUser.id);
-      setAchievements(userAchievements);
-    }
-  }, [currentUser, getAchievements]);
+  
+  // 直接获取最新的成就列表，确保实时更新
+  const achievements = currentUser ? getAchievements(currentUser.id) : [];
 
   const getAchievementIcon = (id: string) => {
     switch (id) {
