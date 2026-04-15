@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PlusSquare, User, Sparkles, BarChart3, MapPin, Calendar, Bottles, Award } from 'lucide-react';
+import { Home, PlusSquare, User, Sparkles, BarChart3, MapPin, Calendar, Award, MessageCircle, MessageSquare } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import NotificationCenter from './NotificationCenter';
@@ -31,7 +31,7 @@ export default function Navbar() {
     {
       path: '/drift-bottle',
       label: '漂流瓶',
-      icon: Bottles,
+      icon: MessageSquare,
     },
     {
       path: '/achievements',

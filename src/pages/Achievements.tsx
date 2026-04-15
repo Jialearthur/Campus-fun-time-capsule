@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCapsuleStore } from '../store/useCapsuleStore';
-import { ArrowLeft, Award, Star, Trophy, Heart, Users, MessageCircle, Share2, Bottles, Calendar } from 'lucide-react';
+import { ArrowLeft, Award, Star, Trophy, Heart, Users, MessageCircle, Share2, Calendar, MessageSquare } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -36,7 +36,7 @@ export default function Achievements() {
       case 'share_poster':
         return <Share2 className="w-6 h-6" />;
       case 'ten_drift_bottles':
-        return <Bottles className="w-6 h-6" />;
+        return <MessageSquare className="w-6 h-6" />;
       case 'bind_anniversary':
         return <Calendar className="w-6 h-6" />;
       default:

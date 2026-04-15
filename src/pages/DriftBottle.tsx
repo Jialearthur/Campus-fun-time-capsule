@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCapsuleStore } from '../store/useCapsuleStore';
-import { ArrowLeft, MessageCircle, Share2, Bottles, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Share2, MessageSquare, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -82,7 +82,7 @@ export default function DriftBottle() {
 
       <div className="max-w-md mx-auto px-4 pt-6">
         <div className="mb-8 text-center">
-          <Bottles className="w-16 h-16 text-candy-blue mx-auto mb-4" />
+          <MessageSquare className="w-16 h-16 text-candy-blue mx-auto mb-4" />
           <h2 className="font-bold text-xl text-[#5a4b7a] mb-2">时光漂流瓶</h2>
           <p className="text-sm text-[#a093c2] mb-4">
             每一个漂流瓶都承载着一段校园回忆，快来开启你的奇遇吧
@@ -94,7 +94,7 @@ export default function DriftBottle() {
 
         {!currentBottle ? (
           <div className="text-center py-12 bg-gradient-to-r from-candy-blue/10 to-candy-teal/10 rounded-2xl border border-candy-blue/20">
-            <Bottles className="w-20 h-20 text-candy-blue/40 mx-auto mb-4" />
+            <MessageSquare className="w-20 h-20 text-candy-blue/40 mx-auto mb-4" />
             <p className="text-[#a093c2] mb-6">还没有漂流瓶</p>
             <button 
               onClick={handleGetBottle}
@@ -108,7 +108,7 @@ export default function DriftBottle() {
             <div className="bg-white rounded-2xl p-6 border border-[#e0d6f0] shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Bottles className="w-5 h-5 text-candy-blue" />
+                  <MessageSquare className="w-5 h-5 text-candy-blue" />
                   <span className="font-medium text-[#5a4b7a]">漂流瓶</span>
                 </div>
                 <span className="text-xs bg-candy-yellow/20 text-candy-yellow px-2 py-1 rounded-full">
@@ -188,7 +188,7 @@ export default function DriftBottle() {
 
         <div className="bg-gradient-to-r from-candy-blue/10 to-candy-teal/10 rounded-2xl p-4 border border-candy-blue/20 mt-8">
           <h3 className="font-medium text-[#5a4b7a] mb-2 flex items-center gap-2">
-            <Bottles className="w-4 h-4 text-candy-blue" />
+            <MessageSquare className="w-4 h-4 text-candy-blue" />
             漂流瓶规则
           </h3>
           <ul className="text-sm text-[#a093c2] space-y-1">
