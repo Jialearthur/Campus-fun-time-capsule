@@ -43,7 +43,7 @@ export default function Navbar() {
 
   return (
     <nav className={cn(
-      "fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t pb-safe",
+      "md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t pb-safe",
       isDark
         ? "bg-dark-bg-secondary/80 border-dark-border-primary"
         : "bg-white/80 border-apple-gray-200"

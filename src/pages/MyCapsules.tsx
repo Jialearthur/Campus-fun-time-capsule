@@ -40,9 +40,9 @@ export default function MyCapsules() {
         ? "bg-dark-bg-primary"
         : "bg-apple-gray-100"
     )}>
-      <div className="max-w-lg mx-auto px-6 pt-10">
-        {/* 主题切换按钮 */}
-        <div className="flex justify-end mb-8">
+      <div className="container mx-auto px-4 py-10">
+        {/* Theme toggle (only for mobile) */}
+        <div className="md:hidden flex justify-end mb-8">
           <button
             onClick={toggleTheme}
             className={cn(
@@ -67,7 +67,7 @@ export default function MyCapsules() {
             <User className="w-14 h-14 text-white" />
           </div>
           <h1 className={cn(
-            "text-4xl font-bold mb-2 tracking-tight",
+            "text-3xl md:text-4xl font-bold mb-2 tracking-tight",
             isDark ? "text-dark-text-primary" : "text-apple-gray-800"
           )}>{currentUser.nickname}</h1>
           <p className={cn(
@@ -76,10 +76,10 @@ export default function MyCapsules() {
           )}>我的时光胶囊</p>
           
           {/* Stats */}
-          <div className="flex justify-center gap-12 mt-10">
+          <div className="flex justify-center gap-8 md:gap-12 mt-10">
             <div className="text-center">
               <p className={cn(
-                "text-3xl font-bold tracking-tight",
+                "text-2xl md:text-3xl font-bold tracking-tight",
                 isDark ? "text-dark-text-primary" : "text-apple-gray-800"
               )}>
                 {myCapsules.length}
@@ -91,7 +91,7 @@ export default function MyCapsules() {
             </div>
             <div className="text-center">
               <p className={cn(
-                "text-3xl font-bold tracking-tight",
+                "text-2xl md:text-3xl font-bold tracking-tight",
                 isDark ? "text-dark-accent-secondary" : "text-apple-orange"
               )}>{pendingCapsules.length}</p>
               <p className={cn(
@@ -101,7 +101,7 @@ export default function MyCapsules() {
             </div>
             <div className="text-center">
               <p className={cn(
-                "text-3xl font-bold tracking-tight",
+                "text-2xl md:text-3xl font-bold tracking-tight",
                 isDark ? "text-dark-accent-secondary" : "text-apple-pink"
               )}>{openedCapsules.length}</p>
               <p className={cn(
@@ -113,7 +113,7 @@ export default function MyCapsules() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-3 mb-10 bg-apple-gray-200/50 dark:bg-dark-bg-secondary rounded-apple-xl p-1.5">
+        <div className="flex gap-3 mb-10 bg-apple-gray-200/50 dark:bg-dark-bg-secondary rounded-apple-xl p-1.5 max-w-md mx-auto">
           <TabButton 
             active={activeTab === 'pending'}
             onClick={() => setActiveTab('pending')}
@@ -131,9 +131,17 @@ export default function MyCapsules() {
         </div>
 
         {/* Capsules List */}
-        <div className="space-y-6">
+        <div className={cn(
+          "space-y-6",
+          "md:grid md:grid-cols-2 md:gap-6",
+          "lg:grid-cols-3"
+        )}>
           {displayCapsules.length === 0 ? (
-            <div className="text-center py-20 animate-fade-in">
+            <div className={cn(
+              "text-center py-20 animate-fade-in",
+              "md:col-span-2",
+              "lg:col-span-3"
+            )}>
               <div className={cn(
                 "w-28 h-28 mx-auto mb-8 rounded-apple-2xl flex items-center justify-center shadow-apple",
                 isDark

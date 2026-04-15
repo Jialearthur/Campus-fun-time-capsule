@@ -21,7 +21,7 @@ export default function Home() {
         ? "bg-dark-bg-primary"
         : "bg-apple-gray-100"
     )}>
-      <div className="max-w-lg mx-auto px-6 pt-12">
+      <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16 animate-fade-up">
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -35,13 +35,13 @@ export default function Home() {
             </div>
           </div>
           <h1 className={cn(
-            "text-5xl font-bold mb-4 tracking-tight",
+            "text-4xl md:text-5xl font-bold mb-4 tracking-tight",
             isDark ? "text-dark-text-primary" : "text-apple-gray-800"
           )}>
             校园时光胶囊
           </h1>
           <p className={cn(
-            "text-xl font-light leading-relaxed mb-10",
+            "text-lg md:text-xl font-light leading-relaxed mb-10 max-w-2xl mx-auto",
             isDark ? "text-dark-text-secondary" : "text-apple-gray-500"
           )}>
             记录校园时光，珍藏青春回忆
@@ -71,7 +71,11 @@ export default function Home() {
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 gap-6 mb-16">
+        <div className={cn(
+          "grid gap-6 mb-16",
+          "sm:grid-cols-2",
+          "lg:grid-cols-3"
+        )}>
           <FeatureButton
             icon={<Plus className="w-8 h-8 text-white" />}
             title="创建胶囊"
@@ -81,29 +85,26 @@ export default function Home() {
             isDark={isDark}
           />
           
-          <div className="grid grid-cols-2 gap-4">
-            <FeatureButton
-              icon={<Users className="w-6 h-6 text-white" />}
-              title="胶囊广场"
-              description="发现他人的时光故事"
-              onClick={() => navigate('/square')}
-              gradient={isDark ? "from-apple-teal to-dark-accent-primary" : "from-apple-teal to-apple-indigo"}
-              isDark={isDark}
-              compact
-            />
-            <FeatureButton
-              icon={<BookOpen className="w-6 h-6 text-white" />}
-              title="我的胶囊"
-              description="查看我的时光收藏"
-              onClick={() => navigate('/my')}
-              gradient={isDark ? "from-apple-green to-apple-teal" : "from-apple-green to-apple-teal"}
-              isDark={isDark}
-              compact
-            />
-          </div>
+          <FeatureButton
+            icon={<Users className="w-8 h-8 text-white" />}
+            title="胶囊广场"
+            description="发现他人的时光故事"
+            onClick={() => navigate('/square')}
+            gradient={isDark ? "from-apple-teal to-dark-accent-primary" : "from-apple-teal to-apple-indigo"}
+            isDark={isDark}
+          />
           
           <FeatureButton
-            icon={<MapPin className="w-7 h-7 text-white" />}
+            icon={<BookOpen className="w-8 h-8 text-white" />}
+            title="我的胶囊"
+            description="查看我的时光收藏"
+            onClick={() => navigate('/my')}
+            gradient={isDark ? "from-apple-green to-apple-teal" : "from-apple-green to-apple-teal"}
+            isDark={isDark}
+          />
+          
+          <FeatureButton
+            icon={<MapPin className="w-8 h-8 text-white" />}
             title="校园地图"
             description="探索校园里的时光胶囊"
             onClick={() => navigate('/campus-map')}
@@ -112,11 +113,20 @@ export default function Home() {
           />
           
           <FeatureButton
-            icon={<BarChart3 className="w-7 h-7 text-white" />}
+            icon={<BarChart3 className="w-8 h-8 text-white" />}
             title="数据统计"
             description="查看胶囊数据和互动情况"
             onClick={() => navigate('/dashboard')}
             gradient={isDark ? "from-dark-accent-tertiary to-apple-orange" : "from-apple-indigo to-apple-purple"}
+            isDark={isDark}
+          />
+          
+          <FeatureButton
+            icon={<MessageSquare className="w-8 h-8 text-white" />}
+            title="漂流瓶"
+            description="随机收到他人的时光胶囊"
+            onClick={() => navigate('/drift-bottle')}
+            gradient={isDark ? "from-apple-blue to-dark-accent-primary" : "from-apple-blue to-apple-indigo"}
             isDark={isDark}
           />
         </div>
@@ -143,7 +153,6 @@ function FeatureButton({
   onClick,
   gradient,
   isDark,
-  compact = false
 }: {
   icon: React.ReactNode;
   title: string;
@@ -151,7 +160,6 @@ function FeatureButton({
   onClick: () => void;
   gradient: string;
   isDark: boolean;
-  compact?: boolean;
 }) {
   return (
     <button
@@ -163,25 +171,23 @@ function FeatureButton({
           : "bg-white border border-apple-gray-200 shadow-apple hover:shadow-apple-lg"
       )}
     >
-      <div className={cn("flex items-start gap-4", compact && "flex-col items-center text-center")}>
+      <div className="flex items-start gap-4">
         <div className={cn(
           "shrink-0 flex items-center justify-center shadow-apple rounded-apple-xl bg-gradient-to-br",
           gradient,
-          compact ? "w-14 h-14" : "w-16 h-16"
+          "w-16 h-16"
         )}>
           {icon}
         </div>
-        <div className={cn("flex-1", compact && "mt-3")}>
+        <div className="flex-1">
           <h3 className={cn(
-            "font-semibold mb-1",
-            compact ? "text-base" : "text-xl",
+            "font-semibold mb-1 text-xl",
             isDark ? "text-dark-text-primary" : "text-apple-gray-800"
           )}>
             {title}
           </h3>
           <p className={cn(
-            "font-light",
-            compact ? "text-sm" : "text-base",
+            "font-light text-base",
             isDark ? "text-dark-text-secondary" : "text-apple-gray-500"
           )}>
             {description}

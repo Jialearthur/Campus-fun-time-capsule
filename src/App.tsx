@@ -1,47 +1,55 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
-import CapsuleSquare from './pages/CapsuleSquare';
 import CreateCapsule from './pages/CreateCapsule';
 import MyCapsules from './pages/MyCapsules';
 import CapsuleDetail from './pages/CapsuleDetail';
-import DataDashboard from './pages/DataDashboard';
-import JoinGroupCapsule from './pages/JoinGroupCapsule';
-import CampusMap from './pages/CampusMap';
-import AnniversaryManager from './pages/AnniversaryManager';
+import Square from './pages/Square';
 import DriftBottle from './pages/DriftBottle';
 import Achievements from './pages/Achievements';
+import CampusMap from './pages/CampusMap';
+import Dashboard from './pages/Dashboard';
+import Navbar from './components/Navbar';
+import Header from './components/Header';
+import { useTheme } from './hooks/useTheme';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
-const AppContent = () => {
-  const location = useLocation();
-  const showNavbar = !location.pathname.startsWith('/capsule/') && 
-                    location.pathname !== '/create' && 
-                    !location.pathname.startsWith('/join/');
+function cn(...inputs: any[]) {
+  return twMerge(clsx(inputs));
+}
 
-  return (
-    <div className="min-h-screen">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/square" element={<CapsuleSquare />} />
-        <Route path="/create" element={<CreateCapsule />} />
-        <Route path="/my" element={<MyCapsules />} />
-        <Route path="/capsule/:id" element={<CapsuleDetail />} />
-        <Route path="/dashboard" element={<DataDashboard />} />
-        <Route path="/join/:id" element={<JoinGroupCapsule />} />
-        <Route path="/campus-map" element={<CampusMap />} />
-        <Route path="/anniversaries" element={<AnniversaryManager />} />
-        <Route path="/drift-bottle" element={<DriftBottle />} />
-        <Route path="/achievements" element={<Achievements />} />
-      </Routes>
-      {showNavbar && <Navbar />}
-    </div>
-  );
-};
+function App() {
+  const { isDark } = useTheme();
 
-export default function App() {
   return (
     <Router>
-      <AppContent />
+      <div className={cn(
+        "min-h-screen transition-colors duration-500",
+        isDark ? "bg-dark-bg-primary" : "bg-apple-gray-100"
+      )}>
+        {/* 桌面端头部 */}
+        <Header />
+        
+        <main className="container mx-auto px-4 pb-20">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/create" element={<CreateCapsule />} />
+            <Route path="/my" element={<MyCapsules />} />
+            <Route path="/capsule/:id" element={<CapsuleDetail />} />
+            <Route path="/square" element={<Square />} />
+            <Route path="/drift-bottle" element={<DriftBottle />} />
+            <Route path="/achievements" element={<Achievements />} />
+            <Route path="/campus-map" element={<CampusMap />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
+        
+        {/* 移动端导航栏 */}
+        <Navbar />
+      </div>
     </Router>
   );
 }
+
+export default App;
