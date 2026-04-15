@@ -98,7 +98,7 @@ export default function DriftBottle() {
             <p className="text-[#a093c2] mb-6">还没有漂流瓶</p>
             <button 
               onClick={handleGetBottle}
-              className="px-10 py-4 bg-gradient-to-r from-candy-blue to-candy-teal text-white rounded-2xl font-bold text-lg shadow-lg shadow-candy-blue/30 hover:opacity-90 transition-all active:scale-95"
+              className="px-12 py-5 bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] text-white rounded-2xl font-bold text-xl shadow-xl shadow-indigo-500/30 hover:opacity-90 transition-all active:scale-95"
             >
               捞一个漂流瓶 🎣
             </button>
@@ -179,7 +179,7 @@ export default function DriftBottle() {
 
             <button 
               onClick={handleGetBottle}
-              className="w-full py-4 bg-gradient-to-r from-candy-blue to-candy-teal text-white rounded-2xl font-bold text-lg shadow-lg shadow-candy-blue/30 hover:opacity-90 transition-all active:scale-95"
+              className="w-full py-5 bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] text-white rounded-2xl font-bold text-xl shadow-xl shadow-indigo-500/30 hover:opacity-90 transition-all active:scale-95"
             >
               再捞一个漂流瓶 🎣
             </button>
